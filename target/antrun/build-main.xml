@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <mkdir dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
+  <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
+    <fileset includes="monitor.xml" dir="src/main/resources/conf"/>
+  </copy>
+  <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
+    <fileset includes="config.yml" dir="src/main/resources/conf"/>
+  </copy>
+  <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
+    <fileset includes="kubernetes-snapshot-extension.jar" dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target"/>
+  </copy>
+  <zip destfile="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension-0.1.zip">
+    <zipfileset prefix="KubernetesSnapshotExtension/" filemode="755" dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
+  </zip>
+  <delete dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
+</target>
+</project>
