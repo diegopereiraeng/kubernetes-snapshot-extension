@@ -6,6 +6,9 @@ This extension works only with the standalone machine agent.
 
 Monitors state of the Kubernetes or Openshift clusters and records attributes of resources like pods, endpoints, daemonset, replica sets and deployments.
 The data is received via Kubernetes API at a configurable interval and is pushed to the AppDynamics Analytics Events API for reporting.
+The data can be used to build custom queries or dashboards like this:
+
+
 
 ## Prerequisites
 
