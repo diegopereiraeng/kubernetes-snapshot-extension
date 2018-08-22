@@ -5,7 +5,7 @@ This extension works only with the standalone machine agent.
 ## Use Case
 
 Monitors state of the Kubernetes or Openshift clusters and records attributes of resources like pods, endpoints, daemonset, replica sets and deployments.
-The data is received via Kubernetes API and is pushed to the AppDynamics Analytics Events API for reporting.
+The data is received via Kubernetes API at a configurable interval and is pushed to the AppDynamics Analytics Events API for reporting.
 
 ## Prerequisites
 
@@ -90,7 +90,14 @@ Either [Download the Extension from the latest Github release](https://github.co
 
   ```
 
-3. Restart the Machine Agent.
+3. Configure frequency of updates in monitor.xml:
+
+'''
+    <execution-style>periodic</execution-style>
+    <execution-frequency-in-seconds>300</execution-frequency-in-seconds>
+'''
+
+4. Restart the Machine Agent.
 
 ## Build from Source
 
