@@ -8,6 +8,8 @@ Monitors state of the Kubernetes or Openshift clusters and records attributes of
 The data is received via Kubernetes API at a configurable interval and is pushed to the AppDynamics Analytics Events API for reporting.
 The data can be used to build custom queries or dashboards like this:
 
+![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
+
 
 
 ## Prerequisites
