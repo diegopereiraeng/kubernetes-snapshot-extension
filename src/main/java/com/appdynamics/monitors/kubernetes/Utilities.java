@@ -66,7 +66,9 @@ class Utilities {
             podObject = checkAddObject(podObject, podItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
 //            podObject = checkAddObject(podObject, podItem.getMetadata().getGenerateName(), "generateName");
 //            podObject = checkAddObject(podObject, podItem.getMetadata().getGeneration(), "generation");
-//            podObject = checkAddObject(podObject, podItem.getMetadata().getLabels(), "labels");
+            if (podItem.getMetadata().getLabels() != null) {
+                podObject = checkAddObject(podObject, podItem.getMetadata().getLabels().toString(), "labels");
+            }
             podObject = checkAddObject(podObject, podItem.getMetadata().getName(), "name");
             podObject = checkAddObject(podObject, namespace, "namespace");
             podObject = checkAddObject(podObject, podItem.getMetadata().getResourceVersion(), "resourceVersion");
