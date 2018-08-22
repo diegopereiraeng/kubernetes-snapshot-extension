@@ -37,28 +37,28 @@ Either [Download the Extension from the latest Github release](https://github.co
   Optional settings:
 
   ```
-  # Name od the Pod attribute schema
+  # Name of the Pod attribute schema
   podsSchemaName: "k8s_pod_snapshots"
 
-  # Name od the Pod Security  schema
+  # Name of the Pod Security  schema
   podsSecuritySchemaName: "openshift_pod_sec_snapshots"
 
-  # Name od the Deployment attribute schema
+  # Name of the Deployment attribute schema
   deploySchemaName: "openshift_deploy_snapshots"
 
-  # Name od the Daemon Set attribute schema
+  # Name of the Daemon Set attribute schema
   daemonSchemaName: "openshift_daemon_snapshots"
 
 
-  # Name od the Replica Set attribute schema
+  # Name of the Replica Set attribute schema
   rsSchemaName: "openshift_rs_snapshots"
 
 
-  # Name od the EndPoint attribute schema
+  # Name of the EndPoint attribute schema
   endpointSchemaName: "k8s_endpoint_snapshots"
 
 
-  # Name od the Summary Data schema
+  # Name of the Summary Data schema
   summarySchemaName: "openshift_cluster_summary"
 
   # Flag indicating whether to collect Pod attributes
