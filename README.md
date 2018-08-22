@@ -40,7 +40,7 @@ Either [Download the Extension from the latest Github release](https://github.co
   # Name of the Pod attribute schema
   podsSchemaName: "k8s_pod_snapshots"
 
-  # Name of the Pod Security  schema
+  # Name of the Pod Security schema
   podsSecuritySchemaName: "openshift_pod_sec_snapshots"
 
   # Name of the Deployment attribute schema
