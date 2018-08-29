@@ -42,7 +42,6 @@ class EventsRestOperation {
             //noinspection StatementWithEmptyBody
             for (String line; (line = br.readLine()) != null; response += line);
             conn.disconnect();
-            logger.info("Events API response: {}", response);
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readTree(response);
         } catch (IOException e) {

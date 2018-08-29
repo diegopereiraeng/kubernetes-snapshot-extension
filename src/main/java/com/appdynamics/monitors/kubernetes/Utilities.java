@@ -64,15 +64,33 @@ class Utilities {
             podObject = checkAddObject(podObject, podItem.getMetadata().getClusterName(), "clusterName");
             podObject = checkAddObject(podObject, podItem.getMetadata().getCreationTimestamp(), "creationTimestamp");
             podObject = checkAddObject(podObject, podItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-//            podObject = checkAddObject(podObject, podItem.getMetadata().getGenerateName(), "generateName");
-//            podObject = checkAddObject(podObject, podItem.getMetadata().getGeneration(), "generation");
+
             if (podItem.getMetadata().getLabels() != null) {
-                podObject = checkAddObject(podObject, podItem.getMetadata().getLabels().toString(), "labels");
+                String labels = "";
+                Iterator it = podItem.getMetadata().getLabels().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    labels += String.format("%s:%S;", pair.getKey(), pair.getValue());
+                    it.remove();
+                }
+                podObject = checkAddObject(podObject, labels, "labels");
             }
+
+//            if (podItem.getMetadata().getAnnotations() != null){
+//                String annotations = "";
+//                Iterator it = podItem.getMetadata().getLabels().entrySet().iterator();
+//                while (it.hasNext()) {
+//                    Map.Entry pair = (Map.Entry)it.next();
+//                    annotations += String.format("%s:%S;", pair.getKey(), pair.getValue());
+//                    it.remove();
+//                }
+//                podObject = checkAddObject(podObject, annotations, "annotations");
+//            }
+
             podObject = checkAddObject(podObject, podItem.getMetadata().getName(), "name");
             podObject = checkAddObject(podObject, namespace, "namespace");
             podObject = checkAddObject(podObject, podItem.getMetadata().getResourceVersion(), "resourceVersion");
-//            podObject = checkAddObject(podObject, podItem.getMetadata().getSelfLink(), "selfLink");
+
             podObject = checkAddLong(podObject, podItem.getSpec().getActiveDeadlineSeconds(), "activeDeadlineSeconds");
             int containerCount = podItem.getSpec().getContainers() != null ? podItem.getSpec().getContainers().size() : 0;
             podObject = checkAddInt(podObject, containerCount, "containerCount");
@@ -124,6 +142,8 @@ class Utilities {
             podObject = checkAddObject(podObject, podItem.getStatus().getPodIP(), "podIP");
             podObject = checkAddObject(podObject, podItem.getStatus().getQosClass(), "qosClass");
             podObject = checkAddObject(podObject, podItem.getStatus().getReason(), "reason");
+
+
             if (podItem.getStatus().getReason() != null && podItem.getStatus().getReason().equals("Evicted")){
                 incrementField(summary, "evictions");
                 incrementField(summaryNamespace, "evictions");
@@ -282,11 +302,38 @@ class Utilities {
             deployObject = checkAddObject(deployObject, namespace, "namespace");
             deployObject = checkAddObject(deployObject, deployItem.getMetadata().getResourceVersion(), "resourceVersion");
 
+            if (deployItem.getMetadata().getLabels() != null) {
+                String labels = "";
+                Iterator it = deployItem.getMetadata().getLabels().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    labels += String.format("%s:%s;", pair.getKey(), pair.getValue());
+//                    logger.info("Labels {}", labels);
+                    it.remove();
+                }
+//                deployObject = checkAddObject(deployObject, labels, "labels");
+            }
+
+            if (deployItem.getMetadata().getAnnotations() != null){
+                String annotations = "";
+                Iterator it = deployItem.getMetadata().getLabels().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    annotations += String.format("%s:%s;", pair.getKey(), pair.getValue());
+                    logger.info("Annotation {}", annotations);
+                    it.remove();
+                }
+//                deployObject = checkAddObject(deployObject, annotations, "annotations");
+            }
+
+
             deployObject = checkAddInt(deployObject, deployItem.getSpec().getMinReadySeconds(), "minReadySecs");
             deployObject = checkAddInt(deployObject, deployItem.getSpec().getProgressDeadlineSeconds(), "progressDeadlineSecs");
 
             int replicas = deployItem.getSpec().getReplicas();
             deployObject = checkAddInt(deployObject, deployItem.getSpec().getReplicas(), "replicas");
+
+//            deployObject = checkAddObject(deployObject, deployItem.getSpec().getSelector().getMatchLabels().toString(), "labels");
 
             incrementField(summary, "deployReplicas", replicas);
             incrementField(summaryNamespace, "deployReplicas", replicas);

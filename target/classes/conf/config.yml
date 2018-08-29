@@ -44,7 +44,7 @@ includeRSSnapshot: "true"
 
 includeSummary: "true"
 
-logPayloads: "true"
+logPayloads: "false"
 
 # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
 #eventsUrl: "https://fra-ana-api.saas.appdynamics.com:443"
