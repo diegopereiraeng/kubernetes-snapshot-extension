@@ -1,26 +1,34 @@
 package com.appdynamics.monitors.kubernetes;
 
-import com.fasterxml.jackson.core.JsonParser;
+import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.metrics.Metric;
+import com.appdynamics.monitors.kubernetes.Models.AdqlSearchObj;
+import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.kubernetes.client.models.*;
-import org.joda.time.DateTime;
+import io.kubernetes.client.ApiClient;
+import io.kubernetes.client.util.Config;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-class Utilities {
-    private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
-    private static final String ALL = "all";
-    static HashMap<String, ObjectNode> summaryMap = new HashMap<String, ObjectNode>();
+import static com.appdynamics.monitors.kubernetes.Constants.*;
 
-    static URL getUrl(String input){
+public class Utilities {
+    private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
+    public static final String ALL = "all";
+    public static int tierID = 0;
+    public static String ClusterName = "";
+    public static ArrayList<AdqlSearchObj> savedSearches = new ArrayList<AdqlSearchObj>();
+
+    public static URL getUrl(String input){
         URL url = null;
         try {
             url = new URL(input);
@@ -30,558 +38,75 @@ class Utilities {
         return url;
     }
 
-    static ArrayNode createPodPayload(V1PodList podList){
-        Long loadTime = new Date().getTime();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode summary = initSummaryObject(loadTime, ALL, ALL);
-        summaryMap.put(ALL, summary);
-        for(V1Pod podItem : podList.getItems()){
-            ObjectNode podObject = mapper.createObjectNode();
-            String namespace = podItem.getMetadata().getNamespace();
-            String nodeName = podItem.getSpec().getNodeName();
+    public static boolean shouldRunJob(Map<String, String> config, String jobtype){
+        return config.get(jobtype) != null && config.get(jobtype).equals("true");
+    }
 
-            podObject = checkAddLong(podObject, loadTime, "batch_ts");
-
-            ObjectNode summaryNamespace = summaryMap.get(namespace);
-            if (summaryNamespace == null){
-                summaryNamespace = initSummaryObject(loadTime, namespace, ALL);
-                summaryMap.put(namespace, summaryNamespace);
+    public static Map<String, String> getEntityConfig(List<Map<String, String>> config, String entityType){
+        Map<String, String>  entityConfig = null;
+        logger.info("Checking section {}", entityType);
+        for(Map<String, String> map : config){
+            if (entityType.equals(map.get(CONFIG_ENTITY_TYPE))){
+                entityConfig = map;
+                break;
             }
+        }
+        return entityConfig;
+    }
 
-            ObjectNode summaryNode = summaryMap.get(nodeName);
-            if (summaryNode == null){
-                summaryNode = initSummaryObject(loadTime, ALL, nodeName);
-                summaryMap.put(nodeName, summaryNode);
+    public static boolean shouldLogPayloads(Map<String, String> config){
+        return config.get("logPayloads") != null && config.get("logPayloads").equals("true");
+    }
+
+    public static URL ensureSchema(Map<String, String> config, String apiKey, String accountName, String schemaName, String schemaDefinition){
+        URL publishUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/publish/" + config.get(schemaName));
+        URL schemaUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/schema/" + config.get(schemaName));
+        String requestBody = config.get(schemaDefinition);
+//        ObjectNode existingSchema = null;
+//        try {
+//            existingSchema = (ObjectNode) new ObjectMapper().readTree(requestBody);
+//        }
+//        catch (IOException ioEX){
+//            logger.error("Unable to determine the latest Pod schema", ioEX);
+//        }
+
+        JsonNode serverSchema = RestClient.doRequest(schemaUrl, accountName, apiKey, "", "GET");
+        if(serverSchema == null){
+            if (shouldLogPayloads(config)) {
+                logger.info("Schema Url {} does not exists. creating {}", schemaUrl, requestBody);
             }
-
-            incrementField(summary, "pods");
-            incrementField(summaryNamespace, "pods");
-            incrementField(summaryNode, "pods");
-
-            podObject = checkAddLong(podObject, podItem.getMetadata().getDeletionGracePeriodSeconds(), "deletionGracePeriod");
-            podObject = checkAddObject(podObject, podItem.getMetadata().getUid(), "object_uid");
-            podObject = checkAddObject(podObject, podItem.getMetadata().getClusterName(), "clusterName");
-            podObject = checkAddObject(podObject, podItem.getMetadata().getCreationTimestamp(), "creationTimestamp");
-            podObject = checkAddObject(podObject, podItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-
-            if (podItem.getMetadata().getLabels() != null) {
-                String labels = "";
-                Iterator it = podItem.getMetadata().getLabels().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    labels += String.format("%s:%S;", pair.getKey(), pair.getValue());
-                    it.remove();
-                }
-                podObject = checkAddObject(podObject, labels, "labels");
-            }
-
-//            if (podItem.getMetadata().getAnnotations() != null){
-//                String annotations = "";
-//                Iterator it = podItem.getMetadata().getLabels().entrySet().iterator();
-//                while (it.hasNext()) {
-//                    Map.Entry pair = (Map.Entry)it.next();
-//                    annotations += String.format("%s:%S;", pair.getKey(), pair.getValue());
-//                    it.remove();
+            RestClient.doRequest(schemaUrl, accountName, apiKey, requestBody, "POST");
+        }
+        else {
+            logger.info("Schema exists");
+//            if (existingSchema != null) {
+//                logger.info("Existing schema is not empty");
+//                ArrayNode updated = Utilities.checkSchemaForUpdates(serverSchema, existingSchema);
+//                if (updated != null) {
+//                    //update schema changes
+//                    logger.info("Schema changed, updating", schemaUrl);
+//                    if (shouldLogPayloads(config)) {
+//                        logger.info("New schema fields: {}", updated.toString());
+//                    }
+//                    RestClient.doRequest(schemaUrl, accountName, apiKey, updated.toString(), "PATCH");
 //                }
-//                podObject = checkAddObject(podObject, annotations, "annotations");
+//                else {
+//                    logger.info("Nothing to update");
+//                }
 //            }
-
-            podObject = checkAddObject(podObject, podItem.getMetadata().getName(), "name");
-            podObject = checkAddObject(podObject, namespace, "namespace");
-            podObject = checkAddObject(podObject, podItem.getMetadata().getResourceVersion(), "resourceVersion");
-
-            podObject = checkAddLong(podObject, podItem.getSpec().getActiveDeadlineSeconds(), "activeDeadlineSeconds");
-            int containerCount = podItem.getSpec().getContainers() != null ? podItem.getSpec().getContainers().size() : 0;
-            podObject = checkAddInt(podObject, containerCount, "containerCount");
-
-            if (containerCount > 0) {
-                incrementField(summary, "containers", containerCount);
-                incrementField(summaryNamespace, "containers", containerCount);
-                incrementField(summaryNode, "containers", containerCount);
-            }
-
-            int initContainerCount = podItem.getSpec().getInitContainers() != null ? podItem.getSpec().getInitContainers().size() : 0;
-            podObject = checkAddInt(podObject, initContainerCount, "initContainerCount");
-
-            if (initContainerCount > 0) {
-                incrementField(summary, "initcontainers", initContainerCount);
-                incrementField(summaryNamespace, "initcontainers", initContainerCount);
-                incrementField(summaryNode, "initcontainers", initContainerCount);
-            }
-
-            podObject = checkAddObject(podObject, podItem.getSpec().getDnsPolicy(), "dnsPolicy");
-            podObject = checkAddBoolean(podObject, podItem.getSpec().isHostIPC(), "hostIPC");
-            podObject = checkAddBoolean(podObject, podItem.getSpec().isHostNetwork(), "hostNetwork");
-            podObject = checkAddBoolean(podObject, podItem.getSpec().isHostPID(), "hostPID");
-            podObject = checkAddObject(podObject, podItem.getSpec().getHostname(), "hostname");
-            podObject = checkAddObject(podObject, nodeName, "nodeName");
-            podObject = checkAddObject(podObject, podItem.getSpec().getPriority(), "priority");
-            podObject = checkAddObject(podObject, podItem.getSpec().getRestartPolicy(), "restartPolicy");
-            podObject = checkAddObject(podObject, podItem.getSpec().getSchedulerName(), "schedulerName");
-            podObject = checkAddObject(podObject, podItem.getSpec().getServiceAccountName(), "serviceAccountName");
-            podObject = checkAddLong(podObject, podItem.getSpec().getTerminationGracePeriodSeconds(), "terminationGracePeriodSeconds");
-
-            int tolerationsCount = podItem.getSpec().getTolerations() != null ? podItem.getSpec().getTolerations().size() : 0;
-            podObject = checkAddInt(podObject, tolerationsCount, "tolerationsCount");
-
-            int volumesCount = podItem.getSpec().getVolumes() != null ? podItem.getSpec().getVolumes().size() : 0;
-            podObject = checkAddInt(podObject, volumesCount, "volumesCount");
-
-            boolean hasNodeAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getNodeAffinity() != null;
-            podObject = checkAddBoolean(podObject, hasNodeAffinity, "hasNodeAffinity");
-
-            boolean hasPodAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAffinity() != null;
-            podObject = checkAddBoolean(podObject, hasPodAffinity, "hasPodAffinity");
-
-            boolean hasPodAntiAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAntiAffinity() != null;
-            podObject = checkAddBoolean(podObject, hasPodAntiAffinity, "hasPodAntiAffinity");
-
-            podObject = checkAddObject(podObject, podItem.getStatus().getHostIP(), "hostIP");
-            podObject = checkAddObject(podObject, podItem.getStatus().getPhase(), "phase");
-            podObject = checkAddObject(podObject, podItem.getStatus().getPodIP(), "podIP");
-            podObject = checkAddObject(podObject, podItem.getStatus().getQosClass(), "qosClass");
-            podObject = checkAddObject(podObject, podItem.getStatus().getReason(), "reason");
-
-
-            if (podItem.getStatus().getReason() != null && podItem.getStatus().getReason().equals("Evicted")){
-                incrementField(summary, "evictions");
-                incrementField(summaryNamespace, "evictions");
-                incrementField(summaryNode, "evictions");
-            }
-            podObject = checkAddObject(podObject, podItem.getStatus().getStartTime(), "startTime");
-
-            if (podItem.getStatus().getConditions() != null && podItem.getStatus().getConditions().size() > 0) {
-                V1PodCondition recentCondition = podItem.getStatus().getConditions().get(0);
-                podObject = checkAddObject(podObject, recentCondition.getLastProbeTime(), "lastProbeTimeCondition");
-                podObject = checkAddObject(podObject, recentCondition.getLastTransitionTime(), "lastTransitionTimeCondition");
-                podObject = checkAddObject(podObject, recentCondition.getReason(), "reasonCondition");
-                podObject = checkAddObject(podObject, recentCondition.getStatus(), "statusCondition");
-                podObject = checkAddObject(podObject, recentCondition.getType(), "typeCondition");
-                podObject = checkAddObject(podObject, recentCondition.getMessage(), "messageCondition");
-            }
-
-            boolean limitsDefined = false;
-            for(V1Container container : podItem.getSpec().getContainers()){
-                limitsDefined = container.getResources() != null &&
-                        (container.getResources().getLimits() != null || container.getResources().getRequests() != null);
-                if (!limitsDefined){
-                    break;
-                }
-            }
-            podObject = checkAddBoolean(podObject, limitsDefined, "limitsDefined");
-            if (!limitsDefined){
-                incrementField(summary, "limits");
-                incrementField(summaryNamespace, "limits");
-                incrementField(summaryNode, "limits");
-            }
-
-            int numPorts = 0;
-            int numLive = 0;
-            int numReady = 0;
-            for(V1Container container : podItem.getSpec().getContainers()){
-                numPorts += container.getPorts() != null ? container.getPorts().size() : 0;
-                numLive += container.getLivenessProbe() != null ? 1 : 0;
-                numReady += container.getReadinessProbe() != null ? 1 : 0;
-            }
-            podObject = checkAddInt(podObject, numPorts, "numPorts");
-            podObject = checkAddInt(podObject, numLive, "liveProbes");
-            podObject = checkAddInt(podObject, numReady, "readyProbes");
-            arrayNode.add(podObject);
-
-            if (numLive == 0){
-                incrementField(summary, "lprobe");
-                incrementField(summaryNamespace, "lprobe");
-                incrementField(summaryNode, "lprobe");
-            }
-
-            if (numReady == 0){
-                incrementField(summary, "rprobe");
-                incrementField(summaryNamespace, "rprobe");
-                incrementField(summaryNode, "rprobe");
-            }
         }
-        return  arrayNode;
-    }
-
-    static ArrayNode createEndpointSnapshot(V1EndpointsList epList) {
-        Long loadTime = new Date().getTime();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode summary = summaryMap.get(ALL);
-        for (V1Endpoints ep : epList.getItems()) {
-            ObjectNode objectNode = mapper.createObjectNode();
-            objectNode = checkAddLong(objectNode, loadTime, "batch_ts");
-            objectNode = checkAddObject(objectNode, ep.getMetadata().getName(), "name");
-
-            String namespace = ep.getMetadata().getNamespace();
-            objectNode = checkAddObject(objectNode, namespace, "namespace");
-
-            ObjectNode summaryNamespace = summaryMap.get(namespace);
-            if (summaryNamespace == null){
-                summaryNamespace = initSummaryObject(loadTime, namespace, ALL);
-                summaryMap.put(namespace, summaryNamespace);
-            }
-
-            incrementField(summary, "endpoints");
-            incrementField(summaryNamespace, "endpoints");
-
-            objectNode = checkAddObject(objectNode, ep.getMetadata().getUid(), "object_uid");
-            objectNode = checkAddObject(objectNode, ep.getMetadata().getCreationTimestamp(), "creationTimestamp");
-            objectNode = checkAddObject(objectNode, ep.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-            int ups = 0;
-            int downs = 0;
-            String downContext = "";
-            if (ep.getSubsets() != null) {
-
-                for (V1EndpointSubset subset : ep.getSubsets()) {
-                    if (subset.getAddresses() != null) {
-                        ups += subset.getAddresses().size();
-                    }
-
-                    if (subset.getNotReadyAddresses() != null) {
-                        downs += subset.getNotReadyAddresses().size();
-                        for (V1EndpointAddress address : subset.getNotReadyAddresses()) {
-                            String obj = address.getTargetRef() != null ? address.getTargetRef().getName() : "";
-                            downContext += String.format("%s, %s", obj, address.getIp());
-                        }
-
-                    }
-                }
-            }
-
-            objectNode = checkAddInt(objectNode, ups, "ip_up");
-            objectNode = checkAddInt(objectNode, downs, "ip_down");
-            objectNode = checkAddObject(objectNode, downContext, "downContext");
-
-            if (ups > 0){
-                incrementField(summary, "endpoints_healthy");
-                incrementField(summaryNamespace, "endpoints_healthy");
-            }
-
-            incrementField(summary, "ip_up", ups);
-            incrementField(summaryNamespace, "ip_up", ups);
-
-            incrementField(summary, "ip_down", downs);
-            incrementField(summaryNamespace, "ip_down", downs);
-
-            arrayNode.add(objectNode);
-        }
-
-        return arrayNode;
-    }
-
-    static ArrayNode createDeployPayload(ExtensionsV1beta1DeploymentList deployList){
-        Long loadTime = new Date().getTime();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode summary = summaryMap.get(ALL);
-        for(ExtensionsV1beta1Deployment deployItem : deployList.getItems()) {
-            ObjectNode deployObject = mapper.createObjectNode();
-
-            String namespace = deployItem.getMetadata().getNamespace();
-
-            deployObject = checkAddLong(deployObject, loadTime, "batch_ts");
-
-            ObjectNode summaryNamespace = summaryMap.get(namespace);
-            if (summaryNamespace == null){
-                summaryNamespace = initSummaryObject(loadTime, namespace, ALL);
-                summaryMap.put(namespace, summaryNamespace);
-            }
-
-            incrementField(summary, "deploys");
-            incrementField(summaryNamespace, "deploys");
-
-
-            deployObject = checkAddLong(deployObject, deployItem.getMetadata().getDeletionGracePeriodSeconds(), "deletionGracePeriod");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getUid(), "object_uid");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getClusterName(), "clusterName");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getCreationTimestamp(), "creationTimestamp");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getName(), "name");
-            deployObject = checkAddObject(deployObject, namespace, "namespace");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getResourceVersion(), "resourceVersion");
-
-            if (deployItem.getMetadata().getLabels() != null) {
-                String labels = "";
-                Iterator it = deployItem.getMetadata().getLabels().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    labels += String.format("%s:%s;", pair.getKey(), pair.getValue());
-//                    logger.info("Labels {}", labels);
-                    it.remove();
-                }
-//                deployObject = checkAddObject(deployObject, labels, "labels");
-            }
-
-            if (deployItem.getMetadata().getAnnotations() != null){
-                String annotations = "";
-                Iterator it = deployItem.getMetadata().getLabels().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    annotations += String.format("%s:%s;", pair.getKey(), pair.getValue());
-                    logger.info("Annotation {}", annotations);
-                    it.remove();
-                }
-//                deployObject = checkAddObject(deployObject, annotations, "annotations");
-            }
-
-
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getMinReadySeconds(), "minReadySecs");
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getProgressDeadlineSeconds(), "progressDeadlineSecs");
-
-            int replicas = deployItem.getSpec().getReplicas();
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getReplicas(), "replicas");
-
-//            deployObject = checkAddObject(deployObject, deployItem.getSpec().getSelector().getMatchLabels().toString(), "labels");
-
-            incrementField(summary, "deployReplicas", replicas);
-            incrementField(summaryNamespace, "deployReplicas", replicas);
-
-
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getRevisionHistoryLimit(), "revisionHistoryLimits");
-
-            deployObject = checkAddObject(deployObject, deployItem.getSpec().getStrategy().getType(), "strategy");
-
-            if (deployItem.getSpec().getStrategy().getRollingUpdate() != null){
-                deployObject = checkAddObject(deployObject, deployItem.getSpec().getStrategy().getRollingUpdate().getMaxSurge(), "maxSurge");
-                deployObject = checkAddObject(deployObject, deployItem.getSpec().getStrategy().getRollingUpdate().getMaxUnavailable(), "maxUnavailable");
-            }
-
-
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getAvailableReplicas(), "replicasAvailable");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getUnavailableReplicas(), "replicasUnAvailable");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getUpdatedReplicas(), "replicasUpdated");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getCollisionCount(), "collisionCount");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getReadyReplicas(), "replicasReady");
-
-            if (deployItem.getStatus().getAvailableReplicas() != null) {
-                incrementField(summary, "deployReplicasAvailable", deployItem.getStatus().getAvailableReplicas());
-                incrementField(summaryNamespace, "deployReplicasAvailable", deployItem.getStatus().getAvailableReplicas());
-            }
-
-            if (deployItem.getStatus().getUnavailableReplicas() != null) {
-                incrementField(summary, "deployReplicasUnAvailable", deployItem.getStatus().getUnavailableReplicas());
-                incrementField(summaryNamespace, "deployReplicasUnAvailable", deployItem.getStatus().getUnavailableReplicas());
-            }
-
-            if (deployItem.getStatus().getCollisionCount() != null) {
-                incrementField(summary, "deployCollisionCount", deployItem.getStatus().getCollisionCount());
-                incrementField(summaryNamespace, "deployCollisionCount", deployItem.getStatus().getCollisionCount());
-            }
-
-            if (deployItem.getStatus().getReadyReplicas() != null) {
-                incrementField(summary, "deployReplicasReady", deployItem.getStatus().getReadyReplicas());
-                incrementField(summaryNamespace, "deployReplicasReady", deployItem.getStatus().getReadyReplicas());
-            }
-
-
-            arrayNode.add(deployObject);
-        }
-
-
-        return arrayNode;
+        return publishUrl;
     }
 
 
-    static ArrayNode createDaemonsetPayload(V1beta1DaemonSetList dsList){
-        Long loadTime = new Date().getTime();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode summary = summaryMap.get(ALL);
-        for(V1beta1DaemonSet deployItem : dsList.getItems()) {
-            ObjectNode deployObject = mapper.createObjectNode();
-
-            String namespace = deployItem.getMetadata().getNamespace();
-
-            deployObject = checkAddLong(deployObject, loadTime, "batch_ts");
-
-            ObjectNode summaryNamespace = summaryMap.get(namespace);
-            if (summaryNamespace == null){
-                summaryNamespace = initSummaryObject(loadTime, namespace, ALL);
-                summaryMap.put(namespace, summaryNamespace);
-            }
-
-            incrementField(summary, "daemons");
-            incrementField(summaryNamespace, "daemons");
-
-
-            deployObject = checkAddLong(deployObject, deployItem.getMetadata().getDeletionGracePeriodSeconds(), "deletionGracePeriod");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getUid(), "object_uid");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getClusterName(), "clusterName");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getCreationTimestamp(), "creationTimestamp");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getName(), "name");
-            deployObject = checkAddObject(deployObject, namespace, "namespace");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getResourceVersion(), "resourceVersion");
-
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getMinReadySeconds(), "minReadySecs");
-
-
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getRevisionHistoryLimit(), "revisionHistoryLimits");
-
-
-
-
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getNumberAvailable(), "replicasAvailable");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getNumberUnavailable(), "replicasUnAvailable");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getCollisionCount(), "collisionCount");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getNumberReady(), "replicasReady");
-
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getCurrentNumberScheduled(), "numberScheduled");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getDesiredNumberScheduled(), "desiredNumber");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getNumberMisscheduled(), "missScheduled");
-
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getUpdatedNumberScheduled(), "updatedNumberScheduled");
-
-            if (deployItem.getStatus().getNumberAvailable() != null) {
-                incrementField(summary, "daemonReplicasAvailable", deployItem.getStatus().getNumberAvailable());
-                incrementField(summaryNamespace, "daemonReplicasAvailable", deployItem.getStatus().getNumberAvailable());
-            }
-
-            if (deployItem.getStatus().getNumberUnavailable() != null) {
-                incrementField(summary, "daemonReplicasUnAvailable", deployItem.getStatus().getNumberUnavailable());
-                incrementField(summaryNamespace, "daemonReplicasUnAvailable", deployItem.getStatus().getNumberUnavailable());
-            }
-
-            if (deployItem.getStatus().getCollisionCount() != null) {
-                incrementField(summary, "daemonCollisionCount", deployItem.getStatus().getCollisionCount());
-                incrementField(summaryNamespace, "daemonCollisionCount", deployItem.getStatus().getCollisionCount());
-            }
-
-            if (deployItem.getStatus().getNumberReady() != null) {
-                incrementField(summary, "daemonReplicasReady", deployItem.getStatus().getNumberReady());
-                incrementField(summaryNamespace, "daemonReplicasReady", deployItem.getStatus().getNumberReady());
-            }
-
-            if (deployItem.getStatus().getCurrentNumberScheduled() != null) {
-                incrementField(summary, "daemonNumberScheduled", deployItem.getStatus().getCurrentNumberScheduled());
-                incrementField(summaryNamespace, "daemonNumberScheduled", deployItem.getStatus().getCurrentNumberScheduled());
-            }
-
-            if (deployItem.getStatus().getDesiredNumberScheduled() != null) {
-                incrementField(summary, "daemonDesiredNumber", deployItem.getStatus().getDesiredNumberScheduled());
-                incrementField(summaryNamespace, "daemonDesiredNumber", deployItem.getStatus().getDesiredNumberScheduled());
-            }
-
-            if (deployItem.getStatus().getNumberMisscheduled() != null) {
-                incrementField(summary, "daemonMissScheduled", deployItem.getStatus().getNumberMisscheduled());
-                incrementField(summaryNamespace, "daemonMissScheduled", deployItem.getStatus().getNumberMisscheduled());
-            }
-
-            arrayNode.add(deployObject);
-        }
-
-
-        return arrayNode;
-    }
-
-    static ArrayNode createReplicasetPayload(V1beta1ReplicaSetList rsList) {
-        Long loadTime = new Date().getTime();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode summary = summaryMap.get(ALL);
-        for (V1beta1ReplicaSet deployItem : rsList.getItems()) {
-            ObjectNode deployObject = mapper.createObjectNode();
-
-            String namespace = deployItem.getMetadata().getNamespace();
-
-            deployObject = checkAddLong(deployObject, loadTime, "batch_ts");
-
-            ObjectNode summaryNamespace = summaryMap.get(namespace);
-            if (summaryNamespace == null) {
-                summaryNamespace = initSummaryObject(loadTime, namespace, ALL);
-                summaryMap.put(namespace, summaryNamespace);
-            }
-
-            incrementField(summary, "rs");
-            incrementField(summaryNamespace, "rs");
-
-
-            deployObject = checkAddLong(deployObject, deployItem.getMetadata().getDeletionGracePeriodSeconds(), "deletionGracePeriod");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getUid(), "object_uid");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getClusterName(), "clusterName");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getCreationTimestamp(), "creationTimestamp");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getName(), "name");
-            deployObject = checkAddObject(deployObject, namespace, "namespace");
-            deployObject = checkAddObject(deployObject, deployItem.getMetadata().getResourceVersion(), "resourceVersion");
-
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getMinReadySeconds(), "minReadySecs");
-
-            int replicas = deployItem.getSpec().getReplicas();
-            deployObject = checkAddInt(deployObject, deployItem.getSpec().getReplicas(), "replicas");
-
-            incrementField(summary, "rsReplicas", replicas);
-            incrementField(summaryNamespace, "rsReplicas", replicas);
-
-
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getAvailableReplicas(), "rsReplicasAvailable");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getFullyLabeledReplicas(), "replicasLabeled");
-            deployObject = checkAddInt(deployObject, deployItem.getStatus().getReadyReplicas(), "replicasReady");
-
-            if (deployItem.getStatus().getAvailableReplicas() != null) {
-                incrementField(summary, "rsReplicasAvailable", deployItem.getStatus().getAvailableReplicas());
-                incrementField(summaryNamespace, "rsReplicasAvailable", deployItem.getStatus().getFullyLabeledReplicas());
-            }
-
-
-            arrayNode.add(deployObject);
-        }
-
-        return arrayNode;
-    }
-
-
-    static ArrayNode createPodSecurityPayload(V1beta1PodSecurityPolicyList list){
-        Long loadTime = new Date().getTime();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode summary = summaryMap.get(ALL);
-        for (V1beta1PodSecurityPolicy policyItem : list.getItems()) {
-            ObjectNode policyObject = mapper.createObjectNode();
-
-            String namespace = policyItem.getMetadata().getNamespace();
-
-            policyObject = checkAddLong(policyObject, loadTime, "batch_ts");
-
-            ObjectNode summaryNamespace = summaryMap.get(namespace);
-            if (summaryNamespace == null) {
-                summaryNamespace = initSummaryObject(loadTime, namespace, ALL);
-                summaryMap.put(namespace, summaryNamespace);
-            }
-
-            policyObject = checkAddObject(policyObject, policyItem.getMetadata().getUid(), "object_uid");
-            policyObject = checkAddObject(policyObject, policyItem.getMetadata().getClusterName(), "clusterName");
-            policyObject = checkAddObject(policyObject, policyItem.getMetadata().getCreationTimestamp(), "creationTimestamp");
-            policyObject = checkAddObject(policyObject, policyItem.getMetadata().getDeletionTimestamp(), "deletionTimestamp");
-            policyObject = checkAddObject(policyObject, policyItem.getMetadata().getName(), "name");
-            policyObject = checkAddObject(policyObject, namespace, "namespace");
-
-            boolean isPrivileged = policyItem.getSpec().isPrivileged();
-            policyObject = checkAddBoolean(policyObject,  isPrivileged,"privileged");
-            if (isPrivileged){
-                incrementField(summary, "privilegedPods");
-                incrementField(summaryNamespace, "privilegedPods");
-            }
-
-            policyObject = checkAddObject(policyObject, policyItem.getSpec().getRunAsUser().getRule(), "runAsUser");
-
-
-            arrayNode.add(policyObject);
-        }
-        return arrayNode;
-    }
-
-
-    private static ObjectNode checkAddObject(ObjectNode objectNode, Object object, String fieldName){
+    public static ObjectNode checkAddObject(ObjectNode objectNode, Object object, String fieldName){
         if(object != null){
             objectNode.put(fieldName, object.toString());
         }
         return objectNode;
     }
 
-    private static ObjectNode checkAddInt(ObjectNode objectNode, Integer val, String fieldName){
+    public static ObjectNode checkAddInt(ObjectNode objectNode, Integer val, String fieldName){
         if (val == null){
             val = 0;
         }
@@ -590,7 +115,7 @@ class Utilities {
         return objectNode;
     }
 
-    private static ObjectNode checkAddLong(ObjectNode objectNode, Long val, String fieldName){
+    public static ObjectNode checkAddLong(ObjectNode objectNode, Long val, String fieldName){
         if (val == null){
             val = 0L;
         }
@@ -599,7 +124,26 @@ class Utilities {
         return objectNode;
     }
 
-    private static ObjectNode checkAddBoolean(ObjectNode objectNode, Boolean val, String fieldName){
+    public static ObjectNode checkAddFloat(ObjectNode objectNode, Float val, String fieldName){
+        if (val == null){
+            val = new Float(0);
+        }
+        objectNode.put(fieldName, val);
+
+        return objectNode;
+    }
+
+
+    public static ObjectNode checkAddDecimal(ObjectNode objectNode, BigDecimal val, String fieldName){
+        if (val == null){
+            val = new BigDecimal(0);
+        }
+        objectNode.put(fieldName, val);
+
+        return objectNode;
+    }
+
+    public static ObjectNode checkAddBoolean(ObjectNode objectNode, Boolean val, String fieldName){
         if (val == null){
             val = false;
         }
@@ -641,7 +185,7 @@ class Utilities {
         return updateSchema;
     }
 
-    private  static ObjectNode initSummaryObject(long batchTS, String namespace, String node){
+    public  static ObjectNode initSummaryObject(long batchTS, String namespace, String node){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
         summary.put("batch_ts", batchTS);
@@ -680,43 +224,161 @@ class Utilities {
         return summary;
     }
 
-    private static ObjectNode incrementField(ObjectNode obj, String fieldName){
+    public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName){
+        ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt() + 1;
             obj.put(fieldName, val);
         }
-        if (obj != null && !obj.has(fieldName)){
-            obj.put(fieldName, 1);
-        }
+
         return obj;
     }
 
-    private static ObjectNode incrementField(ObjectNode obj, String fieldName, int increment){
+    public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName, int increment){
+        ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt();
             obj.put(fieldName, val+increment);
         }
-        if (obj != null && !obj.has(fieldName)){
-            obj.put(fieldName, increment);
-        }
+
         return obj;
     }
 
-    public  static ArrayNode getSummaryData(){
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode list = mapper.createArrayNode();
+    public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName, float increment){
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            int val = obj.get(fieldName).asInt();
+            obj.put(fieldName, val+increment);
+        }
+
+        return obj;
+    }
+
+    public static ObjectNode incrementField(SummaryObj summaryObj,  String fieldName, BigDecimal increment){
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            BigDecimal val = new BigDecimal(obj.get(fieldName).asDouble());
+            val = val.add(increment);
+            obj.put(fieldName, val);
+        }
+
+        return obj;
+    }
+
+    public  static ArrayList getSummaryDataList(HashMap<String, SummaryObj> summaryMap){
+        ArrayList list = new ArrayList();
         Iterator it = summaryMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            list.add((ObjectNode)pair.getValue());
+            SummaryObj summaryObj = (SummaryObj)pair.getValue();
+            list.add(summaryObj);
             it.remove();
         }
         return list;
     }
 
-    public static void clearSummary(){
+    public  static ArrayNode getSummaryData(HashMap<String, SummaryObj> summaryMap){
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode list = mapper.createArrayNode();
+        Iterator it = summaryMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            SummaryObj summaryObj = (SummaryObj)pair.getValue();
+            list.add(summaryObj.getData());
+            it.remove();
+        }
+        return list;
+    }
+
+    public static String getMetricsPath(Map<String, String> config){
+        return String.format(config.get(DEFAULT_METRIC_PREFIX_NAME), tierID);
+    }
+
+    public static String getMetricsPath(Map<String, String> config, String namespace, String node){
+        if(!node.equals(ALL)){
+            return String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, METRIC_PATH_NODES, METRIC_SEPARATOR, node);
+        }
+        else if (!namespace.equals(ALL)){
+            return String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, METRIC_PATH_NAMESPACES, METRIC_SEPARATOR, namespace);
+        }
+
+        return getMetricsPath(config);
+    }
+
+    public static List<Metric> getMetricsFromSummary(HashMap<String, SummaryObj> summaryMap, Map<String, String> config){
+        List<Metric> metricList = new ArrayList<Metric>();
+        String pathMain = getMetricsPath(config);
+        ArrayList<SummaryObj> objList = getSummaryDataList(summaryMap);
+        for(SummaryObj summaryObj : objList){
+            JsonNode obj = summaryObj.getData();
+            Iterator<Map.Entry<String, JsonNode>> nodes = obj.fields();
+            while (nodes.hasNext()){
+                Map.Entry<String, JsonNode> entry = nodes.next();
+                String fieldName = entry.getKey();
+                if (!fieldName.equals("batch_ts") && !fieldName.equals("nodename") && !fieldName.equals("namespace")) {
+                    String path = String.format("%s%s%s", summaryObj.getPath(), METRIC_SEPARATOR, fieldName);
+                    String val = entry.getValue().asText();
+                    Metric m = new Metric(fieldName, val, path, "OBSERVATION", "CURRENT", "INDIVIDUAL");
+                    metricList.add(m);
+                }
+            }
+        }
+        return metricList;
+    }
+
+    public static void clearSummary(HashMap<String, ObjectNode> summaryMap){
         //clear summary data
         summaryMap.clear();
+    }
+
+    public static String ensureClusterName(Map<String, String> config, String clusterName){
+        if (clusterName == null || clusterName.isEmpty()){
+
+            if (Utilities.ClusterName != null &&  !Utilities.ClusterName.isEmpty()) {
+                clusterName = Utilities.ClusterName;
+            }
+            else {
+                clusterName = Utilities.getClusterApplicationName(config);
+            }
+        }
+        if (Utilities.ClusterName == null | Utilities.ClusterName.isEmpty()){
+            Utilities.ClusterName = clusterName; //need this to build queries;
+        }
+        return clusterName;
+    }
+
+    public static String getClusterApplicationName(Map<String, String> config){
+        String appName = System.getenv("APPLICATION_NAME");
+        if (StringUtils.isNotEmpty(appName) == false){
+            appName = config.get(CONFIG_APP_NAME);
+        }
+        return  appName;
+    }
+
+    public static AdqlSearchObj getSavedSearch(String name){
+        AdqlSearchObj theObj = null;
+        for(AdqlSearchObj s : savedSearches){
+            if(s.getName().equals(name)){
+                theObj = s;
+                break;
+            }
+        }
+        return theObj;
+    }
+
+    public static ApiClient initClient(Map<String, String> config) throws Exception{
+        ApiClient client;
+        String apiMode = config.get("apiMode");
+        if (apiMode.equals("server")) {
+            client = Config.fromConfig(config.get("kubeClientConfig"));
+        }
+        else if (apiMode.equals("cluster")){
+            client = Config.fromCluster();
+        }
+        else{
+            throw new Exception("apiMode not supported. Must be server or cluster");
+        }
+        return client;
     }
 
 }

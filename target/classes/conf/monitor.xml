@@ -5,7 +5,7 @@
     <monitor-configuration/>
     <monitor-run-task>
         <execution-style>periodic</execution-style>
-        <execution-frequency-in-seconds>300</execution-frequency-in-seconds>
+        <execution-frequency-in-seconds>210</execution-frequency-in-seconds>
         <name>Kubernetes Snapshot Extension Run task</name>
         <display-name>Kubernetes Snapshot Extension Run task</display-name>
         <description>Kubernetes Snapshot Extension Run task</description>

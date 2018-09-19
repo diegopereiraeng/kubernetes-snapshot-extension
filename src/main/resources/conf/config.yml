@@ -1,120 +1,190 @@
 # Number of Threads for the Extension
-numberOfThreads: 1
+numberOfThreads: 3
 
 # This will create it in specific Tier aka Component. Replace <COMPONENT_ID>.
 # Please make sure to have a trailing |.
 # To find out the COMPONENT_ID, please see the screen shot here https://docs.appdynamics.com/display/latest/Build+a+Monitoring+Extension+Using+Java
-#metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|KubernetesEvents|"
-metricPrefix:  "Custom Metrics|KubernetesEvents|"
+metricPrefix: "Server|Component:%s|Custom Metrics|Cluster Stats|"
+#metricPrefix:  "Custom Metrics|Cluster Stats|"
+
+appName: "Openshift-Cluster-01"
+appTierName: "ClusterAgent"
 
 # Path to your kubectl Client configuration
 kubeClientConfig: "/home/origin/.kube/config"
+
+#server or cluster
+apiMode: "server"
+
 # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
 # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
 eventsApiKey: "fec1794f-4db0-4d5e-80c7-d9a3b950fe59"
+
 # Global Account Name obtained from
 # AppDynamics --> Settings --> License --> Accounts --> Global Account Name
 accountName: "customer1_f569566d-7308-4ce3-9686-c4f004b9232b"
 
 podsSchemaName: "k8s_pod_snapshots"
 
-podsSecuritySchemaName: "openshift_pod_sec_snapshots"
+nodeSchemaName: "k8s_node_snapshots"
 
-deploySchemaName: "openshift_deploy_snapshots"
+eventsSchemaName: "k8s_events"
 
-daemonSchemaName: "openshift_daemon_snapshots"
+deploySchemaName: "k8s_deploy_snapshots"
 
-rsSchemaName: "openshift_rs_snapshots"
+daemonSchemaName: "k8s_daemon_snapshots"
+
+rsSchemaName: "k8s_rs_snapshots"
 
 endpointSchemaName: "k8s_endpoint_snapshots"
 
-summarySchemaName: "openshift_cluster_summary"
-
-includePodSnapshot: "true"
-
-includePodSecuritySnapshot: "true"
-
-includeDeploySnapshot: "true"
-
-includeDaemonSnapshot: "true"
-
-includeEndpointSnapshot: "true"
-
-includeRSSnapshot: "true"
-
-includeSummary: "true"
 
 logPayloads: "false"
 
+entities:
+- type: "pod"
+- type: "node"
+- type: "deployment"
+- type: "daemon"
+- type: "replica"
+- type: "event"
+- type: "endpoint"
+
+dashboardTemplatePath: "/templates/k8sdashboard_auto.json"
+dashboardNameSuffix: "SUMMARY"
+controllerAPIUser: "k8sresty@customer1:k8sresty"
+controllerUrl: "http://staging.demo.appdynamics.com/controller/"
+
+
 # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
-#eventsUrl: "https://fra-ana-api.saas.appdynamics.com:443"
 eventsUrl: "https://analytics.api.appdynamics.com"
 
 
 podsSchemaDefinition: '{
    "schema" : {
-      "batch_ts": "integer",
-      "deletionGracePeriod": "integer",
       "object_uid": "string",
       "clusterName": "string",
       "creationTimestamp": "date",
       "deletionTimestamp": "date",
-      "generateName": "string",
-      "generation": "string",
       "labels": "string",
+      "annotations": "string",
       "name": "string",
       "namespace": "string",
-      "resourceVersion": "string",
-      "selfLink": "string",
-      "activeDeadlineSeconds": "integer",
       "containerCount": "integer",
       "initContainerCount": "integer",
-      "dnsPolicy": "string",
-      "hostIPC": "boolean",
-      "hostNetwork": "boolean",
-      "hostPID": "boolean",
-      "hostname": "string",
       "nodeName": "string",
       "priority": "integer",
       "restartPolicy": "string",
-      "schedulerName": "string",
       "serviceAccountName": "string",
       "terminationGracePeriodSeconds": "integer",
-      "tolerationsCount": "integer",
-      "volumesCount": "integer",
-      "hasNodeAffinity": "boolean",
+      "tolerations": "string",
+      "nodeAffinityPreferred": "string",
+      "nodeAffinityRequired": "string",
       "hasPodAffinity": "boolean",
       "hasPodAntiAffinity": "boolean",
       "hostIP": "string",
       "phase": "string",
       "podIP": "string",
-      "qosClass": "string",
       "reason": "string",
       "startTime": "date",
-      "lastProbeTimeCondition": "date",
       "lastTransitionTimeCondition": "date",
       "reasonCondition": "string",
       "statusCondition": "string",
       "typeCondition": "string",
-      "messageCondition": "string",
       "limitsDefined": "boolean",
-      "numPorts": "integer",
       "liveProbes": "integer",
-      "readyProbes": "integer"
+      "readyProbes": "integer",
+      "podRestarts": "integer",
+      "numPrivileged": "integer",
+      "ports": "string",
+      "memRequest": "float",
+      "cpuRequest": "float",
+      "cpuLimit": "float",
+      "memLimit": "float",
+      "containerStates": "string",
+      "images": "string",
+      "waitReasons": "string",
+      "termReasons": "string",
+      "runningStartTime": "date",
+      "terminationTime": "date",
+      "mounts": "string"
    }
 }'
 
+nodeSchemaDefinition: '{
+  "schema" : {
+      "nodeName": "string",
+      "clusterName": "string",
+      "podCIDR": "string",
+      "taints": "string",
+      "phase": "string",
+      "addresses": "string",
+      "labels": "string",
+      "role": "string",
+      "cpuCapacity": "float",
+      "memCapacity": "float",
+      "podCapacity": "integer",
+      "cpuAllocations": "float",
+      "memAllocations": "float",
+      "podAllocations": "integer",
+      "kubeletPort": "integer",
+      "osArch": "string",
+      "kubeletVersion": "string",
+      "runtimeVersion": "string",
+      "machineID": "string",
+      "osName": "string",
+      "attachedVolumes": "string",
+      "volumesInUse": "string",
+      "ready": "string",
+      "outOfDisk": "string",
+      "memoryPressure": "string",
+      "diskPressure": "string"
+  }
+}'
+
+eventsSchemaDefinition: '{
+   "schema" : {
+      "firstTimestamp": "date",
+      "object_kind": "string",
+      "object_name": "string",
+      "object_namespace": "string",
+      "object_resourceVersion": "string",
+      "object_uid": "string",
+      "lastTimestamp": "date",
+      "message": "string",
+      "annotations": "string",
+      "clusterName": "string",
+      "creationTimestamp": "date",
+      "deletionTimestamp": "date",
+      "finalizers": "string",
+      "generateName": "string",
+      "generation": "string",
+      "initializers": "string",
+      "labels": "string",
+      "name": "string",
+      "namespace": "string",
+      "ownerReferences": "string",
+      "resourceVersion": "string",
+      "selfLink": "string",
+      "type": "string",
+      "count": "string",
+      "source_component": "string",
+      "source_host": "string",
+      "reason": "string"
+   }
+}'
+
+
 deploySchemaDefinition: '{
   "schema": {
-    "batch_ts": "integer",
-    "deletionGracePeriod": "integer",
     "clusterName": "string",
     "name": "string",
     "namespace": "string",
     "object_uid": "string",
     "creationTimestamp": "date",
     "deletionTimestamp": "date",
-    "resourceVersion": "string",
+    "labels": "string",
+    "annotations": "string",
     "minReadySecs": "integer",
     "progressDeadlineSecs": "integer",
     "replicas": "integer",
@@ -132,15 +202,12 @@ deploySchemaDefinition: '{
 
 daemonSchemaDefinition: '{
   "schema": {
-    "batch_ts": "integer",
-    "deletionGracePeriod": "integer",
     "clusterName": "string",
     "name": "string",
     "namespace": "string",
     "object_uid": "string",
     "creationTimestamp": "date",
     "deletionTimestamp": "date",
-    "resourceVersion": "string",
     "minReadySecs": "integer",
     "revisionHistoryLimits": "integer",
     "replicasAvailable": "integer",
@@ -157,15 +224,12 @@ daemonSchemaDefinition: '{
 
 rsSchemaDefinition: '{
   "schema": {
-    "batch_ts": "integer",
-    "deletionGracePeriod": "integer",
     "clusterName": "string",
     "name": "string",
     "namespace": "string",
     "object_uid": "string",
     "creationTimestamp": "date",
     "deletionTimestamp": "date",
-    "resourceVersion": "string",
     "minReadySecs": "integer",
     "replicas": "integer",
     "rsReplicasAvailable": "integer",
@@ -174,12 +238,10 @@ rsSchemaDefinition: '{
   }
 }'
 
-
-
 endpointSchemaDefinition: '{
   "schema": {
-    "batch_ts": "integer",
     "name": "string",
+    "clusterName": "string",
     "namespace": "string",
     "object_uid": "string",
     "creationTimestamp": "date",
@@ -190,57 +252,3 @@ endpointSchemaDefinition: '{
   }
 }'
 
-
-podSecuritySchemaDefinition: '{
-  "schema": {
-    "batch_ts": "integer",
-    "clusterName": "string",
-    "name": "string",
-    "namespace": "string",
-    "object_uid": "string",
-    "creationTimestamp": "date",
-    "deletionTimestamp": "date",
-    "privileged": "boolean",
-    "runAsUser": "string"
-  }
-}'
-
-
-
-
-summarySchemaDefinition: '{
-  "schema": {
-    "batch_ts": "integer",
-    "namespace": "string",
-    "nodename": "string",
-    "pods": "integer",
-    "containers": "integer",
-    "initcontainers": "integer",
-    "evictions": "integer",
-    "limits": "integer",
-    "rprobe": "integer",
-    "lprobe": "integer",
-    "endpoints": "integer",
-    "endpoints_healthy": "integer",
-    "ip_up": "integer",
-    "ip_down": "integer",
-    "deploys": "integer",
-    "deployReplicas": "integer",
-    "deployReplicasAvailable": "integer",
-    "deployReplicasUnAvailable": "integer",
-    "deployCollisionCount": "integer",
-    "deployReplicasReady": "integer",
-    "daemons": "integer",
-    "daemonReplicasAvailable": "integer",
-    "daemonReplicasUnAvailable": "integer",
-    "daemonCollisionCount": "integer",
-    "daemonReplicasReady": "integer",
-    "daemonNumberScheduled": "integer",
-    "daemonDesiredNumber": "integer",
-    "daemonMissScheduled": "integer",
-    "rs": "integer",
-    "rsReplicas": "integer",
-    "rsReplicasAvailable": "integer",
-    "privilegedPods": "integer"
-  }
-}'

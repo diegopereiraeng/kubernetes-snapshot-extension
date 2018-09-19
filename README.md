@@ -140,6 +140,11 @@ Either [Download the Extension from the latest Github release](https://github.co
 </tbody>
 </table>
 
+## Stats per 100 Pods 10 projects
+Pod payload size = 170k
+Number of metrics: 285
+Number of event records
+
 ## Contributing
 
 Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/sashaPM/kubernetes-snapshot-extension).

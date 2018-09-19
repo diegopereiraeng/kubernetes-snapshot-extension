@@ -1,412 +1,331 @@
 package com.appdynamics.monitors.kubernetes;
 
-import com.appdynamics.extensions.StringUtils;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
-import com.appdynamics.extensions.util.MetricWriteHelper;
-import com.appdynamics.extensions.util.MetricWriteHelperFactory;
+import com.appdynamics.extensions.ABaseMonitor;
+import com.appdynamics.extensions.TasksExecutionServiceProvider;
+import com.appdynamics.extensions.util.AssertUtils;
+import com.appdynamics.monitors.kubernetes.Dashboard.ADQLSearchGenerator;
+import com.appdynamics.monitors.kubernetes.Dashboard.ClusterDashboardGenerator;
+import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
+import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
+import com.appdynamics.monitors.kubernetes.SnapshotTasks.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
-import io.kubernetes.client.Configuration;
-import io.kubernetes.client.apis.CoreV1Api;
-import io.kubernetes.client.apis.ExtensionsV1beta1Api;
-import io.kubernetes.client.models.*;
-import io.kubernetes.client.util.Config;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.IOException;
+
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+
+import static com.appdynamics.monitors.kubernetes.Constants.*;
+import static com.appdynamics.monitors.kubernetes.Utilities.ensureSchema;
+import static com.appdynamics.monitors.kubernetes.Utilities.shouldLogPayloads;
 
 @SuppressWarnings("WeakerAccess")
-public class KubernetesSnapshotExtension extends AManagedMonitor {
-    private static final Logger logger = LoggerFactory.getLogger(KubernetesSnapshotExtension.class);
-    private MonitorConfiguration configuration;
+public class KubernetesSnapshotExtension extends ABaseMonitor {
 
+
+    private static final Logger logger = LoggerFactory.getLogger(KubernetesSnapshotExtension.class);
+    private static final String [] TASKS = new String[]{
+            CONFIG_ENTITY_TYPE_POD,
+            CONFIG_ENTITY_TYPE_NODE,
+            CONFIG_ENTITY_TYPE_EVENT,
+            CONFIG_ENTITY_TYPE_DEPLOYMENT,
+            CONFIG_ENTITY_TYPE_DAEMON,
+            CONFIG_ENTITY_TYPE_ENDPOINT,
+            CONFIG_ENTITY_TYPE_REPLICA};
+
+    private CountDownLatch latch;
     public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
 
-    private void initialize(Map<String, String> argsMap) {
-        MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
-        MonitorConfiguration conf = new MonitorConfiguration("Custom Metrics|K8S",
-                new TaskRunnable(), metricWriteHelper);
-        final String configFilePath = argsMap.get("config-file");
-        conf.setConfigYml(configFilePath);
-        conf.setMetricWriter(MetricWriteHelperFactory.create(this));
-        conf.checkIfInitialized(MonitorConfiguration.ConfItem.CONFIG_YML,
-                MonitorConfiguration.ConfItem.EXECUTOR_SERVICE,
-                MonitorConfiguration.ConfItem.METRIC_PREFIX,
-                MonitorConfiguration.ConfItem.METRIC_WRITE_HELPER);
-        this.configuration = conf;
+//    private void sendSummaryData(){
+//        logger.info("Proceeding to summary...");
+//        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
+//        if (config != null) {
+//            String apiKey = config.get("eventsApiKey");
+//            String accountName = config.get("accountName");
+//            URL publishUrl = ensureSchema(config, apiKey, accountName, "summarySchemaName", "summarySchemaDefinition");
+//
+//            String payload = Utilities.getSummaryData().toString();
+//
+//            if(!payload.equals("[]")){
+//                if(shouldLogPayloads(config)) {
+//                    logger.info("About to push summary data to Events API: {}", payload);
+//                }
+//                RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
+//            }
+//            logger.info("Summary data sent successfully");
+//        }
+//    }
+
+
+    @Override
+    protected String getDefaultMetricPrefix() {
+        return DEFAULT_METRIC_PREFIX;
     }
 
     @Override
-    public TaskOutput execute(Map<String, String> map, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
+    public String getMonitorName() {
+        return "Kubernetes State Monitor";
+    }
+
+    @Override
+    protected void doRun(TasksExecutionServiceProvider tasksExecutionServiceProvider) {
         try{
-            if(map != null){
-                if (logger.isDebugEnabled()) {logger.debug("The raw arguments are {}", map);}
-                initialize(map);
-                configuration.executeTask();
-                return new TaskOutput("Finished executing Kubernetes Snapshot Extension");
+            long start = new Date().getTime();
+            logger.info("Taking cluster snapshot");
+            Map<String, String> config = (Map<String, String>)configuration.getConfigYml();
+            //populate Tier ID and cache of searched
+            initClusterMonitoring(config);
+            ArrayList<SnapshotRunnerBase> tasks = new ArrayList<SnapshotRunnerBase>();
+            List<Map<String,String>> entities = (List<Map<String,String>>)configuration.getConfigYml().get(CONFIG_NODE_ENTITIES);
+            if(entities != null) {
+                logger.info("Requested entities: {}", entities.toString());
+                int count = entities.size();
+                latch = new CountDownLatch(count);
+
+                for(String taskName : TASKS){
+                    Map<String, String> taskConfig = Utilities.getEntityConfig(entities, taskName);
+                    if (taskConfig != null){
+                        tasks.add(initTask(tasksExecutionServiceProvider, taskConfig, taskName));
+                    }
+                }
+
+                for (SnapshotRunnerBase task : tasks) {
+                    executeSnapshotTask(tasksExecutionServiceProvider, task);
+                }
+
+                try {
+                    logger.info("Waiting for tasks to complete");
+                    latch.await();
+                } catch (InterruptedException ex) {
+                    logger.error("Snapshot execution is interrupted", ex.toString());
+                }
+
+
+                //check dashboard
+                long finish = new Date().getTime();
+                long duration = finish - start;
+                logger.info("All tasks complete {} millisec. Checking the dashboard", duration);
+                //if does not exist, create from template
+                if (shoudldBuildDashboard()) {
+                    ArrayList<AppDMetricObj> metrics = new ArrayList<AppDMetricObj>();
+                    for (SnapshotRunnerBase t : tasks) {
+                        ArrayList<SummaryObj> summaryList = t.getMetricsBundle();
+                        for (SummaryObj summaryObj : summaryList) {
+                            metrics.addAll(summaryObj.getMetricsMetadata());
+                        }
+                    }
+                    logger.info("Collected {} metrics", metrics.size());
+                    buildDashboard(tasksExecutionServiceProvider, config, metrics);
+                }
             }
         }
         catch(Exception e) {
             logger.error("Failed to execute the Kubernetes Snapshot Extension task", e);
         }
-        throw new TaskExecutionException("Kubernetes Snapshot Extension task completed with failures.");
+
     }
 
-    private class TaskRunnable implements Runnable {
-        @SuppressWarnings("unchecked")
-        public void run() {
-            Utilities.clearSummary();
+    private boolean shoudldBuildDashboard(){
+        return false;
+    }
 
-            Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-            if (config != null) {
-                //get the POD data
-                if (shouldRunJob(config, "includePodSnapshot")) {
-                    generatePodSnapshot();
-                }
+    public void buildDashboard(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, ArrayList<AppDMetricObj> metrics){
+          ClusterDashboardGenerator dashboardGenerator = new ClusterDashboardGenerator(config, metrics);
+        try {
+            tasksExecutionServiceProvider.submit("DashboardTask", dashboardGenerator);
+        }
+        catch (Exception ex){
+            logger.error("Dashboard task was interrupted.", ex);
+        }
 
-                //now let's get Endpoints
-                if (shouldRunJob(config, "includeEndpointSnapshot")) {
-                    generateEndPointSnapshot();
-                }
+    }
 
-                //Deployments
-                if (shouldRunJob(config, "includeDeploySnapshot")) {
-                    generateDeploySnapshot();
-                }
+    private SnapshotRunnerBase initTask(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, String taskName){
+        SnapshotRunnerBase task = null;
+        switch (taskName){
+            case CONFIG_ENTITY_TYPE_POD:
+                task = new PodSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_NODE:
+                task = new NodeSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_DEPLOYMENT:
+                task = new DeploymentSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_DAEMON:
+                task = new DaemonSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_ENDPOINT:
+                task = new EndpointSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_REPLICA:
+                task = new ReplicaSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_EVENT:
+                task = new EventSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+        }
+        return task;
+    }
 
-                //Daemonsets
-                if (shouldRunJob(config, "includeDaemonSnapshot")) {
-                    generateDaemonsetSnapshot();
-                }
-
-                //Replicasets
-                if (shouldRunJob(config, "includeRSSnapshot")) {
-                    generateReplicasetSnapshot();
-                }
-
-                //Pod Security
-                if (shouldRunJob(config, "includePodSecuritySnapshot")){
-                    generatePodSecuritySnapshot();
-                }
-
-
-                //Summary
-                if (shouldRunJob(config, "includeSummary")) {
-                    sendSummaryData();
-                }
-            }
+    private void executeSnapshotTask(TasksExecutionServiceProvider tasksExecutionServiceProvider, SnapshotRunnerBase task){
+        try {
+            tasksExecutionServiceProvider.submit(task.getTaskName(), task);
+        }catch (Exception ex){
+            logger.error(task.getTaskName() + " task was interrupted", ex);
         }
     }
 
-    private static boolean shouldRunJob(Map<String, String> config, String jobtype){
-        return config.get(jobtype) != null && config.get(jobtype).equals("true");
+    @Override
+    protected int getTaskCount() {
+        List<Map<String,String>> entities = (List<Map<String,String>>)configuration.getConfigYml().get(CONFIG_NODE_ENTITIES);
+        AssertUtils.assertNotNull(entities, "The 'entities' section in config.yml must have values");
+        return entities.size();
     }
 
-    private static boolean shouldLogPayloads(Map<String, String> config){
-        return config.get("logPayloads") != null && config.get("logPayloads").equals("true");
+    public void initClusterMonitoring(Map<String, String> config){
+        try {
+            String clusterName = Utilities.getClusterApplicationName(config);
+            logger.info("Initializing Monitoring. Cluster {}", clusterName);
+            //does the app exist?
+            if (Utilities.tierID == 0) {
+                JsonNode appObj = findClusterApp(config, clusterName);
+                if (appObj == null || appObj.get("id") == null) {
+                    logger.info("Creating Application for cluster metrics...");
+                    //create if it doesn't
+                    appObj = createClusterApp(config, clusterName);
+                    if (appObj != null && appObj.get("id") != null) {
+                        int appID = appObj.get("id").asInt();
+                        checkAppTier(config, appID);
+                    }
+                }
+                else if (appObj != null && appObj.get("id") != null) {
+                    int appID = appObj.get("id").asInt();
+                    logger.info("Application Tier {} created", appID);
+                    checkAppTier(config, appID);
+                }
+            }
+            logger.info("Application and App Tier for cluster monitoring created");
+        }
+        catch (Exception ex){
+            logger.error("Unable to initialize cluster monitoring");
+        }
     }
 
-    private URL ensureSchema(Map<String, String> config, String apiKey, String accountName, String schemaName, String schemaDefinition){
-        URL publishUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/publish/" + config.get(schemaName));
-        URL schemaUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/schema/" + config.get(schemaName));
-        String requestBody = config.get(schemaDefinition);
-//        ObjectNode existingSchema = null;
-//        try {
-//            existingSchema = (ObjectNode) new ObjectMapper().readTree(requestBody);
-//        }
-//        catch (IOException ioEX){
-//            logger.error("Unable to determine the latest Pod schema", ioEX);
-//        }
-
-        JsonNode serverSchema = EventsRestOperation.doRequest(schemaUrl, accountName, apiKey, "", "GET");
-        if(serverSchema == null){
-            logger.info("Schema Url {} does not exists", schemaUrl);
-            EventsRestOperation.doRequest(schemaUrl, accountName, apiKey, requestBody, "POST");
-            logger.info("Schema Url {} created", schemaUrl);
+    private void checkAppTier(Map<String, String> config, int appID){
+        //build monitoring tier
+        JsonNode tierObj = findAppTier(config, appID);
+        if (tierObj != null && tierObj.get("id") != null){
+            Utilities.tierID = tierObj.get("id").asInt();
         }
         else {
-            logger.info("Schema exists");
-//            if (existingSchema != null) {
-//                logger.info("Existing schema is not empty");
-//                ArrayNode updated = Utilities.checkSchemaForUpdates(serverSchema, existingSchema);
-//                if (updated != null) {
-//                    //update schema changes
-//                    logger.info("Schema changed, updating", schemaUrl);
-//                    if (shouldLogPayloads(config)) {
-//                        logger.info("New schema fields: {}", updated.toString());
-//                    }
-//                    EventsRestOperation.doRequest(schemaUrl, accountName, apiKey, updated.toString(), "PATCH");
-//                }
-//                else {
-//                    logger.info("Nothing to update");
-//                }
-//            }
-        }
-        return publishUrl;
-    }
-
-    private void generatePodSnapshot(){
-        logger.info("Proceeding to POD update...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName,"podsSchemaName", "podsSchemaDefinition");
-
-            ApiClient client;
-            try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
-                Configuration.setDefaultApiClient(client);
-                CoreV1Api api = new CoreV1Api();
-
-                V1PodList podList;
-                podList = api.listPodForAllNamespaces(null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
-                String payload = Utilities.createPodPayload(podList).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push PODs to Events API: {}", payload);
-                }
-                if(!payload.equals("[]")){
-                    EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to push POD data", e);
-                e.printStackTrace();
-            } catch (ApiException e) {
-                logger.error("Failed to push POD data", e);
-                e.printStackTrace();
+            logger.info("Creating Application Tier for cluster metrics...");
+            tierObj = createAppTier(config, appID);
+            if (tierObj != null && tierObj.get("id") != null) {
+                Utilities.tierID = tierObj.get("id").asInt();
+                logger.info("Tier ID = {}", Utilities.tierID);
             }
         }
     }
 
-    private void generateEndPointSnapshot(){
-        logger.info("Proceeding to End Points update...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName,"endpointSchemaName", "endpointSchemaDefinition");
+    private JsonNode findAppTier(Map<String, String> config, int appID){
+        JsonNode theTier = null;
+        String tierName = config.get(CONFIG_APP_TIER_NAME);
+        String path = "restui/tiers/list/health";
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode obj = mapper.createObjectNode();
+        ArrayNode sorts = obj.putArray("columnSorts");
+        ObjectNode columnObj = mapper.createObjectNode();
+        columnObj.put("column", "TIER_NAME");
+        columnObj.put("direction", "ASC");
+        sorts.add(columnObj);
+        obj.put("limit", -1);
+        obj.put("offset", 0);
+        ObjectNode requestFilter = obj.putObject("requestFilter");
+        ObjectNode params = requestFilter.putObject("queryParams");
+        params.put("applicationId", appID);
+        requestFilter.putArray("filters");
+        ArrayNode results = obj.putArray("resultColumns");
+        results.add("TIER_NAME");
 
-            ApiClient client;
-            try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
-                Configuration.setDefaultApiClient(client);
-                CoreV1Api api = new CoreV1Api();
+        ArrayNode searchList = obj.putArray("searchFilters");
+        ObjectNode searchObj = mapper.createObjectNode();
+        ArrayNode cols = searchObj.putArray("columns");
+        cols.add("TIER_NAME");
+        searchObj.put("query", tierName);
+        searchList.add(searchObj);
+        String requestBody = obj.toString();
 
-                V1EndpointsList epList;
-                epList = api.listEndpointsForAllNamespaces(null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
-                String payload = Utilities.createEndpointSnapshot(epList).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push PODs to Events API: {}", payload);
+        JsonNode tierObj = RestClient.callControllerAPI(path, config, requestBody, "POST");
+        if (tierObj != null && tierObj.get("data") != null){
+            JsonNode list = tierObj.get("data");
+            for(JsonNode tier : list){
+                if (tier.get("name") != null && tier.get("name").asText().equals(tierName) ){
+                    theTier = tier;
+                    break;
                 }
-                if(!payload.equals("[]")) {
-                    EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to push POD data", e);
-                e.printStackTrace();
-            } catch (ApiException e) {
-                logger.error("Failed to push POD data", e);
-                e.printStackTrace();
             }
+        }
+        return theTier;
+    }
+
+    private JsonNode findClusterApp(Map<String, String> config, String appName){
+        String path = String.format("restui/applicationManagerUiBean/applicationByName?applicationName=%s", appName);
+        JsonNode appObj = RestClient.callControllerAPI(path, config, "", "GET");
+        return appObj;
+    }
+
+    private JsonNode createClusterApp(Map<String, String> config, String clusterName){
+        try {
+            String path = "restui/allApplications/createApplication?applicationType=APM";
+            String requestBody = buildAppObj(clusterName).toString();
+            JsonNode appObj = RestClient.callControllerAPI(path, config, requestBody, "POST");
+            return appObj;
+        }
+        catch (Exception ex){
+            logger.error("Unable create Application for cluster monitoring");
+            return null;
         }
     }
 
-    private void generateDeploySnapshot(){
-        logger.info("Proceeding to Deployment update...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName,"deploySchemaName", "deploySchemaDefinition");
-
-            ApiClient client;
-            try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-
-                ExtensionsV1beta1DeploymentList deployList =
-                        api.listDeploymentForAllNamespaces(null, null, true, null, null, null, null, null, null);
-
-                String payload = Utilities.createDeployPayload(deployList).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Deployments to Events API: {}", payload);
-                }
-                if(!payload.equals("[]")){
-                    EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to push Deployments data", e);
-                e.printStackTrace();
-            } catch (ApiException e) {
-                logger.error("Failed to push Deployments data", e);
-                e.printStackTrace();
-            }
-        }
+    private JsonNode createAppTier(Map<String, String> config , int appID){
+        String path = "restui/components/createComponent";
+        String tierName = config.get(CONFIG_APP_TIER_NAME);
+        String requestBody = buildTierObj(appID, tierName).toString();
+        JsonNode tierObj = RestClient.callControllerAPI(path, config, requestBody, "POST");
+        return tierObj;
     }
 
-    private void generateDaemonsetSnapshot(){
-        logger.info("Proceeding to Daemonsets update...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName,"daemonSchemaName", "daemonSchemaDefinition");
-
-            ApiClient client;
-            try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-
-                V1beta1DaemonSetList dsList =
-                        api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
-
-                String payload = Utilities.createDaemonsetPayload(dsList).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Daemonsets to Events API: {}", payload);
-                }
-                if(!payload.equals("[]")){
-                    EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to push Daemonsets data", e);
-                e.printStackTrace();
-            } catch (ApiException e) {
-                logger.error("Failed to push Daemonsets data", e);
-                e.printStackTrace();
-            }
-        }
+    private ObjectNode buildAppObj(String appName){
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode obj = mapper.createObjectNode();
+        obj.put("name", appName);
+        obj.put("description", String.format("Data Repository for cluster %s", appName));
+        return obj;
     }
 
-    private void generateReplicasetSnapshot(){
-        logger.info("Proceeding to Replicaset update...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName, "rsSchemaName", "rsSchemaDefinition");
-
-            ApiClient client;
-            try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-
-                V1beta1ReplicaSetList rsList =
-                        api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
-
-                String payload = Utilities.createReplicasetPayload(rsList).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Replicaset to Events API: {}", payload);
-                }
-                if(!payload.equals("[]")){
-                    EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to push Replicaset data", e);
-                e.printStackTrace();
-            } catch (ApiException e) {
-                logger.error("Failed to push Replicaset data", e);
-                e.printStackTrace();
-            }
-        }
+    private ObjectNode buildTierObj(int appID, String tierName){
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode obj = mapper.createObjectNode();
+        obj.put("applicationId", appID);
+        ObjectNode componentType = obj.putObject("componentType");
+        componentType.put("agentType", "APP_AGENT");
+        componentType.put("id", 4);
+        componentType.put("name", "Application Server");
+        componentType.put("nameUnique", true);
+        componentType.put("version", 0);
+        obj.put("name", tierName);
+        obj.put("description","Monitoring tier for the cluster monitoring application");
+        return obj;
     }
-
-
-    private void generatePodSecuritySnapshot(){
-        logger.info("Proceeding to Pod Security update...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName, "podsSecuritySchemaName", "podSecuritySchemaDefinition");
-
-            ApiClient client;
-            try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-
-                V1beta1PodSecurityPolicyList secList =
-                        api.listPodSecurityPolicy(null,
-                                null,
-                                null,
-                                true,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null);
-
-                if (secList.getItems() != null) {
-                    logger.info("Policy list size = {}", secList.getItems().size());
-                }
-                String payload = Utilities.createPodSecurityPayload(secList).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Pod Security to Events API: {}", payload);
-                }
-                if(!payload.equals("[]")){
-                    EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to push Pod Security data", e);
-                e.printStackTrace();
-            } catch (ApiException e) {
-                logger.error("Failed to push Pod Security data", e);
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
-    private void sendSummaryData(){
-        logger.info("Proceeding to summary...");
-        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-        if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
-            URL publishUrl = ensureSchema(config, apiKey, accountName, "summarySchemaName", "summarySchemaDefinition");
-
-            String payload = Utilities.getSummaryData().toString();
-
-            if(!payload.equals("[]")){
-                if(shouldLogPayloads(config)) {
-                    logger.info("About to push summary data to Events API: {}", payload);
-                }
-                EventsRestOperation.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-            }
-            logger.info("Summary data sent successfully");
-        }
-    }
-
-
-    private static String getImplementationVersion() { return KubernetesSnapshotExtension.class.getPackage().getImplementationTitle(); }
 }
