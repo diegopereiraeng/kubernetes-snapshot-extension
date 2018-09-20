@@ -16,7 +16,6 @@ import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
-import io.kubernetes.client.util.Config;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -48,8 +47,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         logger.info("Proceeding to Node update...");
         Map<String, String> config = (Map<String, String>) getConfiguration().getConfigYml();
         if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
+            String apiKey = Utilities.getEventsAPIKey(config);
+            String accountName = Utilities.getGlobalAccountName(config);
             URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName, CONFIG_SCHEMA_NAME_NODE, CONFIG_SCHEMA_DEF_NODE);
 
             try {
@@ -77,7 +76,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 }
 
                 //build and update metrics
-                List<Metric> metricList = Utilities.getMetricsFromSummary(summaryMap, config);
+//                serializeMetrics();
+                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} node metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadNodeMetricsTask", metricsTask);
@@ -98,18 +98,25 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
      ArrayNode createNodePayload(V1NodeList nodeList, Map<String, String> config) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
-        SummaryObj summary = initNodeSummaryObject(config,  ALL);
-        summaryMap.put(ALL, summary);
+
         for(V1Node nodeObj : nodeList.getItems()) {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();
-            SummaryObj summaryNode = summaryMap.get(nodeName);
-            if (summaryNode == null) {
-                summaryNode = initNodeSummaryObject(config, nodeName);
-                summaryMap.put(nodeName, summaryNode);
-            }
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
             String clusterName = Utilities.ensureClusterName(config, nodeObj.getMetadata().getClusterName());
+
+            SummaryObj summary = getSummaryMap().get(ALL);
+            if (summary == null) {
+                summary = initNodeSummaryObject(config, ALL);
+                getSummaryMap().put(ALL, summary);
+            }
+
+            SummaryObj summaryNode = getSummaryMap().get(nodeName);
+            if (summaryNode == null) {
+                summaryNode = initNodeSummaryObject(config, nodeName);
+                getSummaryMap().put(nodeName, summaryNode);
+            }
+
 
             nodeObject = checkAddObject(nodeObject, clusterName, "clusterName");
             nodeObject = checkAddObject(nodeObject, nodeObj.getSpec().getPodCIDR(), "podCIDR");
@@ -296,7 +303,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         }
         String clusterName = Utilities.ClusterName;
         String parentSchema = config.get(CONFIG_SCHEMA_NAME_NODE);
-        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", config.get(CONFIG_APP_TIER_NAME));
+        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", Utilities.getClusterTierName(config));
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
         if (nodeName.equals(ALL)) {
             //global
@@ -319,15 +326,15 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE,
                     String.format("select * from %s where cpuAllocations > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
         }
-        else {
-            //node level
-            String nodePath = String.format("%s|%s|", rootPath, METRIC_PATH_NODES, nodeName);
-            metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
-            metricsList.add(new AppDMetricObj("AllocationsMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
-            metricsList.add(new AppDMetricObj("CapacityCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
-            metricsList.add(new AppDMetricObj("CapacityMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
-            metricsList.add(new AppDMetricObj("CapacityPods", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
-        }
+//        else {
+//            //node level
+//            String nodePath = String.format("%s|%s|", rootPath, METRIC_PATH_NODES, nodeName);
+//            metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+//            metricsList.add(new AppDMetricObj("AllocationsMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+//            metricsList.add(new AppDMetricObj("CapacityCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+//            metricsList.add(new AppDMetricObj("CapacityMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+//            metricsList.add(new AppDMetricObj("CapacityPods", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+//        }
         return metricsList;
     }
 }

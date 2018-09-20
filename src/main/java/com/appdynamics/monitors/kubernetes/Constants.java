@@ -1,6 +1,8 @@
 package com.appdynamics.monitors.kubernetes;
 
 public class Constants {
+    public static final String CONFIG_EVENTS_API_KEY  = "eventsApiKey";
+    public static final String CONFIG_GLOBAL_ACCOUNT_NAME  ="accountName";
     public static final String METRIC_SEPARATOR  = "|";
     public static final String DEFAULT_METRIC_PREFIX_NAME  = "metricPrefix";
     public static final String METRIC_PATH_NODES  = "Nodes";

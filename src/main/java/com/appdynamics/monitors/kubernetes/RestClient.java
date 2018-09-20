@@ -2,6 +2,7 @@ package com.appdynamics.monitors.kubernetes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.UrlBase64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,15 @@ import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_DASH_TEMPLATE
 
 public class RestClient {
     private static final Logger logger = LoggerFactory.getLogger(RestClient.class);
+
+
+    public static String getRESTCredentials(Map<String, String> config){
+        String creds = System.getenv("REST_API_CREDENTIALS");
+        if (StringUtils.isNotEmpty(creds) == false){
+            creds = config.get(CONFIG_CONTROLLER_API_USER);
+        }
+        return  creds;
+    }
 
     public static JsonNode doRequest(URL url, String accountName, String apiKey, String requestBody, String method) {
 
@@ -63,7 +73,7 @@ public class RestClient {
         HttpURLConnection conn = null;
         String path = config.get(CONFIG_CONTROLLER_URL) + "auth?action=login";
         URL url = Utilities.getUrl(path);
-        String user = config.get(CONFIG_CONTROLLER_API_USER);
+        String user = getRESTCredentials(config);
         try {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -174,7 +184,7 @@ public class RestClient {
         HttpURLConnection conn = null;
         String path = config.get(CONFIG_CONTROLLER_URL) + "CustomDashboardImportExportServlet";
         URL url = Utilities.getUrl(path);
-        String user = config.get(CONFIG_CONTROLLER_API_USER);
+        String user = getRESTCredentials(config);
         File templateFile = new File(filePath);
         try {
             conn = (HttpURLConnection) url.openConnection();

@@ -7,8 +7,8 @@ numberOfThreads: 3
 metricPrefix: "Server|Component:%s|Custom Metrics|Cluster Stats|"
 #metricPrefix:  "Custom Metrics|Cluster Stats|"
 
-appName: "Openshift-Cluster-01"
-appTierName: "ClusterAgent"
+appName: "Openshift-Cluster-01" # APPLICATION_NAME env var
+appTierName: "ClusterAgent"  # TIER_NAME en var
 
 # Path to your kubectl Client configuration
 kubeClientConfig: "/home/origin/.kube/config"
@@ -18,11 +18,11 @@ apiMode: "server"
 
 # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
 # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
-eventsApiKey: "fec1794f-4db0-4d5e-80c7-d9a3b950fe59"
+eventsApiKey: ""  # EVENT_ACCESS_KEY env var
 
 # Global Account Name obtained from
 # AppDynamics --> Settings --> License --> Accounts --> Global Account Name
-accountName: "customer1_f569566d-7308-4ce3-9686-c4f004b9232b"
+accountName: ""  # GLOBAL_ACCOUNT_NAME env var
 
 podsSchemaName: "k8s_pod_snapshots"
 
@@ -51,7 +51,7 @@ entities:
 dashboardTemplatePath: "templates/k8s_dashboard_template.json"
 nodeTemplatePath: "templates/k8s_node_template.json"
 dashboardNameSuffix: "SUMMARY"
-controllerAPIUser: "k8sresty@customer1:k8sresty"
+controllerAPIUser: ""   # REST_API_CREDENTIALS env var
 controllerUrl: "http://staging.demo.appdynamics.com/controller/"
 dashboardCheckInterval: "600"
 

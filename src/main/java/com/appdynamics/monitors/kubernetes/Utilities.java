@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -264,7 +265,7 @@ public class Utilities {
             Map.Entry pair = (Map.Entry)it.next();
             SummaryObj summaryObj = (SummaryObj)pair.getValue();
             list.add(summaryObj);
-            it.remove();
+//            it.remove();
         }
         return list;
     }
@@ -277,7 +278,7 @@ public class Utilities {
             Map.Entry pair = (Map.Entry)it.next();
             SummaryObj summaryObj = (SummaryObj)pair.getValue();
             list.add(summaryObj.getData());
-            it.remove();
+//            it.remove();
         }
         return list;
     }
@@ -347,6 +348,31 @@ public class Utilities {
         return  appName;
     }
 
+    public static String getClusterTierName(Map<String, String> config){
+        String appName = System.getenv("TIER_NAME");
+        if (StringUtils.isNotEmpty(appName) == false){
+            appName = config.get(CONFIG_APP_TIER_NAME);
+        }
+        return  appName;
+    }
+
+
+    public static String getEventsAPIKey(Map<String, String> config){
+        String key = System.getenv("EVENT_ACCESS_KEY");
+        if (StringUtils.isNotEmpty(key) == false){
+            key = config.get(CONFIG_EVENTS_API_KEY);
+        }
+        return  key;
+    }
+
+    public static String getGlobalAccountName(Map<String, String> config){
+        String key = System.getenv("GLOBAL_ACCOUNT_NAME");
+        if (StringUtils.isNotEmpty(key) == false){
+            key = config.get(CONFIG_GLOBAL_ACCOUNT_NAME);
+        }
+        return  key;
+    }
+
     public static AdqlSearchObj getSavedSearch(String name){
         AdqlSearchObj theObj = null;
         for(AdqlSearchObj s : savedSearches){
@@ -371,6 +397,11 @@ public class Utilities {
             throw new Exception("apiMode not supported. Must be server or cluster");
         }
         return client;
+    }
+
+    public static String getRootDirectory(){
+        File file = new File(".");
+        return String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
     }
 
 }

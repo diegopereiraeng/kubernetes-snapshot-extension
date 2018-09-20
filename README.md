@@ -4,11 +4,23 @@ This extension works only with the standalone machine agent.
 
 ## Use Case
 
-Monitors state of the Kubernetes or Openshift clusters and records attributes of resources like pods, endpoints, daemonset, replica sets and deployments.
-The data is received via Kubernetes API at a configurable interval and is pushed to the AppDynamics Analytics Events API for reporting.
-It compliments the [Kubernetes Events Extension](https://github.com/Appdynamics/kubernetes-events-extension). The combined data can be used to build custom queries or dashboards like this:
+Monitors events and state of Kubernetes or OpenShift clusters, records attributes of resources like pods, endpoints, daemonset, replica sets and deployments.
+The data is received via Kubernetes API at a configurable interval and is pushed to the AppDynamics Analytics Events API for reporting. Several metrics are automatically creared
+and stored under the configurable Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
+-> <Tier Name> -> Custom Metrics -> Cluster Stats.
+![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/metrics.png)
+The extension aggregates metrics at the cluster level with further categorization by node and namespace
+
+If you want to monitor events only, use [Kubernetes Events Extension](https://github.com/Appdynamics/kubernetes-events-extension).
+If you are interested in automated metric collection for events and other cluster resources, this extensions is self-sufficient. The event collection is enabled by default.
+
+The extension automatically creates the dashboard below.
 
 ![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
+
+For each exposed metric, a named ADQL query along with the dashboard. Double-clicking on a dashboard widget will open the corresponding query.
+These automatically created queries can also be accessed under Analytics -> Searches. The search names are constructed with the following format:
+<Cluster Name. Metric Name>
 
 
 
@@ -17,10 +29,39 @@ It compliments the [Kubernetes Events Extension](https://github.com/Appdynamics/
  * This extension requires the Java Machine Agent
  * The AppDynamics platform needs the Events Service set up
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the data
+ * The number of metrics collected depends on the size of the cluster in terms of namespaces/projects and nodes. You may need to increase the max number of
+ metrics in the machine agent configuration. The current metric collection numbers are
+ ** Cluster: 52
+ ** Node: 15
+ ** Namespace: 39
 
 ## Installation
 
-Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/0.1/KubernetesSnapshotExtension-0.1.zip) or Build from Source.
+* A sample start-up script for the machine agent:
+
+```
+#!/bin/bash
+
+
+SVM_PROPERTIES="-Dappdynamics.controller.hostName=${CONTROLLER_HOST}"
+SVM_PROPERTIES+=" -Dappdynamics.controller.port=${CONTROLLER_PORT}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.applicationName=${APPLICATION_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.nodeName=${TIER_NAME}_node1"
+SVM_PROPERTIES+=" -Dappdynamics.agent.accountName=${ACCOUNT_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.accountAccessKey=${ACCOUNT_ACCESS_KEY}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.uniqueHostId=Openshift_Master-${APPLICATION_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.controller.ssl.enabled=true"
+SVM_PROPERTIES+=" -Dappdynamics.sim.enabled=true"
+SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
+#SVM_PROPERTIES+=" -Dmetric.http.listener=true"
+#SVM_PROPERTIES+=" -Dmetric.http.listener.host=0.0.0.0"
+
+./bin/machine-agent ${SVM_PROPERTIES} -d -p ./pid.txt
+
+```
+
+Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/0.6/KubernetesSnapshotExtension-0.6.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
@@ -28,70 +69,78 @@ Either [Download the Extension from the latest Github release](https://github.co
 
 2. Set up `config.yml`.
   ```
-    # Path to your kubectl Client configuration. A typical location is "$HOME/.kube/config", but it may differ on your machine
+    # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config", but it may differ on your machine
     kubeClientConfig:
 
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
     # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
+    # Alternatively, EVENT_ACCESS_KEY environmental variable can be used to populate the field
     eventsApiKey: ""
 
     # Global Account Name obtained from
     # AppDynamics --> Settings --> License --> Accounts --> Global Account Name
+    # Alternatively, GLOBAL_ACCOUNT_NAME environmental variable can be used to populate the field
     accountName: ""
+
+    # REST API credentials. The account must have rights to login, create dashboards and saved searches
+    # Alternatively, REST_API_CREDENTIALS environmental variable can be used to populate the field
+    controllerAPIUser: ""
+
+    # Controller URL to access REST API
+    controllerUrl: "http://staging.demo.appdynamics.com/controller/"
   ```
   Optional settings:
 
   ```
+  # List of resources that will be monitored
+  entities:
+  - type: "pod"
+  - type: "node"
+  - type: "deployment"
+  - type: "daemon"
+  - type: "replica"
+  - type: "event"
+  - type: "endpoint"
+
+  # Path to the template used to create the default dashboard
+  dashboardTemplatePath: "templates/k8s_dashboard_template.json"
+
+  # Path to the template used to create node widgets on the default dashboard. Not Enabled.
+  nodeTemplatePath: "templates/k8s_node_template.json"
+
+  # Dashboard name suffix
+  dashboardNameSuffix: "SUMMARY"
+
+  # Time in seconds between the checks if the default dashboard exists
+  dashboardCheckInterval: "600"
+
+
+  # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
+  eventsUrl: "https://analytics.api.appdynamics.com"
+
   # Name of the Pod attribute schema
   podsSchemaName: "k8s_pod_snapshots"
 
-  # Name of the Pod Security schema
-  podsSecuritySchemaName: "openshift_pod_sec_snapshots"
+  # Name of the Node schema
+  podsSecuritySchemaName: "k8_node_snapshots"
 
   # Name of the Deployment attribute schema
-  deploySchemaName: "openshift_deploy_snapshots"
+  deploySchemaName: "k8s_deploy_snapshots"
 
   # Name of the Daemon Set attribute schema
-  daemonSchemaName: "openshift_daemon_snapshots"
+  daemonSchemaName: "k8s_daemon_snapshots"
 
 
   # Name of the Replica Set attribute schema
-  rsSchemaName: "openshift_rs_snapshots"
+  rsSchemaName: "k8s_rs_snapshots"
 
 
   # Name of the EndPoint attribute schema
   endpointSchemaName: "k8s_endpoint_snapshots"
 
+  # Name of the Events attribute schema
+   eventsSchemaName: "k8s_events"
 
-  # Name of the Summary Data schema
-  summarySchemaName: "openshift_cluster_summary"
-
-  # Flag indicating whether to collect Pod attributes
-  includePodSnapshot: "true"
-
-  # Flag indicating whether to collect Pod Security attributes
-  includePodSecuritySnapshot: "true"
-
-  # Flag indicating whether to collect Deployment attributes
-  includeDeploySnapshot: "true"
-
-  # Flag indicating whether to collect Daemon Set attributes
-  includeDaemonSnapshot: "true"
-
-  # Flag indicating whether to collect Endpoint attributes
-  includeEndpointSnapshot: "true"
-
-
-  # Flag indicating whether to collect Replica Set attributes
-  includeRSSnapshot: "true"
-
-
-  # Flag indicating whether to collect Summary attributes
-  includeSummary: "true"
-
-
-  # Flag indicating whether to log payload being sent to AppD API endpoint
-  logPayloads: "true"
 
   ```
 
@@ -99,7 +148,7 @@ Either [Download the Extension from the latest Github release](https://github.co
 
 ```
     <execution-style>periodic</execution-style>
-    <execution-frequency-in-seconds>300</execution-frequency-in-seconds>
+    <execution-frequency-in-seconds>200</execution-frequency-in-seconds>
 ```
 
 4. Restart the Machine Agent.

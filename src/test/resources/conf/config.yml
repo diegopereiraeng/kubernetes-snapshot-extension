@@ -5,7 +5,7 @@ numberOfThreads: 3
 # Please make sure to have a trailing |.
 # To find out the COMPONENT_ID, please see the screen shot here https://docs.appdynamics.com/display/latest/Build+a+Monitoring+Extension+Using+Java
 metricPrefix: "Server|Component:%s|Custom Metrics|Cluster Stats|"
-
+#metricPrefix:  "Custom Metrics|Cluster Stats|"
 
 appName: "Openshift-Cluster-01"
 appTierName: "ClusterAgent"
@@ -18,11 +18,11 @@ apiMode: "server"
 
 # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
 # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
-eventsApiKey: "fec1794f-4db0-4d5e-80c7-d9a3b950fe59"
+eventsApiKey: ""
 
 # Global Account Name obtained from
 # AppDynamics --> Settings --> License --> Accounts --> Global Account Name
-accountName: "customer1_f569566d-7308-4ce3-9686-c4f004b9232b"
+accountName: ""
 
 podsSchemaName: "k8s_pod_snapshots"
 
@@ -48,14 +48,15 @@ entities:
 - type: "event"
 - type: "endpoint"
 
-dashboardTemplatePath: "src/main/resources/templates/k8s_dashboard_template.json"
-nodeTemplatePath: "src/main/resources/templates/k8s_node_template.json"
+dashboardTemplatePath: "templates/k8s_dashboard_template.json"
+nodeTemplatePath: "templates/k8s_node_template.json"
 dashboardNameSuffix: "SUMMARY"
-controllerAPIUser: "k8sresty@customer1:k8sresty"
+controllerAPIUser: "<username>@<tenantID>:<password>"
 controllerUrl: "http://staging.demo.appdynamics.com/controller/"
+dashboardCheckInterval: "600"  # time in seconds between the checks if the default dashboard exists
 
 
-# Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
+# Events Service Endpoint. These Default settings are for SaaS Users. Change, if you are on Premise
 eventsUrl: "https://analytics.api.appdynamics.com"
 
 

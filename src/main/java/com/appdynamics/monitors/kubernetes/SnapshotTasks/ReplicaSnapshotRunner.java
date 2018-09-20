@@ -12,22 +12,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.models.V1beta1ReplicaSet;
 import io.kubernetes.client.models.V1beta1ReplicaSetList;
-import io.kubernetes.client.util.Config;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_APP_TIER_NAME;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_DEF_RS;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_RS;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -48,8 +44,8 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         logger.info("Proceeding to ReplicaSet update...");
         Map<String, String> config = (Map<String, String>) getConfiguration().getConfigYml();
         if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
+            String apiKey = Utilities.getEventsAPIKey(config);
+            String accountName = Utilities.getGlobalAccountName(config);
             URL publishUrl = ensureSchema(config, apiKey, accountName, CONFIG_SCHEMA_NAME_RS, CONFIG_SCHEMA_DEF_RS);
 
             try {
@@ -69,7 +65,8 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
                 //build and update metrics
-                List<Metric> metricList = Utilities.getMetricsFromSummary(summaryMap, config);
+//                serializeMetrics();
+                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} replica set metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadRSMetricsTask", metricsTask);
@@ -87,24 +84,27 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
      ArrayNode createReplicasetPayload(V1beta1ReplicaSetList rsList, Map<String, String> config) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
-        SummaryObj summary = initRSSummaryObject(config, ALL);
-        summaryMap.put(ALL, summary);
 
         for (V1beta1ReplicaSet deployItem : rsList.getItems()) {
             ObjectNode deployObject = mapper.createObjectNode();
 
             String namespace = deployItem.getMetadata().getNamespace();
+            String clusterName = Utilities.ensureClusterName(config, deployItem.getMetadata().getClusterName());
 
-            SummaryObj summaryNamespace = summaryMap.get(namespace);
+            SummaryObj summary = getSummaryMap().get(ALL);
+            if (summary == null) {
+                summary = initRSSummaryObject(config, ALL);
+                getSummaryMap().put(ALL, summary);
+            }
+
+            SummaryObj summaryNamespace = getSummaryMap().get(namespace);
             if (summaryNamespace == null) {
                 summaryNamespace = initRSSummaryObject(config, namespace);
-                summaryMap.put(namespace, summaryNamespace);
+                getSummaryMap().put(namespace, summaryNamespace);
             }
 
             incrementField(summary, "ReplicaSets");
             incrementField(summaryNamespace, "ReplicaSets");
-
-            String clusterName = Utilities.ensureClusterName(config, deployItem.getMetadata().getClusterName());
 
             deployObject = checkAddObject(deployObject, deployItem.getMetadata().getUid(), "object_uid");
             deployObject = checkAddObject(deployObject, clusterName, "clusterName");
@@ -167,25 +167,27 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         }
         String clusterName = Utilities.ClusterName;
         String parentSchema = config.get(CONFIG_SCHEMA_NAME_RS);
-        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", config.get(CONFIG_APP_TIER_NAME));
+        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", Utilities.getClusterTierName(config));
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
 
         String filter = "";
         if(!namespace.equals(ALL)){
-            filter = String.format("and object_namespace = \"%s\"", namespace);
+            filter = String.format("and namespace = \"%s\"", namespace);
         }
 
-        metricsList.add(new AppDMetricObj("ReplicaSets", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+        if (namespace.equals(ALL)) {
+            metricsList.add(new AppDMetricObj("ReplicaSets", parentSchema, CONFIG_SCHEMA_DEF_RS,
+                    String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("RsReplicas", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where replicas > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("RsReplicas", parentSchema, CONFIG_SCHEMA_DEF_RS,
+                    String.format("select * from %s where replicas > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("RsReplicasAvailable", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where rsReplicasAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("RsReplicasAvailable", parentSchema, CONFIG_SCHEMA_DEF_RS,
+                    String.format("select * from %s where rsReplicasAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("RsReplicasUnAvailable", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where rsReplicasAvailable = 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("RsReplicasUnAvailable", parentSchema, CONFIG_SCHEMA_DEF_RS,
+                    String.format("select * from %s where rsReplicasAvailable = 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+        }
 
         return metricsList;
     }

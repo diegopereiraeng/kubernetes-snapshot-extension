@@ -14,6 +14,12 @@ public class AppDMetricObj {
     private String widgetName = "";
     private String namespace = "";
     private String node = "";
+    private String levelName = "";
+    private String level = "";
+
+    public AppDMetricObj(){
+
+    }
 
 
     public AppDMetricObj(String name, String parentSchema, String schemaDefinitionName, String query, String rootPath, String namespace, String node){

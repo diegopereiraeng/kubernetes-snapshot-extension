@@ -46,14 +46,13 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
     }
 
     public void validateDashboard(Map<String, String> config){
-        //cache searches
-        ADQLSearchGenerator.loadAllSearches(config);
         //check if Dashboard exists
-        String dashName = String.format("%s-%s-%s", Utilities.getClusterApplicationName(config), config.get(CONFIG_APP_TIER_NAME), config.get(CONFIG_DASH_NAME_SUFFIX));
+        String dashName = String.format("%s-%s-%s", Utilities.getClusterApplicationName(config), Utilities.getClusterTierName(config), config.get(CONFIG_DASH_NAME_SUFFIX));
         if (!dashboardExists(dashName, config)) {
+            //cache searches
+            ADQLSearchGenerator.loadAllSearches(config);
             //if not, read template
-            File file = new File(".");
-            String currentDirectory = String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
+            String currentDirectory = Utilities.getRootDirectory();
             String path = String.format("%s/%s", currentDirectory, config.get(CONFIG_DASH_TEMPLATE_PATH));
             logger.info("Reading the dashboard template from {}", path);
             JsonNode template = readTemplate(path);
@@ -150,7 +149,7 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
                 ((ObjectNode) metric).put("metricPath", metricObj.getPath());
                 JsonNode scope = metric.get("scopeEntity");
                 ((ObjectNode) scope).put("applicationName", config.get(CONFIG_APP_NAME));
-                ((ObjectNode) scope).put("entityName", config.get(CONFIG_APP_TIER_NAME));
+                ((ObjectNode) scope).put("entityName", Utilities.getClusterTierName(config));
             }
     }
 

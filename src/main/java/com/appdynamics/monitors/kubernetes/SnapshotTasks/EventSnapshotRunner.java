@@ -13,17 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
-import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
-import io.kubernetes.client.util.Config;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URL;
-import java.security.AllPermission;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
@@ -52,8 +47,8 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
         Map<String, String> config = (Map<String, String>) getConfiguration().getConfigYml();
         if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
+            String apiKey = Utilities.getEventsAPIKey(config);
+            String accountName = Utilities.getGlobalAccountName(config);
             URL publishUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/publish/" + config.get(CONFIG_SCHEMA_NAME_EVENT));
             URL schemaUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/schema/" + config.get(CONFIG_SCHEMA_NAME_EVENT));
             String requestBody = config.get(CONFIG_SCHEMA_DEF_EVENT);
@@ -63,9 +58,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                 RestClient.doRequest(schemaUrl, accountName, apiKey, requestBody, "POST");
                 logger.info("Schema Url {} created", schemaUrl);
             }
-            else {
-                logger.info("Schema Url {} exists", schemaUrl);
-            }
+
 
             try {
                 ApiClient client = Utilities.initClient(config);
@@ -93,7 +86,8 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                 }
 
                 //build and update metrics
-                List<Metric> metricList = Utilities.getMetricsFromSummary(summaryMap, config);
+//                serializeMetrics();
+                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} event metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadEventMetricsTask", metricsTask);
@@ -111,26 +105,32 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
     private ArrayNode createEventPayload(V1EventList eventList, Map<String, String> config) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
-        SummaryObj summary = initEventummaryObject(config, ALL);
-        summaryMap.put(ALL, summary);
-        int countAll = 0;
-        int countErrors = 0;
+
+
         for (V1Event item : eventList.getItems()) {
             if (item.getLastTimestamp().isAfter(Globals.previousRunTimestamp) || Globals.previousRunTimestamp == null){
                 if (!item.getMetadata().getSelfLink().equals(Globals.previousRunSelfLink)){
 
+                    boolean error = false;
                     ObjectNode objectNode = mapper.createObjectNode();
                     String namespace = item.getMetadata().getNamespace();
                     String nodeName = item.getSource().getHost();
-
-                    SummaryObj summaryNamespace = summaryMap.get(namespace);
-                    if (summaryNamespace == null){
-                        summaryNamespace = initEventummaryObject(config, namespace);
-                        summaryMap.put(namespace, summaryNamespace);
-                    }
-
                     String reason = item.getReason();
                     String message = item.getMessage();
+                    String clusterName = Utilities.ensureClusterName(config, item.getMetadata().getClusterName());
+
+                    SummaryObj summary = getSummaryMap().get(ALL);
+                    if (summary == null) {
+                        summary = initEventSummaryObject(config, ALL);
+                        getSummaryMap().put(ALL, summary);
+                    }
+
+                    SummaryObj summaryNamespace = getSummaryMap().get(namespace);
+                    if (summaryNamespace == null){
+                        summaryNamespace = initEventSummaryObject(config, namespace);
+                        getSummaryMap().put(namespace, summaryNamespace);
+                    }
+
 
                     objectNode = checkAddObject(objectNode, item.getFirstTimestamp(), "firstTimestamp");
                     objectNode = checkAddObject(objectNode, item.getMetadata().getAnnotations(), "annotations");
@@ -143,15 +143,14 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                     objectNode = checkAddObject(objectNode, item.getMetadata().getOwnerReferences(), "ownerReferences");
                     objectNode = checkAddObject(objectNode, item.getInvolvedObject().getKind(), "object_kind");
                     objectNode = checkAddObject(objectNode, item.getInvolvedObject().getName(), "object_name");
-                    objectNode = checkAddObject(objectNode, namespace, "object_namespace");
                     objectNode = checkAddObject(objectNode, item.getInvolvedObject().getResourceVersion(), "object_resourceVersion");
                     objectNode = checkAddObject(objectNode, item.getInvolvedObject().getUid(), "object_uid");
                     objectNode = checkAddObject(objectNode, item.getMessage(), "message");
-                    objectNode = checkAddObject(objectNode, item.getMetadata().getClusterName(), "clusterName");
+                    objectNode = checkAddObject(objectNode, clusterName, "clusterName");
                     objectNode = checkAddObject(objectNode, item.getMetadata().getGenerateName(), "generateName");
                     objectNode = checkAddObject(objectNode, item.getMetadata().getGeneration(), "generation");
                     objectNode = checkAddObject(objectNode, item.getMetadata().getName(), "name");
-                    objectNode = checkAddObject(objectNode, item.getMetadata().getNamespace(), "namespace");
+                    objectNode = checkAddObject(objectNode, namespace, "namespace");
                     objectNode = checkAddObject(objectNode, item.getMetadata().getResourceVersion(), "resourceVersion");
                     objectNode = checkAddObject(objectNode, item.getMetadata().getSelfLink(), "selfLink");
                     objectNode = checkAddObject(objectNode, item.getType(), "type");
@@ -180,14 +179,14 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                     || reason.equals("Unhealthy") || reason.equals("Failed") || reason.equals("SandboxChanged")){
                         Utilities.incrementField(summary, "PodIssues");
                         Utilities.incrementField(summaryNamespace, "PodIssues");
-                        countErrors++;
+                        error = true;
                     }
 
                     if (reason.equals("Evicted") || reason.equals("FailedDaemonPod") || reason.equals("NodeHasDiskPressure") || reason.equals("NodeNotReady")
                     || reason.equals("EvictionThresholdMet") || reason.equals("ErrorReconciliationRetryTimeout") || reason.equals("ExceededGracePeriod")){
                         Utilities.incrementField(summary, "EvictionThreats");
                         Utilities.incrementField(summaryNamespace, "EvictionThreats");
-                        countErrors++;
+                        error = true;
                     }
 
                     if (reason.equals("Failed") && message.contains("ImagePullBackOff")){
@@ -210,19 +209,19 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNamespace, "PodKills");
                     }
 
-                    countAll++;
 
                     Utilities.incrementField(summary, "EventsCount");
                     Utilities.incrementField(summaryNamespace, "EventsCount");
 
 
-                    Utilities.incrementField(summary, "EventsError", countErrors);
-                    Utilities.incrementField(summaryNamespace, "EventsError", countErrors);
-
-
-                    int countInfo = countAll - countErrors;
-                    Utilities.incrementField(summary, "EventsInfo",  countInfo);
-                    Utilities.incrementField(summaryNamespace, "EventsInfo", countInfo);
+                    if (error) {
+                        Utilities.incrementField(summary, "EventsError");
+                        Utilities.incrementField(summaryNamespace, "EventsError");
+                    }
+                    else {
+                        Utilities.incrementField(summary, "EventsInfo");
+                        Utilities.incrementField(summaryNamespace, "EventsInfo");
+                    }
 
                     arrayNode.add(objectNode);
                     Globals.lastElementSelfLink = item.getMetadata().getSelfLink();
@@ -238,7 +237,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
         return arrayNode;
     }
-    public  static SummaryObj initEventummaryObject(Map<String, String> config, String namespace){
+    public  static SummaryObj initEventSummaryObject(Map<String, String> config, String namespace){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
         summary.put("namespace", namespace);
@@ -266,55 +265,55 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
         if (Utilities.ClusterName == null || Utilities.ClusterName.isEmpty()){
             return new ArrayList<AppDMetricObj>();
         }
-        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", config.get(CONFIG_APP_TIER_NAME));
+        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", Utilities.getClusterTierName(config));
         String clusterName = Utilities.ClusterName;
         String parentSchema = config.get(CONFIG_SCHEMA_NAME_EVENT);
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
 
         String filter = "";
         if(!namespace.equals(ALL)){
-            filter = String.format("and object_namespace = \"%s\"", namespace);
+            filter = String.format("and namespace = \"%s\"", namespace);
         }
 
+        if(namespace.equals(ALL)) {
+            metricsList.add(new AppDMetricObj("EventsCount", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("EventsCount", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("EventsError", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("EventsError", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("EventsInfo", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason NOT IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("EventsInfo", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason NOT IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("ScaleDowns", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"ScalingReplicaSet\" and message like \'Scaled down*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("ScaleDowns", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"ScalingReplicaSet\" and message like \'Scaled down*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("CrashLoops", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"BackOff\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-
-        metricsList.add(new AppDMetricObj("QuotaViolations", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"FailedCreate\" and message like \'*failed quota*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("PodIssues", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason IN ( \"FailedCreate\", \"FailedBinding\", \"BackOff\", \"Unhealthy\", \"Failed\", \"SandboxChanged\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("EvictionThreats", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason IN \"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("ImagePullErrors", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"Failed\" AND message LIKE \"*ImagePullBackOff*\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("ImagePulls", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"Pulling\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("StorageIssues", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"FailedBinding\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-        metricsList.add(new AppDMetricObj("PodKills", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"Killing\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("CrashLoops", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"BackOff\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
 
+            metricsList.add(new AppDMetricObj("QuotaViolations", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"FailedCreate\" and message like \'*failed quota*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+            metricsList.add(new AppDMetricObj("PodIssues", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason IN ( \"FailedCreate\", \"FailedBinding\", \"BackOff\", \"Unhealthy\", \"Failed\", \"SandboxChanged\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+            metricsList.add(new AppDMetricObj("EvictionThreats", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason IN (\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+            metricsList.add(new AppDMetricObj("ImagePullErrors", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"Failed\" AND message LIKE \"*ImagePullBackOff*\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+            metricsList.add(new AppDMetricObj("ImagePulls", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"Pulling\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+            metricsList.add(new AppDMetricObj("StorageIssues", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"FailedBinding\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+            metricsList.add(new AppDMetricObj("PodKills", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                    String.format("select * from %s where reason = \"Killing\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+        }
 
         return metricsList;
     }

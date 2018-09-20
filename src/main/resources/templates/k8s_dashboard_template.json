@@ -20,7 +20,7 @@
         {
             "widgetType": "TextWidget",
             "title": null,
-            "height": 709,
+            "height": 576,
             "width": 1479,
             "minHeight": 0,
             "minWidth": 0,
@@ -621,7 +621,7 @@
             "isGlobal": true,
             "propertiesMap": null,
             "dataSeriesTemplates": null,
-            "text": "Reductions",
+            "text": "Scale-down",
             "textAlign": "LEFT",
             "margin": 4
         },
@@ -5469,7 +5469,7 @@
             "width": 126,
             "minHeight": 0,
             "minWidth": 0,
-            "x": 63,
+            "x": 70,
             "y": 33,
             "label": null,
             "description": null,

@@ -94,13 +94,15 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     Globals.lastDashboardCheck = finish;
                     ArrayList<AppDMetricObj> metrics = new ArrayList<AppDMetricObj>();
                     for (SnapshotRunnerBase t : tasks) {
-                        ArrayList<SummaryObj> summaryList = t.getMetricsBundle();
-                        for (SummaryObj summaryObj : summaryList) {
+                        for(SummaryObj summaryObj : t.getMetricsBundle()){
                             metrics.addAll(summaryObj.getMetricsMetadata());
                         }
                     }
-                    logger.info("Starting dashboard build with collected {} metrics", metrics.size());
+                    logger.info("Starting dashboard build with collected {} metric metadata", metrics.size());
                     buildDashboard(tasksExecutionServiceProvider, config, metrics);
+                }
+                else {
+                    logger.info("No action necessary. Done");
                 }
             }
         }
@@ -217,7 +219,8 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     private JsonNode findAppTier(Map<String, String> config, int appID){
         JsonNode theTier = null;
-        String tierName = config.get(CONFIG_APP_TIER_NAME);
+        String tierName = Utilities.getClusterTierName(config);
+        logger.info("Looking for tier {}", tierName);
         String path = "restui/tiers/list/health";
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode obj = mapper.createObjectNode();
@@ -277,7 +280,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     private JsonNode createAppTier(Map<String, String> config , int appID){
         String path = "restui/components/createComponent";
-        String tierName = config.get(CONFIG_APP_TIER_NAME);
+        String tierName = Utilities.getClusterTierName(config);
         String requestBody = buildTierObj(appID, tierName).toString();
         JsonNode tierObj = RestClient.callControllerAPI(path, config, requestBody, "POST");
         return tierObj;

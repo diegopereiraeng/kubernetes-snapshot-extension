@@ -12,14 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.models.V1EndpointAddress;
 import io.kubernetes.client.models.V1EndpointSubset;
 import io.kubernetes.client.models.V1Endpoints;
 import io.kubernetes.client.models.V1EndpointsList;
-import io.kubernetes.client.util.Config;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_APP_TIER_NAME;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_DEF_EP;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_EP;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -51,8 +48,8 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         logger.info("Proceeding to End Points update...");
         Map<String, String> config = (Map<String, String>) getConfiguration().getConfigYml();
         if (config != null) {
-            String apiKey = config.get("eventsApiKey");
-            String accountName = config.get("accountName");
+            String apiKey = Utilities.getEventsAPIKey(config);
+            String accountName = Utilities.getGlobalAccountName(config);
             URL publishUrl = ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_EP, CONFIG_SCHEMA_DEF_EP);
 
             try {
@@ -80,7 +77,8 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
 
-                List<Metric> metricList = Utilities.getMetricsFromSummary(summaryMap, config);
+//                serializeMetrics();
+                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} endpoints metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadEPMetricsTask", podMetricsTask);
@@ -98,8 +96,6 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         Long loadTime = new Date().getTime();
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
-         SummaryObj summary = initEPSummaryObject(config, ALL);
-         summaryMap.put(ALL, summary);
 
         for (V1Endpoints ep : epList.getItems()) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -108,16 +104,24 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
             String namespace = ep.getMetadata().getNamespace();
             objectNode = checkAddObject(objectNode, namespace, "namespace");
 
-            SummaryObj summaryNamespace = summaryMap.get(namespace);
+            String clusterName = Utilities.ensureClusterName(config, ep.getMetadata().getClusterName());
+
+            SummaryObj summary = getSummaryMap().get(ALL);
+            if (summary == null) {
+                summary = initEPSummaryObject(config, ALL);
+                getSummaryMap().put(ALL, summary);
+            }
+
+            SummaryObj summaryNamespace = getSummaryMap().get(namespace);
             if (summaryNamespace == null){
                 summaryNamespace = initEPSummaryObject(config, namespace);
-                summaryMap.put(namespace, summaryNamespace);
+                getSummaryMap().put(namespace, summaryNamespace);
             }
 
             incrementField(summary, "Endpoints");
             incrementField(summaryNamespace, "Endpoints");
 
-            String clusterName = Utilities.ensureClusterName(config, ep.getMetadata().getClusterName());
+
 
             objectNode = checkAddObject(objectNode, ep.getMetadata().getUid(), "object_uid");
             objectNode = checkAddObject(objectNode, clusterName, "clusterName");
@@ -192,27 +196,27 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         }
         String clusterName = Utilities.ClusterName;
         String parentSchema = config.get(CONFIG_SCHEMA_NAME_EP);
-        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", config.get(CONFIG_APP_TIER_NAME));
+        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", Utilities.getClusterTierName(config));
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
         String filter = "";
         if(!namespace.equals(ALL)){
-            filter = String.format("and object_namespace = \"%s\"", namespace);
+            filter = String.format("and namespace = \"%s\"", namespace);
         }
 
 
-        metricsList.add(new AppDMetricObj("Endpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+        if(namespace.equals(ALL)) {
+            metricsList.add(new AppDMetricObj("Endpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
+                    String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("HealthyEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where ip_up > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("HealthyEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
+                    String.format("select * from %s where ip_up > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("UnhealthyEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where ip_down > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+            metricsList.add(new AppDMetricObj("UnhealthyEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
+                    String.format("select * from %s where ip_down > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("OrphanEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where ip_down = 0 and ip_up = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
-
-
+            metricsList.add(new AppDMetricObj("OrphanEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
+                    String.format("select * from %s where ip_down = 0 and ip_up = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+        }
         return metricsList;
     }
 

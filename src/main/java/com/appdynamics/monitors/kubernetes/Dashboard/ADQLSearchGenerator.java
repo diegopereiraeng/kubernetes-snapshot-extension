@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_EVENT;
+
 
 public class ADQLSearchGenerator{
     protected static final Logger logger = LoggerFactory.getLogger(ADQLSearchGenerator.class);
@@ -27,7 +29,9 @@ public class ADQLSearchGenerator{
 
 
     public static void loadAllSearches(Map<String, String> config){
-        Utilities.savedSearches.clear();
+        if (Utilities.savedSearches.size() > 0){
+            return;
+        }
         try {
             String path = "restui/analyticsSavedSearches/getAllAnalyticsSavedSearches";
             JsonNode searchObj = RestClient.callControllerAPI(path, config, "", "GET");
@@ -52,7 +56,10 @@ public class ADQLSearchGenerator{
             if (query == null || query.isEmpty()){
                 return null;
             }
-            logger.info("Processing search for metric %s", metricObj.getName());
+            if (config.get(CONFIG_SCHEMA_NAME_EVENT).equals(metricObj.getParentSchema())){
+                logger.info("Events metric: {}, query: {}", metricObj.getName(), metricObj.getQuery());
+            }
+            logger.debug("Processing search for metric {}", metricObj.getName());
             String clusterName = Utilities.getClusterApplicationName(config);
             String levelName = metricObj.getLevelName();
             if (levelName != null && !levelName.isEmpty()){
@@ -63,7 +70,9 @@ public class ADQLSearchGenerator{
 
             if (adqlSearchObj == null) {
                 String path = "restui/analyticsSavedSearches/createAnalyticsSavedSearch";
-
+                if (config.get(CONFIG_SCHEMA_NAME_EVENT).equals(metricObj.getParentSchema())){
+                    logger.info("Events search {} does not exist", searchName);
+                }
 
                 ArrayList<String> columns = getColumns(config, metricObj.getParentSchemaDefinition());
                 ObjectNode requestBody = buildSearchObj(searchName, query, columns);
