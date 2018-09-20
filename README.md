@@ -30,7 +30,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * The AppDynamics platform needs the Events Service set up
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the data
  * The number of metrics collected depends on the size of the cluster in terms of namespaces/projects and nodes. You may need to increase the max number of
- metrics in the machine agent configuration. The current metric collection numbers are
+ metrics in the machine agent configuration. The current metric collection numbers are:
  * Cluster: 52
  * Node: 15
  * Namespace: 39
@@ -189,10 +189,6 @@ Either [Download the Extension from the latest Github release](https://github.co
 </tbody>
 </table>
 
-## Stats per 100 Pods 10 projects
-Pod payload size = 170k
-Number of metrics: 285
-Number of event records
 
 ## Contributing
 
