@@ -31,9 +31,9 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the data
  * The number of metrics collected depends on the size of the cluster in terms of namespaces/projects and nodes. You may need to increase the max number of
  metrics in the machine agent configuration. The current metric collection numbers are
- ** Cluster: 52
- ** Node: 15
- ** Namespace: 39
+ * Cluster: 52
+ * Node: 15
+ * Namespace: 39
 
 ## Installation
 
@@ -61,7 +61,7 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 
 ```
 
-Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/0.6/KubernetesSnapshotExtension-0.6.zip) or Build from Source.
+Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.0.6/KubernetesSnapshotExtension-0.6.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 

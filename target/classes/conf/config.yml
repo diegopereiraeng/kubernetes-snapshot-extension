@@ -53,7 +53,7 @@ nodeTemplatePath: "templates/k8s_node_template.json"
 dashboardNameSuffix: "SUMMARY"
 controllerAPIUser: ""   # REST_API_CREDENTIALS env var
 controllerUrl: "http://staging.demo.appdynamics.com/controller/"
-dashboardCheckInterval: "600"
+dashboardCheckInterval: "600"  #time in seconds between the checks if the default dashboard exists
 
 
 # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
