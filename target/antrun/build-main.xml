@@ -2,11 +2,18 @@
 <project name="maven-antrun-" default="main"  >
 <target name="main">
   <mkdir dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
+  <mkdir dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension/templates"/>
   <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
     <fileset includes="monitor.xml" dir="src/main/resources/conf"/>
   </copy>
   <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
     <fileset includes="config.yml" dir="src/main/resources/conf"/>
+  </copy>
+  <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension/templates">
+    <fileset includes="k8s_dashboard_template.json" dir="src/main/resources/templates"/>
+  </copy>
+  <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension/templates">
+    <fileset includes="k8s_node_template.json" dir="src/main/resources/templates"/>
   </copy>
   <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
     <fileset includes="kubernetes-snapshot-extension.jar" dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target"/>

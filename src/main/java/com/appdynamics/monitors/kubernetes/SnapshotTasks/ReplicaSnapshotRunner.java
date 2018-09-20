@@ -62,9 +62,9 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                         api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
 
                 String payload = createReplicasetPayload(rsList, config).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push ReplicaSet to Events API: {}", payload);
-                }
+
+                logger.debug("About to push ReplicaSet to Events API: {}", payload);
+
                 if(!payload.equals("[]")){
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
@@ -126,9 +126,14 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
             deployObject = checkAddInt(deployObject, deployItem.getStatus().getFullyLabeledReplicas(), "replicasLabeled");
             deployObject = checkAddInt(deployObject, deployItem.getStatus().getReadyReplicas(), "replicasReady");
 
-            if (deployItem.getStatus().getAvailableReplicas() != null) {
+            Integer availableReplicas = deployItem.getStatus().getAvailableReplicas();
+            if (availableReplicas != null) {
                 incrementField(summary, "RsReplicasAvailable", deployItem.getStatus().getAvailableReplicas());
                 incrementField(summaryNamespace, "RsReplicasAvailable", deployItem.getStatus().getFullyLabeledReplicas());
+                int unavailable = replicas - availableReplicas;
+                deployObject = checkAddInt(deployObject, unavailable, "rsReplicasUnAvailable");
+                incrementField(summary, "RsReplicasUnAvailable", unavailable);
+                incrementField(summaryNamespace, "RsReplicasUnAvailable", unavailable);
             }
 
 
@@ -145,6 +150,7 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         summary.put("ReplicaSets", 0);
         summary.put("RsReplicas", 0);
         summary.put("RsReplicasAvailable", 0);
+        summary.put("RsReplicasUnAvailable", 0);
 
 
 
@@ -170,13 +176,16 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         }
 
         metricsList.add(new AppDMetricObj("ReplicaSets", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("RsReplicas", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where replicas > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where replicas > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("RsReplicasAvailable", parentSchema, CONFIG_SCHEMA_DEF_RS,
-                String.format("select * from %s where rsReplicasAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where rsReplicasAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+        metricsList.add(new AppDMetricObj("RsReplicasUnAvailable", parentSchema, CONFIG_SCHEMA_DEF_RS,
+                String.format("select * from %s where rsReplicasAvailable = 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         return metricsList;
     }

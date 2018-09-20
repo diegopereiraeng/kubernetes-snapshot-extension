@@ -60,9 +60,9 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                         api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
 
                 String payload = createDaemonsetPayload(dsList, config).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Daemonsets to Events API: {}", payload);
-                }
+
+                logger.debug("About to push Daemonsets to Events API: {}", payload);
+
                 if(!payload.equals("[]")){
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
@@ -173,6 +173,7 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
         summary.put("namespace", namespace);
 
         summary.put("DaemonSets", 0);
+        summary.put("DaemonReplicasAvailable", 0);
         summary.put("DaemonReplicasUnAvailable", 0);
         summary.put("DaemonMissScheduled", 0);
         summary.put("DaemonCollisionCount", 0);
@@ -200,16 +201,19 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
         }
 
         metricsList.add(new AppDMetricObj("DaemonSets", parentSchema, CONFIG_SCHEMA_DEF_DAEMON,
-                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
+
+        metricsList.add(new AppDMetricObj("DaemonReplicasAvailable", parentSchema, CONFIG_SCHEMA_DEF_DAEMON,
+                String.format("select * from %s where replicasAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("DaemonReplicasUnAvailable", parentSchema, CONFIG_SCHEMA_DEF_DAEMON,
-                String.format("select * from %s where replicasUnAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where replicasUnAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("DaemonMissScheduled", parentSchema, CONFIG_SCHEMA_DEF_DAEMON,
-                String.format("select * from %s where missScheduled > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where missScheduled > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("DaemonCollisionCount", parentSchema, CONFIG_SCHEMA_DEF_DAEMON,
-                String.format("select * from %s where collisionCount > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where collisionCount > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
 
         return metricsList;

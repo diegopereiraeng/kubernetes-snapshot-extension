@@ -72,9 +72,9 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                         null,
                         null);
                 String payload = createEndpointPayload(epList, config).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Endpoints to Events API: {}", payload);
-                }
+
+                logger.debug("About to push Endpoints to Events API: {}", payload);
+
 
                 if(!payload.equals("[]")) {
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
@@ -201,16 +201,16 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
 
 
         metricsList.add(new AppDMetricObj("Endpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("HealthyEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where ip_up > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where ip_up > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("UnhealthyEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where ip_down > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where ip_down > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("OrphanEndpoints", parentSchema, CONFIG_SCHEMA_DEF_EP,
-                String.format("select * from %s where ip_down = 0 and ip_up = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where ip_down = 0 and ip_up = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
 
         return metricsList;

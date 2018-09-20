@@ -170,12 +170,12 @@ public class RestClient {
         }
     }
 
-    public static JsonNode createDashboard(Map<String, String> config) {
+    public static JsonNode createDashboard(Map<String, String> config, String filePath) {
         HttpURLConnection conn = null;
         String path = config.get(CONFIG_CONTROLLER_URL) + "CustomDashboardImportExportServlet";
         URL url = Utilities.getUrl(path);
         String user = config.get(CONFIG_CONTROLLER_API_USER);
-        File templateFile = new File(config.get(CONFIG_DASH_TEMPLATE_PATH));
+        File templateFile = new File(filePath);
         try {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");

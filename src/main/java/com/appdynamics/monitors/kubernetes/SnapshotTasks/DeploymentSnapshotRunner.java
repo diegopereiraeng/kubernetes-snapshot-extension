@@ -59,9 +59,9 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
                         api.listDeploymentForAllNamespaces(null, null, true, null, null, null, null, null, null);
 
                 String payload = createDeployPayload(deployList, config).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push Deployments to Events API: {}", payload);
-                }
+
+                logger.debug("About to push Deployments to Events API: {}", payload);
+
                 if(!payload.equals("[]")){
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
@@ -213,16 +213,16 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
         }
 
         metricsList.add(new AppDMetricObj("Deployments", parentSchema, CONFIG_SCHEMA_DEF_DEPLOY,
-                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("DeployReplicas", parentSchema, CONFIG_SCHEMA_DEF_DEPLOY,
-                String.format("select * from %s where replicas > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where replicas > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("DeployReplicasUnAvailable", parentSchema, CONFIG_SCHEMA_DEF_DEPLOY,
-                String.format("select * from %s where replicasUnAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where replicasUnAvailable > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("DeployCollisionCount", parentSchema, CONFIG_SCHEMA_DEF_DEPLOY,
-                String.format("select * from %s where collisionCount > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where collisionCount > 0 and clusterName = \"%s\" %s", parentSchema, clusterName, filter), rootPath, namespace, ALL));
         return metricsList;
     }
 

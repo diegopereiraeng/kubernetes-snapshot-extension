@@ -38,9 +38,6 @@ public class Utilities {
         return url;
     }
 
-    public static boolean shouldRunJob(Map<String, String> config, String jobtype){
-        return config.get(jobtype) != null && config.get(jobtype).equals("true");
-    }
 
     public static Map<String, String> getEntityConfig(List<Map<String, String>> config, String entityType){
         Map<String, String>  entityConfig = null;
@@ -52,10 +49,6 @@ public class Utilities {
             }
         }
         return entityConfig;
-    }
-
-    public static boolean shouldLogPayloads(Map<String, String> config){
-        return config.get("logPayloads") != null && config.get("logPayloads").equals("true");
     }
 
     public static URL ensureSchema(Map<String, String> config, String apiKey, String accountName, String schemaName, String schemaDefinition){
@@ -72,9 +65,9 @@ public class Utilities {
 
         JsonNode serverSchema = RestClient.doRequest(schemaUrl, accountName, apiKey, "", "GET");
         if(serverSchema == null){
-            if (shouldLogPayloads(config)) {
-                logger.info("Schema Url {} does not exists. creating {}", schemaUrl, requestBody);
-            }
+
+            logger.debug("Schema Url {} does not exists. creating {}", schemaUrl, requestBody);
+
             RestClient.doRequest(schemaUrl, accountName, apiKey, requestBody, "POST");
         }
         else {
@@ -85,9 +78,8 @@ public class Utilities {
 //                if (updated != null) {
 //                    //update schema changes
 //                    logger.info("Schema changed, updating", schemaUrl);
-//                    if (shouldLogPayloads(config)) {
-//                        logger.info("New schema fields: {}", updated.toString());
-//                    }
+//                      logger.debug("New schema fields: {}", updated.toString());
+
 //                    RestClient.doRequest(schemaUrl, accountName, apiKey, updated.toString(), "PATCH");
 //                }
 //                else {

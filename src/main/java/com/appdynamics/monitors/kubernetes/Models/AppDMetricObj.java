@@ -1,5 +1,7 @@
 package com.appdynamics.monitors.kubernetes.Models;
 
+import static com.appdynamics.monitors.kubernetes.Utilities.ALL;
+
 public class AppDMetricObj {
     private String name = ""; //metric name
     private String parentSchema = ""; //schema where the metric is stored
@@ -10,9 +12,11 @@ public class AppDMetricObj {
     private String healthRuleToken = "";  //reference of the health rule associated with the metric. Replacement token on dashboard
     private String metricToken = "";//reference of the metric. Replacement token on dashboard
     private String widgetName = "";
+    private String namespace = "";
+    private String node = "";
 
 
-    public AppDMetricObj(String name, String parentSchema, String schemaDefinitionName, String query, String rootPath){
+    public AppDMetricObj(String name, String parentSchema, String schemaDefinitionName, String query, String rootPath, String namespace, String node){
         this.name = name;
         this.parentSchema = parentSchema;
         this.setParentSchemaDefinition(schemaDefinitionName);
@@ -22,6 +26,8 @@ public class AppDMetricObj {
         this.metricToken = String.format("m-%s", this.name);
         this.setPath(rootPath + this.name);
         this.setWidgetName(this.metricToken);
+        this.namespace = namespace;
+        this.node = node;
     }
 
     public String getName() {
@@ -90,5 +96,25 @@ public class AppDMetricObj {
 
     public void setWidgetName(String widgetName) {
         this.widgetName = widgetName;
+    }
+
+    public String getLevelName(){
+        if(namespace != null && !namespace.equals(ALL)){
+            return namespace;
+        }
+        else if (node != null && !node.equals(ALL)){
+            return node;
+        }
+        return "";
+    }
+
+    public String getLevel(){
+        if(namespace != null && !namespace.equals(ALL)){
+            return "namespace";
+        }
+        else if (node != null && !node.equals(ALL)){
+            return "node";
+        }
+        return "";
     }
 }

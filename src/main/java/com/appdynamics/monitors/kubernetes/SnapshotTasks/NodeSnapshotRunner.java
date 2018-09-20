@@ -69,9 +69,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         null,
                         null);
                 String payload = createNodePayload(nodeList, config).toString();
-                if (Utilities.shouldLogPayloads(config)) {
-                    logger.info("About to push Nodes to Events API: {}", payload);
-                }
+
+                logger.debug("About to push Nodes to Events API: {}", payload);
+
                 if(!payload.equals("[]")){
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
@@ -301,32 +301,32 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         if (nodeName.equals(ALL)) {
             //global
             metricsList.add(new AppDMetricObj("ReadyNodes", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where ready = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where ready = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("OutOfDiskNodes", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where outOfDisk = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where outOfDisk = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("MemoryPressureNodes", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where memoryPressure = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where memoryPressure = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("DiskPressureNodes", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where diskPressure = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where diskPressure = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("TaintsTotal", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where taints IS NOT NULL and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where taints IS NOT NULL and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("CapacityMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where memCapacity > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where memCapacity > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("CapacityCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where cpuCapacity > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where cpuCapacity > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("AllocationsMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where memAllocations > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where memAllocations > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
             metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE,
-                    String.format("select * from %s where cpuAllocations > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath));
+                    String.format("select * from %s where cpuAllocations > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
         }
         else {
             //node level
             String nodePath = String.format("%s|%s|", rootPath, METRIC_PATH_NODES, nodeName);
-            metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath));
-            metricsList.add(new AppDMetricObj("AllocationsMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath));
-            metricsList.add(new AppDMetricObj("CapacityCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath));
-            metricsList.add(new AppDMetricObj("CapacityMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath));
-            metricsList.add(new AppDMetricObj("CapacityPods", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath));
+            metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+            metricsList.add(new AppDMetricObj("AllocationsMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+            metricsList.add(new AppDMetricObj("CapacityCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+            metricsList.add(new AppDMetricObj("CapacityMemory", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
+            metricsList.add(new AppDMetricObj("CapacityPods", parentSchema, CONFIG_SCHEMA_DEF_NODE, null, nodePath, ALL, nodeName));
         }
         return metricsList;
     }

@@ -7,4 +7,6 @@ public class Globals {
     public static DateTime previousRunTimestamp = null;
     public static String lastElementSelfLink = "";
     public static String previousRunSelfLink = "";
+
+    public static long lastDashboardCheck = 0;
 }

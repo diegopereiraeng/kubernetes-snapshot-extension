@@ -77,9 +77,7 @@ public class DashboardTest {
             PodSnapshotRunner podSnapshotRunner = new PodSnapshotRunner();
 
             ArrayList<AppDMetricObj> list = podSnapshotRunner.initMetrics(config, ALL, ALL);
-            ArrayList<AppDMetricObj> single = new ArrayList<AppDMetricObj>();
-            single.add(list.get(0));
-            ClusterDashboardGenerator generator = new ClusterDashboardGenerator(config, single);
+            ClusterDashboardGenerator generator = new ClusterDashboardGenerator(config, list);
             generator.validateDashboard(config);
             Assert.assertTrue(true);
         }

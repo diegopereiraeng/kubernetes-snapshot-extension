@@ -84,9 +84,9 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                         null,
                         null);
                 String payload = createEventPayload(eventList, config).toString();
-                if (shouldLogPayloads(config)) {
-                    logger.info("About to push payload to Events API: {}", payload);
-                }
+
+                logger.debug("About to push payload to Events API: {}", payload);
+
 
                 if(!payload.equals("[]")){
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
@@ -278,41 +278,41 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
 
         metricsList.add(new AppDMetricObj("EventsCount", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("EventsError", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("EventsInfo", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason NOT IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason NOT IN (\"FailedCreate\",\"FailedBinding\",\"BackOff\",\"Unhealthy\",\"Failed\",\"SandboxChanged\",\"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("ScaleDowns", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"ScalingReplicaSet\" and message like \'Scaled down*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"ScalingReplicaSet\" and message like \'Scaled down*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("CrashLoops", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"BackOff\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"BackOff\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
 
         metricsList.add(new AppDMetricObj("QuotaViolations", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"FailedCreate\" and message like \'*failed quota*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"FailedCreate\" and message like \'*failed quota*\' and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
-        metricsList.add(new AppDMetricObj("QuotaViolations", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason IN ( \"FailedCreate\", \"FailedBinding\", \"BackOff\", \"Unhealthy\", \"Failed\", \"SandboxChanged\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+        metricsList.add(new AppDMetricObj("PodIssues", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
+                String.format("select * from %s where reason IN ( \"FailedCreate\", \"FailedBinding\", \"BackOff\", \"Unhealthy\", \"Failed\", \"SandboxChanged\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("EvictionThreats", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason IN \"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason IN \"Evicted\",\"FailedDaemonPod\",\"NodeHasDiskPressure\",\"NodeNotReady\",\"EvictionThresholdMet\",\"ErrorReconciliationRetryTimeout\",\"ExceededGracePeriod\") and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("ImagePullErrors", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"Failed\" AND message LIKE \"*ImagePullBackOff*\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"Failed\" AND message LIKE \"*ImagePullBackOff*\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("ImagePulls", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"Pulling\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"Pulling\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("StorageIssues", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"FailedBinding\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"FailedBinding\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
         metricsList.add(new AppDMetricObj("PodKills", parentSchema, CONFIG_SCHEMA_DEF_EVENT,
-                String.format("select * from %s where reason = \"Killing\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"Killing\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, ALL));
 
 
 

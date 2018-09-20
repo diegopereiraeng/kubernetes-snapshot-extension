@@ -1,7 +1,6 @@
 package com.appdynamics.monitors.kubernetes.Dashboard;
 
 import com.appdynamics.extensions.AMonitorTaskRunnable;
-import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.monitors.kubernetes.Constants;
 import com.appdynamics.monitors.kubernetes.Models.AdqlSearchObj;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
@@ -12,17 +11,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonArray;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -57,14 +52,21 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
         String dashName = String.format("%s-%s-%s", Utilities.getClusterApplicationName(config), config.get(CONFIG_APP_TIER_NAME), config.get(CONFIG_DASH_NAME_SUFFIX));
         if (!dashboardExists(dashName, config)) {
             //if not, read template
-            String path = config.get(CONFIG_DASH_TEMPLATE_PATH);
+            File file = new File(".");
+            String currentDirectory = String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
+            String path = String.format("%s/%s", currentDirectory, config.get(CONFIG_DASH_TEMPLATE_PATH));
             logger.info("Reading the dashboard template from {}", path);
             JsonNode template = readTemplate(path);
             JsonNode widgets = template.get("widgetTemplates");
+            //update name
+            ((ObjectNode)template).put("name", dashName);
             //create Dashboard
             logger.info("Creating the dashboard...");
-            buildDashboard(config, metrics,  widgets);
-            writeTemplate(config, template);
+            buildDashboard(metrics,  widgets);
+            writeTemplate(config, template,  currentDirectory);
+        }
+        else{
+            logger.info("Dashboard exists");
         }
     }
 
@@ -80,7 +82,6 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
                 break;
             }
         }
-
         return exists;
     }
 
@@ -96,12 +97,12 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             }
         }
         catch (Exception ex){
-            logger.error("Unable to load dashboard template.", ex);
+            logger.error("Unable to load dashboard template." + path, ex);
         }
         return node;
     }
 
-    private void writeTemplate(Map<String, String> config, JsonNode template){
+    private void writeTemplate(Map<String, String> config, JsonNode template, String currentDirectory){
         try{
             String originalPath = config.get(CONFIG_DASH_TEMPLATE_PATH);
             String ext = ".json";
@@ -109,27 +110,23 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
                 originalPath = originalPath.substring(0, originalPath.length() - ext.length());
             }
 
-            String path = String.format("%s_UPDATED.json", originalPath);
+            String path = String.format("%s/%s_UPDATED.json", currentDirectory, originalPath);
             ObjectMapper mapper = new ObjectMapper();
             ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
             writer.writeValue(new File(path), template);
+            RestClient.createDashboard(config, path);
         }
         catch (Exception ex){
             logger.error("Unable to save the updated dashboard template", ex);
         }
     }
 
-    public void buildDashboard(Map<String, String> config, ArrayList<AppDMetricObj> metrics, JsonNode widgets){
+    public void buildDashboard(ArrayList<AppDMetricObj> metrics, JsonNode widgets){
         try {
             logger.info("Building dashboard...");
             for(AppDMetricObj metricObj : metrics) {
-                JsonNode widget = findWidget(widgets, metricObj.getWidgetName());
-                AdqlSearchObj adqlSearchObj =  ADQLSearchGenerator.getSearchForMetric(config, metricObj);
-                updateDrillDown(config, widget, adqlSearchObj);
-                //token replace metric path
-                updateMetricPath(config, widget, metricObj);
+                updatedWidget(widgets, metricObj);
             }
-            //saveTemplate
         }
         catch (Exception ex){
             logger.error("Unable to save search", ex);
@@ -148,30 +145,71 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
         }
     }
 
-    private void updateMetricPath (Map<String, String> config, JsonNode widget, AppDMetricObj metricObj){
-        JsonNode templates = widget.get("dataSeriesTemplates");
-        for(JsonNode t : templates){
-            JsonNode match = t.get("metricMatchCriteriaTemplate");
-            JsonNode metric = match.get("metricExpressionTemplate");
-            String metricToken = metric.get("metricPath").asText();
-            if (metricToken.equals(metricObj.getMetricToken())) {
-                ((ObjectNode)match).put("applicationName", config.get(CONFIG_APP_NAME));
+    private void updateMetricPath (Map<String, String> config, JsonNode metric, AppDMetricObj metricObj){
+            if (metric != null) {
                 ((ObjectNode) metric).put("metricPath", metricObj.getPath());
                 JsonNode scope = metric.get("scopeEntity");
-                ((ObjectNode)scope).put("applicationName", config.get(CONFIG_APP_NAME));
-                ((ObjectNode)scope).put("entityName", config.get(CONFIG_APP_TIER_NAME));
+                ((ObjectNode) scope).put("applicationName", config.get(CONFIG_APP_NAME));
+                ((ObjectNode) scope).put("entityName", config.get(CONFIG_APP_TIER_NAME));
             }
-        }
     }
 
-    private JsonNode findWidget(JsonNode widgets, String widgetName){
-        JsonNode widget = null;
-        for(JsonNode n : widgets){
-            if (n.get("label") != null && n.get("label").asText().equals(widgetName)){
-                widget = n;
-                break;
+    private JsonNode findMetricNode(JsonNode metricTemplate, String metricPath){
+        JsonNode metricNode = null;
+        if (metricTemplate == null){
+            return metricNode;
+        }
+        if (metricTemplate.get("metricPath") == null){
+            //expression
+            metricNode = findExpression(metricTemplate, metricPath);
+        }
+        else if (metricTemplate.get("metricPath").asText().equals(metricPath)){
+            metricNode = metricTemplate;
+        }
+        return metricNode;
+    }
+
+    private JsonNode findExpression(JsonNode parentExpression, String metricPath){
+        JsonNode theNode = null;
+        for(int i = 0; i < 2; i++){
+            String expNodeName = String.format("expression%d", i+1);
+            JsonNode expNode = parentExpression.get(expNodeName);
+            if (expNode != null){
+                if (expNode.get("metricPath") != null && expNode.get("metricPath").asText().equals(metricPath)){
+                    theNode = expNode;
+                    break;
+                }
+                else{
+                    theNode = findExpression(expNode, metricPath);
+                }
             }
         }
-        return widget;
+        return theNode;
+    }
+
+    private void updatedWidget(JsonNode widgets, AppDMetricObj metricObj){
+        for(JsonNode widget : widgets){
+            JsonNode templates = widget.get("dataSeriesTemplates");
+            if (templates != null) {
+                String path = metricObj.getPath();
+                for (JsonNode t : templates) {
+                    JsonNode match = t.get("metricMatchCriteriaTemplate");
+                    if (match != null) {
+                        JsonNode metricTemplate = match.get("metricExpressionTemplate");
+                        JsonNode metric = findMetricNode(metricTemplate, path);
+                        if (metric != null) {
+                            boolean isExpression = metricTemplate.get("metricPath") == null;
+                            ((ObjectNode) match).put("applicationName", config.get(CONFIG_APP_NAME));
+                            //token replace metric path
+                            updateMetricPath(config, metric, metricObj);
+                            if (!isExpression){
+                                AdqlSearchObj adqlSearchObj =  ADQLSearchGenerator.getSearchForMetric(config, metricObj);
+                                updateDrillDown(config, widget, adqlSearchObj);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

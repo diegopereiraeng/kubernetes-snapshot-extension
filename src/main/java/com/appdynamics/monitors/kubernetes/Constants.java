@@ -8,6 +8,7 @@ public class Constants {
     public static final String DEFAULT_METRIC_PREFIX = "Server|Component:%s|Custom Metrics|Cluster Stats|";
     public static final String CONFIG_DASH_TEMPLATE_PATH = "dashboardTemplatePath";
     public static final String CONFIG_DASH_NAME_SUFFIX = "dashboardNameSuffix";
+    public static final String CONFIG_DASH_CHECK_INTERVAL = "dashboardCheckInterval";
     public static final String CONFIG_APP_NAME = "appName";
     public static final String CONFIG_APP_TIER_NAME = "appTierName";
     public static final String CONFIG_NODE_ENTITIES = "entities";

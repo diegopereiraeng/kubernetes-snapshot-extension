@@ -74,9 +74,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         null,
                         null);
                 String payload = createPodPayload(podList, config).toString();
-                if (Utilities.shouldLogPayloads(config)) {
-                    logger.info("About to push PODs to Events API: {}", payload);
-                }
+
+                logger.debug("About to push PODs to Events API: {}", payload);
+
                 if(!payload.equals("[]")){
                     RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
                 }
@@ -390,57 +390,59 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
 
             podObject = checkAddBoolean(podObject, limitsDefined, "limitsDefined");
-            if (!limitsDefined){
-                Utilities.incrementField(summary, "NoLimits");
-                Utilities.incrementField(summaryNamespace, "NoLimits");
-                Utilities.incrementField(summaryNode, "NoLimits");
-            }
+
 
             podObject =  checkAddFloat(podObject, cpuRequest, "cpuRequest");
             podObject =  checkAddFloat(podObject, memRequest, "memRequest");
             podObject =  checkAddFloat(podObject, cpuLimit, "cpuLimit");
             podObject =  checkAddFloat(podObject, memLimit, "memLimit");
 
-            Utilities.incrementField(summary, "RequestCpu", cpuRequest);
-            Utilities.incrementField(summaryNamespace, "RequestCpu", cpuRequest);
-            Utilities.incrementField(summaryNode, "RequestCpu", cpuRequest);
+            if (!(podItem.getStatus().getReason() != null && podItem.getStatus().getReason().equals("Evicted"))){
+                Utilities.incrementField(summary, "RequestCpu", cpuRequest);
+                Utilities.incrementField(summaryNamespace, "RequestCpu", cpuRequest);
+                Utilities.incrementField(summaryNode, "RequestCpu", cpuRequest);
 
-            Utilities.incrementField(summary, "RequestMemory", memRequest);
-            Utilities.incrementField(summaryNamespace, "RequestMemory", memRequest);
-            Utilities.incrementField(summaryNode, "RequestMemory", memRequest);
+                Utilities.incrementField(summary, "RequestMemory", memRequest);
+                Utilities.incrementField(summaryNamespace, "RequestMemory", memRequest);
+                Utilities.incrementField(summaryNode, "RequestMemory", memRequest);
 
-            Utilities.incrementField(summary, "LimitCpu", cpuLimit);
-            Utilities.incrementField(summaryNamespace, "LimitCpu", cpuLimit);
-            Utilities.incrementField(summaryNode, "LimitCpu", cpuLimit);
+                Utilities.incrementField(summary, "LimitCpu", cpuLimit);
+                Utilities.incrementField(summaryNamespace, "LimitCpu", cpuLimit);
+                Utilities.incrementField(summaryNode, "LimitCpu", cpuLimit);
 
-            Utilities.incrementField(summary, "LimitMemory", memLimit);
-            Utilities.incrementField(summaryNamespace, "LimitMemory", memLimit);
-            Utilities.incrementField(summaryNode, "LimitMemory", memLimit);
+                Utilities.incrementField(summary, "LimitMemory", memLimit);
+                Utilities.incrementField(summaryNamespace, "LimitMemory", memLimit);
+                Utilities.incrementField(summaryNode, "LimitMemory", memLimit);
+
+                if (numLive == 0) {
+                    Utilities.incrementField(summary, "NoLivenessProbe");
+                    Utilities.incrementField(summaryNamespace, "NoLivenessProbe");
+                    Utilities.incrementField(summaryNode, "NoLivenessProbe");
+                }
+
+                if (numReady == 0) {
+                    Utilities.incrementField(summary, "NoReadinessProbe");
+                    Utilities.incrementField(summaryNamespace, "NoReadinessProbe");
+                    Utilities.incrementField(summaryNode, "NoReadinessProbe");
+                }
+
+                if (numPrivileged > 0) {
+                    Utilities.incrementField(summary, "Privileged");
+                    Utilities.incrementField(summaryNamespace, "Privileged");
+                    Utilities.incrementField(summaryNode, "Privileged");
+                }
+                if (!limitsDefined){
+                    Utilities.incrementField(summary, "NoLimits");
+                    Utilities.incrementField(summaryNamespace, "NoLimits");
+                    Utilities.incrementField(summaryNode, "NoLimits");
+                }
+            }
 
 
             podObject = checkAddInt(podObject, numLive, "liveProbes");
             podObject = checkAddInt(podObject, numReady, "readyProbes");
             podObject = checkAddInt(podObject, numPrivileged, "numPrivileged");
             arrayNode.add(podObject);
-
-
-            if (numLive == 0){
-                Utilities.incrementField(summary, "NoLivenessProbe");
-                Utilities.incrementField(summaryNamespace, "NoLivenessProbe");
-                Utilities.incrementField(summaryNode, "NoLivenessProbe");
-            }
-
-            if (numReady == 0){
-                Utilities.incrementField(summary, "NoReadinessProbe");
-                Utilities.incrementField(summaryNamespace, "NoReadinessProbe");
-                Utilities.incrementField(summaryNode, "NoReadinessProbe");
-            }
-
-            if (numPrivileged > 0){
-                Utilities.incrementField(summary, "Privileged");
-                Utilities.incrementField(summaryNamespace, "Privileged");
-                Utilities.incrementField(summaryNode, "Privileged");
-            }
         }
         return  arrayNode;
     }
@@ -505,47 +507,47 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
 
         metricsList.add(new AppDMetricObj("Pods", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("Containers", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where containerCount > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where containerCount > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("InitContainers", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where initContainerCount > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where initContainerCount > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("Evictions", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where reason = \"Evicted\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where reason = \"Evicted\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("PodRestarts", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where podRestarts > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where podRestarts > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("Running", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where phase = \"Running\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where phase = \"Running\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("Failed", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where phase = \"Failed\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where phase = \"Failed\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("Pending", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where phase = \"Pending\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where phase = \"Pending\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("NoLimits", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where limitsDefined = false and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where limitsDefined = false and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("NoReadinessProbe", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where readyProbes = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where readyProbes = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("NoLivenessProbe", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where liveProbes = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where liveProbes = 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("Privileged", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where numPrivileged > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where numPrivileged > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
 
         metricsList.add(new AppDMetricObj("RequestCpu", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where cpuRequest > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where cpuRequest > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("RequestMemory", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where memRequest > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where memRequest > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("LimitCpu", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where cpuLimit > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where cpuLimit > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("LimitMemory", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where memLimit > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where memLimit > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("TolerationsCount", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where tolerations IS NOT NULL and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where tolerations IS NOT NULL and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
 
         metricsList.add(new AppDMetricObj("HasNodeAffinity", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where (nodeAffinityPreferred IS NOT NULL Or nodeAffinityRequired IS NOT NULL) and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where (nodeAffinityPreferred IS NOT NULL Or nodeAffinityRequired IS NOT NULL) and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("HasPodAffinity", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where hasPodAffinity = true and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where hasPodAffinity = true and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
         metricsList.add(new AppDMetricObj("HasPodAntiAffinity", parentSchema, CONFIG_SCHEMA_DEF_POD,
-                String.format("select * from %s where hasPodAntiAffinity = true and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath));
+                String.format("select * from %s where hasPodAntiAffinity = true and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
 
 
         return metricsList;

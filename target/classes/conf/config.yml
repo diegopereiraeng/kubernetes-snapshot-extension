@@ -39,8 +39,6 @@ rsSchemaName: "k8s_rs_snapshots"
 endpointSchemaName: "k8s_endpoint_snapshots"
 
 
-logPayloads: "false"
-
 entities:
 - type: "pod"
 - type: "node"
@@ -50,10 +48,12 @@ entities:
 - type: "event"
 - type: "endpoint"
 
-dashboardTemplatePath: "/templates/k8sdashboard_auto.json"
+dashboardTemplatePath: "templates/k8s_dashboard_template.json"
+nodeTemplatePath: "templates/k8s_node_template.json"
 dashboardNameSuffix: "SUMMARY"
 controllerAPIUser: "k8sresty@customer1:k8sresty"
 controllerUrl: "http://staging.demo.appdynamics.com/controller/"
+dashboardCheckInterval: "600"
 
 
 # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
@@ -233,6 +233,7 @@ rsSchemaDefinition: '{
     "minReadySecs": "integer",
     "replicas": "integer",
     "rsReplicasAvailable": "integer",
+    "rsReplicasUnAvailable": "integer",
     "replicasLabeled": "integer",
     "replicasReady": "integer"
   }

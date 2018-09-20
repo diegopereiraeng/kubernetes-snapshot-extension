@@ -52,10 +52,13 @@ public class ADQLSearchGenerator{
             if (query == null || query.isEmpty()){
                 return null;
             }
-            logger.info("Processing search for metric %S", metricObj.getName());
+            logger.info("Processing search for metric %s", metricObj.getName());
             String clusterName = Utilities.getClusterApplicationName(config);
-
-            String searchName = String.format("%s. %s", clusterName, metricObj.getName());
+            String levelName = metricObj.getLevelName();
+            if (levelName != null && !levelName.isEmpty()){
+                levelName += ".";
+            }
+            String searchName = String.format("%s.%s %s", clusterName, levelName, metricObj.getName());
             AdqlSearchObj adqlSearchObj = Utilities.getSavedSearch(searchName);
 
             if (adqlSearchObj == null) {
@@ -70,6 +73,7 @@ public class ADQLSearchGenerator{
                     adqlSearchObj = new AdqlSearchObj();
                     adqlSearchObj.setId(searchID);
                     adqlSearchObj.setName(searchObj.get("searchName").asText());
+                    Utilities.savedSearches.add(adqlSearchObj);
                 }
             }
             return adqlSearchObj;

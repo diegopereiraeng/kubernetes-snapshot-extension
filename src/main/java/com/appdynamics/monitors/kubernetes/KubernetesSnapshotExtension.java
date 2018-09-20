@@ -3,7 +3,6 @@ package com.appdynamics.monitors.kubernetes;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.appdynamics.monitors.kubernetes.Dashboard.ADQLSearchGenerator;
 import com.appdynamics.monitors.kubernetes.Dashboard.ClusterDashboardGenerator;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
@@ -12,13 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
-import com.singularity.ee.agent.systemagent.api.TaskOutput;
-import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,8 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
-import static com.appdynamics.monitors.kubernetes.Utilities.ensureSchema;
-import static com.appdynamics.monitors.kubernetes.Utilities.shouldLogPayloads;
+
 
 @SuppressWarnings("WeakerAccess")
 public class KubernetesSnapshotExtension extends ABaseMonitor {
@@ -45,26 +39,6 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     private CountDownLatch latch;
     public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
-
-//    private void sendSummaryData(){
-//        logger.info("Proceeding to summary...");
-//        Map<String, String> config = (Map<String, String>) configuration.getConfigYml();
-//        if (config != null) {
-//            String apiKey = config.get("eventsApiKey");
-//            String accountName = config.get("accountName");
-//            URL publishUrl = ensureSchema(config, apiKey, accountName, "summarySchemaName", "summarySchemaDefinition");
-//
-//            String payload = Utilities.getSummaryData().toString();
-//
-//            if(!payload.equals("[]")){
-//                if(shouldLogPayloads(config)) {
-//                    logger.info("About to push summary data to Events API: {}", payload);
-//                }
-//                RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-//            }
-//            logger.info("Summary data sent successfully");
-//        }
-//    }
 
 
     @Override
@@ -111,12 +85,13 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                 }
 
 
-                //check dashboard
                 long finish = new Date().getTime();
                 long duration = finish - start;
                 logger.info("All tasks complete {} millisec. Checking the dashboard", duration);
+                //check dashboard
                 //if does not exist, create from template
-                if (shoudldBuildDashboard()) {
+                if (shoudldBuildDashboard(config)) {
+                    Globals.lastDashboardCheck = finish;
                     ArrayList<AppDMetricObj> metrics = new ArrayList<AppDMetricObj>();
                     for (SnapshotRunnerBase t : tasks) {
                         ArrayList<SummaryObj> summaryList = t.getMetricsBundle();
@@ -124,7 +99,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                             metrics.addAll(summaryObj.getMetricsMetadata());
                         }
                     }
-                    logger.info("Collected {} metrics", metrics.size());
+                    logger.info("Starting dashboard build with collected {} metrics", metrics.size());
                     buildDashboard(tasksExecutionServiceProvider, config, metrics);
                 }
             }
@@ -135,8 +110,10 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     }
 
-    private boolean shoudldBuildDashboard(){
-        return false;
+    private boolean shoudldBuildDashboard(Map<String, String> config){
+        long now = new Date().getTime();
+        long interval = Long.parseLong(config.get(CONFIG_DASH_CHECK_INTERVAL));
+        return Globals.lastDashboardCheck == 0 || (now - Globals.lastDashboardCheck) > interval * 1000;
     }
 
     public void buildDashboard(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, ArrayList<AppDMetricObj> metrics){

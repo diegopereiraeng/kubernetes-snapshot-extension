@@ -141,11 +141,18 @@
                         <configuration>
                             <target>
                                 <mkdir dir="${project.build.directory}/KubernetesSnapshotExtension"/>
+                                <mkdir dir="${project.build.directory}/KubernetesSnapshotExtension/templates"/>
                                 <copy todir="${project.build.directory}/KubernetesSnapshotExtension">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                 </copy>
                                 <copy todir="${project.build.directory}/KubernetesSnapshotExtension">
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
+                                </copy>
+                                <copy todir="${project.build.directory}/KubernetesSnapshotExtension/templates">
+                                    <fileset dir="src/main/resources/templates" includes="k8s_dashboard_template.json"/>
+                                </copy>
+                                <copy todir="${project.build.directory}/KubernetesSnapshotExtension/templates">
+                                    <fileset dir="src/main/resources/templates" includes="k8s_node_template.json"/>
                                 </copy>
                                 <copy todir="${project.build.directory}/KubernetesSnapshotExtension">
                                     <fileset dir="${project.build.directory}"
