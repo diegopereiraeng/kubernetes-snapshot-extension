@@ -34,9 +34,9 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
  * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the threshold for metric ingestion
  in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**). The current metric collection rate is:
- ..* Cluster-specific: 52
- ..* Node-specific: 15
- ..* Namespace-specific: 39
+   * Cluster-specific: 52
+   * Node-specific: 15
+   * Namespace-specific: 39
 
 ## Installation
 
@@ -148,7 +148,7 @@ Either [Download the Extension from the latest Github release](https://github.co
 
 4. Restart the Machine Agent.
 
-A sample start-up script for the machine agent with elevated metrics threshold:
+A sample start-up script for the machine agent with an elevated metrics threshold:
 
 ```
 #!/bin/bash
