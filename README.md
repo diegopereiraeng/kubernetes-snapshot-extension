@@ -7,10 +7,10 @@ This extension works only with the standalone machine agent.
 The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
 The data is received via Kubernetes API at a configurable interval and is sent to the AppDynamics Analytics Events API. Metrics are automatically created
 and stored under a configurable Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
--> <Tier Name> -> Custom Metrics -> Cluster Stats.
+-> Tier Name -> Custom Metrics -> Cluster Stats.
 
 ![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/metrics.png)
-The extension aggregates metrics at the cluster level with further categorization by node and namespace
+The extension aggregates metrics at the cluster level with further categorization by node and namespace.
 
 If you want to monitor events only, use [Kubernetes Events Extension](https://github.com/Appdynamics/kubernetes-events-extension).
 If you are interested in automated metric collection for events and other cluster resources, this extensions is self-sufficient. The event collection is enabled by default.
@@ -34,9 +34,9 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
  * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the threshold for metric ingestion
  in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**). The current metric collection rate is:
- ```* Cluster-specific: 52
- ```* Node-specific: 15
- ```* Namespace-specific: 39
+ ``* Cluster-specific: 52
+ ``* Node-specific: 15
+ ``* Namespace-specific: 39
 
 ## Installation
 
