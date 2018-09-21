@@ -32,8 +32,9 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * The AppDynamics platform needs the Events Service set up.
  * REST API credentials. The account can be created under Administration -> Users. The user account must have rights to create dashboards and saved searches.
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
- * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the threshold for metric ingestion
- in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**). The current metric collection rate is:
+ * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes.
+ It may be necessary to increase the threshold for metric ingestion in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**).
+ The current metric collection rate is:
    * Cluster-specific: 52
    * Node-specific: 15
    * Namespace-specific: 39
@@ -47,9 +48,11 @@ Either [Download the Extension from the latest Github release](https://github.co
   `> unzip KubernetesSnapshotExtension-<VERSION>.zip -d <machine agent home>/monitors/`
 
 2. Set up `config.yml`.
+
 **Required settings**
   ```
-    # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config", but it may differ on your machine
+    # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config",
+    # but it may differ on your machine
     kubeClientConfig:
 
     # Name of the application. It can be an existing application or a new application.
