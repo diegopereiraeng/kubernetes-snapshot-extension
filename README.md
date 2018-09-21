@@ -4,9 +4,9 @@ This extension works only with the standalone machine agent.
 
 ## Use Case
 
-Monitors events and state of Kubernetes or OpenShift clusters, records attributes of resources like pods, endpoints, daemonset, replica sets and deployments.
-The data is received via Kubernetes API at a configurable interval and is pushed to the AppDynamics Analytics Events API for reporting. Several metrics are automatically creared
-and stored under the configurable Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
+The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
+The data is received via Kubernetes API at a configurable interval and is sent to the AppDynamics Analytics Events API. Metrics are automatically created
+and stored under a configurable Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
 -> <Tier Name> -> Custom Metrics -> Cluster Stats.
 ![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/metrics.png)
 The extension aggregates metrics at the cluster level with further categorization by node and namespace
@@ -20,24 +20,24 @@ The extension automatically creates the dashboard below.
 
 For each exposed metric, a named ADQL query along with the dashboard. Double-clicking on a dashboard widget will open the corresponding query.
 These automatically created queries can also be accessed under Analytics -> Searches. The search names are constructed with the following format:
+```
 <Cluster Name. Metric Name>
-
+```
 
 
 ## Prerequisites
 
  * This extension requires the Java Machine Agent
  * The AppDynamics platform needs the Events Service set up
- * You will need one or more Transaction Analytics/APM Peak licenses to consume the data
- * The number of metrics collected depends on the size of the cluster in terms of namespaces/projects and nodes. You may need to increase the max number of
+ * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
+ * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the max number of
  metrics in the machine agent configuration. The current metric collection numbers are:
- * Cluster: 52
- * Node: 15
- * Namespace: 39
+ * Per Cluster: 52
+ * Per Node: 15
+ * Per Namespace: 39
 
 ## Installation
-
-* A sample start-up script for the machine agent:
+The extension runs as a part of AppDynamics Machine Agent. Here is a sample start-up script for the machine agent with elevated metrics threshold:
 
 ```
 #!/bin/bash
@@ -68,22 +68,33 @@ Either [Download the Extension from the latest Github release](https://github.co
   `> unzip KubernetesSnapshotExtension-<VERSION>.zip -d <machine agent home>/monitors/`
 
 2. Set up `config.yml`.
+**Required settings**
   ```
     # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config", but it may differ on your machine
     kubeClientConfig:
 
+    # Name of the application. It can be an existing application or a new application. All collected metrics will be associated with it
+    # The extension will first look for **APPLICATION_NAME** environmental variable. It it is already defined for the machine agent configuration,
+    # this value can be left blank.
+    appName: "Kubernetes-Cluster-01"
+
+    # Name of the tier where metrics will be stored. The tier will be associated with the application configured earlier
+    # The extension will first look for **TIER_NAME** environmental variable. It it is already defined for the machine agent configuration,
+    # this value can be left blank.
+    appTierName: "ClusterAgent"
+
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
     # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
-    # Alternatively, EVENT_ACCESS_KEY environmental variable can be used to populate the field
+    # Alternatively, **EVENT_ACCESS_KEY** environmental variable can be used to populate the field
     eventsApiKey: ""
 
     # Global Account Name obtained from
     # AppDynamics --> Settings --> License --> Accounts --> Global Account Name
-    # Alternatively, GLOBAL_ACCOUNT_NAME environmental variable can be used to populate the field
+    # Alternatively, **GLOBAL_ACCOUNT_NAME** environmental variable can be used to populate the field
     accountName: ""
 
     # REST API credentials. The account must have rights to login, create dashboards and saved searches
-    # Alternatively, REST_API_CREDENTIALS environmental variable can be used to populate the field
+    # Alternatively, **REST_API_CREDENTIALS** environmental variable can be used to populate the field
     controllerAPIUser: ""
 
     # Controller URL to access REST API
@@ -118,27 +129,27 @@ Either [Download the Extension from the latest Github release](https://github.co
   # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
   eventsUrl: "https://analytics.api.appdynamics.com"
 
-  # Name of the Pod attribute schema
+  # Name of the Pod  schema
   podsSchemaName: "k8s_pod_snapshots"
 
   # Name of the Node schema
   podsSecuritySchemaName: "k8_node_snapshots"
 
-  # Name of the Deployment attribute schema
+  # Name of the Deployment  schema
   deploySchemaName: "k8s_deploy_snapshots"
 
-  # Name of the Daemon Set attribute schema
+  # Name of the Daemon Set  schema
   daemonSchemaName: "k8s_daemon_snapshots"
 
 
-  # Name of the Replica Set attribute schema
+  # Name of the Replica Set  schema
   rsSchemaName: "k8s_rs_snapshots"
 
 
-  # Name of the EndPoint attribute schema
+  # Name of the EndPoint  schema
   endpointSchemaName: "k8s_endpoint_snapshots"
 
-  # Name of the Events attribute schema
+  # Name of the Events  schema
    eventsSchemaName: "k8s_events"
 
 
