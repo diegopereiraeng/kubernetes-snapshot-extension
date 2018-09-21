@@ -15,7 +15,9 @@ If you are interested in automated metric collection for events and other cluste
 
 The extension automatically creates the dashboard below.
 
-![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
+![The Default Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
+
+Other specialized dashboards can be built using the collected metrics.
 
 For each exposed metric, a named ADQL query is created by the extension along with the dashboard. Double-clicking on a dashboard widget will open the corresponding query.
 These automatically created queries can also be accessed under Analytics -> Searches. The search names are built in the following format:

@@ -504,7 +504,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|CrashLoops",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -519,7 +519,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Crashes"
                     },
@@ -545,7 +545,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|PodRestarts",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -560,7 +560,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Restarts"
                     },
@@ -685,7 +685,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|ImagePulls",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -700,7 +700,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Pulling"
                     },
@@ -726,7 +726,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|ImagePullErrors",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -741,7 +741,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Errors"
                     },
@@ -908,7 +908,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|StorageIssues",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -923,7 +923,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Binding"
                     },
@@ -949,7 +949,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|QuotaViolations",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -964,7 +964,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Quota Violations"
                     },
@@ -1171,7 +1171,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|NoReadinessProbe",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1186,7 +1186,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -1254,7 +1254,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|NoLimits",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1269,7 +1269,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -1385,7 +1385,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Running",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1400,7 +1400,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Running"
                     },
@@ -1436,7 +1436,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -1452,7 +1452,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Evictions",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -1469,7 +1469,7 @@
                                 "inputMetricPath": null,
                                 "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Running",
                                 "scopeEntity": {
-                                    "applicationName": "Openshift-Cluster-01",
+                                    "applicationName": "",
                                     "entityType": "APPLICATION_COMPONENT",
                                     "entityName": "ClusterAgent",
                                     "scopingEntityType": null,
@@ -1485,7 +1485,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Failed"
                     },
@@ -1562,7 +1562,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|OrphanEndpoints",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1577,7 +1577,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -1693,7 +1693,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|HealthyEndpoints",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1708,7 +1708,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Healthy"
                     },
@@ -1734,7 +1734,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|UnhealthyEndpoints",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1749,7 +1749,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Unhealthy"
                     },
@@ -1958,7 +1958,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|HealthyEndpoints",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -1973,7 +1973,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2085,7 +2085,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|UnhealthyEndpoints",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2100,7 +2100,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2212,7 +2212,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Evictions",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2227,7 +2227,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2295,7 +2295,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Privileged",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2310,7 +2310,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2378,7 +2378,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Endpoints",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2393,7 +2393,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2593,7 +2593,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|NoLivenessProbe",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2608,7 +2608,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2720,7 +2720,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|PodRestarts",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2735,7 +2735,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2803,7 +2803,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2818,7 +2818,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -2930,7 +2930,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DaemonSets",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -2945,7 +2945,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3057,7 +3057,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Deployments",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3072,7 +3072,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3184,7 +3184,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|ReplicaSets",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3199,7 +3199,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3355,7 +3355,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DaemonReplicasAvailable",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3370,7 +3370,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3438,7 +3438,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DaemonReplicasUnAvailable",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3453,7 +3453,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3521,7 +3521,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DeployReplicas",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3536,7 +3536,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3604,7 +3604,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DeployReplicasUnAvailable",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3619,7 +3619,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3731,7 +3731,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|RsReplicas",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3746,7 +3746,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3814,7 +3814,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|RsReplicasUnAvailable",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3829,7 +3829,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -3983,7 +3983,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|EvictionThreats",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -3998,7 +3998,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Risk level"
                     },
@@ -4112,7 +4112,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|EvictionThreats",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -4127,7 +4127,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -4205,7 +4205,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|NoLimits",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4221,7 +4221,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4242,7 +4242,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -4366,7 +4366,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|NoReadinessProbe",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4382,7 +4382,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4403,7 +4403,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -4527,7 +4527,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|NoLivenessProbe",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4543,7 +4543,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4564,7 +4564,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -4688,7 +4688,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pending",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4704,7 +4704,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4725,7 +4725,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -4849,7 +4849,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Evictions",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4865,7 +4865,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pods",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -4886,7 +4886,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -5044,7 +5044,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Pending",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5059,7 +5059,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -5127,7 +5127,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|EventsError",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5142,7 +5142,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -5210,7 +5210,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|InitContainers",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5225,7 +5225,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -5341,7 +5341,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DeployCollisionCount",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5356,7 +5356,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Deployments"
                     },
@@ -5382,7 +5382,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|DaemonCollisionCount",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5397,7 +5397,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Daemon sets"
                     },
@@ -5528,7 +5528,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|EventsError",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -5544,7 +5544,7 @@
                                     "inputMetricPath": null,
                                     "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|EventsCount",
                                     "scopeEntity": {
-                                        "applicationName": "Openshift-Cluster-01",
+                                        "applicationName": "",
                                         "entityType": "APPLICATION_COMPONENT",
                                         "entityName": "ClusterAgent",
                                         "scopingEntityType": null,
@@ -5565,7 +5565,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
@@ -5683,7 +5683,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|PodKills",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5698,7 +5698,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Pod kills"
                     },
@@ -5724,7 +5724,7 @@
                             "inputMetricPath": null,
                             "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|ScaleDowns",
                             "scopeEntity": {
-                                "applicationName": "Openshift-Cluster-01",
+                                "applicationName": "",
                                 "entityType": "APPLICATION_COMPONENT",
                                 "entityName": "ClusterAgent",
                                 "scopingEntityType": null,
@@ -5739,7 +5739,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "Openshift-Cluster-01",
+                        "applicationName": "",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_CUSTOM",
                         "metricDisplayNameCustomFormat": "Scale-downs"
                     },
