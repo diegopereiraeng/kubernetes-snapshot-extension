@@ -8,6 +8,7 @@ The extension monitors events and the state of Kubernetes or OpenShift clusters,
 The data is received via Kubernetes API at a configurable interval and is sent to the AppDynamics Analytics Events API. Metrics are automatically created
 and stored under a configurable Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
 -> <Tier Name> -> Custom Metrics -> Cluster Stats.
+
 ![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/metrics.png)
 The extension aggregates metrics at the cluster level with further categorization by node and namespace
 
@@ -18,8 +19,8 @@ The extension automatically creates the dashboard below.
 
 ![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
 
-For each exposed metric, a named ADQL query along with the dashboard. Double-clicking on a dashboard widget will open the corresponding query.
-These automatically created queries can also be accessed under Analytics -> Searches. The search names are constructed with the following format:
+For each exposed metric, a named ADQL query is created by the extension along with the dashboard. Double-clicking on a dashboard widget will open the corresponding query.
+These automatically created queries can also be accessed under Analytics -> Searches. The search names are built in the following format:
 ```
 <Cluster Name. Metric Name>
 ```
@@ -29,37 +30,15 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
  * This extension requires the Java Machine Agent
  * The AppDynamics platform needs the Events Service set up
+ * REST API credentials. The account can be created under Administration -> Users. The user account must have rights to create dashboards and saved searches
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
- * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the max number of
- metrics in the machine agent configuration. The current metric collection numbers are:
- * Per Cluster: 52
- * Per Node: 15
- * Per Namespace: 39
+ * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the threshold for metric ingestion
+ in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**). The current metric collection rate is:
+ ```* Cluster-specific: 52
+ ```* Node-specific: 15
+ ```* Namespace-specific: 39
 
 ## Installation
-The extension runs as a part of AppDynamics Machine Agent. Here is a sample start-up script for the machine agent with elevated metrics threshold:
-
-```
-#!/bin/bash
-
-
-SVM_PROPERTIES="-Dappdynamics.controller.hostName=${CONTROLLER_HOST}"
-SVM_PROPERTIES+=" -Dappdynamics.controller.port=${CONTROLLER_PORT}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.applicationName=${APPLICATION_NAME}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.nodeName=${TIER_NAME}_node1"
-SVM_PROPERTIES+=" -Dappdynamics.agent.accountName=${ACCOUNT_NAME}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.accountAccessKey=${ACCOUNT_ACCESS_KEY}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.uniqueHostId=Openshift_Master-${APPLICATION_NAME}"
-SVM_PROPERTIES+=" -Dappdynamics.controller.ssl.enabled=true"
-SVM_PROPERTIES+=" -Dappdynamics.sim.enabled=true"
-SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
-#SVM_PROPERTIES+=" -Dmetric.http.listener=true"
-#SVM_PROPERTIES+=" -Dmetric.http.listener.host=0.0.0.0"
-
-./bin/machine-agent ${SVM_PROPERTIES} -d -p ./pid.txt
-
-```
 
 Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.0.6/KubernetesSnapshotExtension-0.6.zip) or Build from Source.
 
@@ -85,16 +64,16 @@ Either [Download the Extension from the latest Github release](https://github.co
 
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
     # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
-    # Alternatively, **EVENT_ACCESS_KEY** environmental variable can be used to populate the field
+    # **EVENT_ACCESS_KEY** environmental variable can be used to populate the field
     eventsApiKey: ""
 
     # Global Account Name obtained from
     # AppDynamics --> Settings --> License --> Accounts --> Global Account Name
-    # Alternatively, **GLOBAL_ACCOUNT_NAME** environmental variable can be used to populate the field
+    # **GLOBAL_ACCOUNT_NAME** environmental variable can be used to populate the field
     accountName: ""
 
     # REST API credentials. The account must have rights to login, create dashboards and saved searches
-    # Alternatively, **REST_API_CREDENTIALS** environmental variable can be used to populate the field
+    # **REST_API_CREDENTIALS** environmental variable can be used to populate the field
     controllerAPIUser: ""
 
     # Controller URL to access REST API
@@ -103,7 +82,7 @@ Either [Download the Extension from the latest Github release](https://github.co
   Optional settings:
 
   ```
-  # List of resources that will be monitored
+  # List of resources that will be monitored. Comment out individual items to exclude from monitoring
   entities:
   - type: "pod"
   - type: "node"
@@ -122,7 +101,7 @@ Either [Download the Extension from the latest Github release](https://github.co
   # Dashboard name suffix
   dashboardNameSuffix: "SUMMARY"
 
-  # Time in seconds between the checks if the default dashboard exists
+  # Time in seconds between the checks if the default dashboard needs to be recreated
   dashboardCheckInterval: "600"
 
 
@@ -163,6 +142,28 @@ Either [Download the Extension from the latest Github release](https://github.co
 ```
 
 4. Restart the Machine Agent.
+
+A sample start-up script for the machine agent with elevated metrics threshold:
+
+```
+#!/bin/bash
+SVM_PROPERTIES="-Dappdynamics.controller.hostName=${CONTROLLER_HOST}"
+SVM_PROPERTIES+=" -Dappdynamics.controller.port=${CONTROLLER_PORT}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.applicationName=${APPLICATION_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.nodeName=${TIER_NAME}_node1"
+SVM_PROPERTIES+=" -Dappdynamics.agent.accountName=${ACCOUNT_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.accountAccessKey=${ACCOUNT_ACCESS_KEY}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.uniqueHostId=Openshift_Master-${APPLICATION_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.controller.ssl.enabled=true"
+SVM_PROPERTIES+=" -Dappdynamics.sim.enabled=true"
+SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
+#SVM_PROPERTIES+=" -Dmetric.http.listener=true"
+#SVM_PROPERTIES+=" -Dmetric.http.listener.host=0.0.0.0"
+
+./bin/machine-agent ${SVM_PROPERTIES} -d -p ./pid.txt
+
+```
 
 ## Build from Source
 
