@@ -6,7 +6,7 @@ This extension works only with the standalone machine agent.
 
 The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
 The data is received via Kubernetes API at a configurable interval and is sent to the AppDynamics Analytics Events API. Metrics are automatically created
-and stored under a configurable Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
+and stored under a desired Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
 -> Tier Name -> Custom Metrics -> Cluster Stats.
 
 ![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/metrics.png)
@@ -28,15 +28,15 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
 ## Prerequisites
 
- * This extension requires the Java Machine Agent
- * The AppDynamics platform needs the Events Service set up
- * REST API credentials. The account can be created under Administration -> Users. The user account must have rights to create dashboards and saved searches
+ * This extension requires the Java Machine Agent.
+ * The AppDynamics platform needs the Events Service set up.
+ * REST API credentials. The account can be created under Administration -> Users. The user account must have rights to create dashboards and saved searches.
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
  * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes. It may be necessary to increase the threshold for metric ingestion
  in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**). The current metric collection rate is:
- ``* Cluster-specific: 52
- ``* Node-specific: 15
- ``* Namespace-specific: 39
+ ..* Cluster-specific: 52
+ ..* Node-specific: 15
+ ..* Namespace-specific: 39
 
 ## Installation
 
@@ -52,13 +52,17 @@ Either [Download the Extension from the latest Github release](https://github.co
     # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config", but it may differ on your machine
     kubeClientConfig:
 
-    # Name of the application. It can be an existing application or a new application. All collected metrics will be associated with it
-    # The extension will first look for **APPLICATION_NAME** environmental variable. It it is already defined for the machine agent configuration,
+    # Name of the application. It can be an existing application or a new application.
+    #All collected metrics will be associated with it
+    # The extension will first look for **APPLICATION_NAME** environmental variable.
+    #It it is already defined for the machine agent configuration,
     # this value can be left blank.
     appName: "Kubernetes-Cluster-01"
 
-    # Name of the tier where metrics will be stored. The tier will be associated with the application configured earlier
-    # The extension will first look for **TIER_NAME** environmental variable. It it is already defined for the machine agent configuration,
+    # Name of the tier where metrics will be stored. The tier will be associated
+    #with the application configured earlier
+    # The extension will first look for **TIER_NAME** environmental variable.
+    #It it is already defined for the machine agent configuration,
     # this value can be left blank.
     appTierName: "ClusterAgent"
 
@@ -82,7 +86,8 @@ Either [Download the Extension from the latest Github release](https://github.co
   Optional settings:
 
   ```
-  # List of resources that will be monitored. Comment out individual items to exclude from monitoring
+  # List of resources that will be monitored. Comment out individual items to exclude
+  #from monitoring
   entities:
   - type: "pod"
   - type: "node"
