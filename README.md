@@ -1,7 +1,5 @@
 # AppDynamics Kubernetes Snapshot Extension
 
-This extension works only with the standalone machine agent.
-
 ## Use Case
 
 The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
@@ -33,7 +31,10 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * REST API credentials. The account can be created under Administration -> Users. The user account must have rights to create dashboards and saved searches.
  * You will need one or more Transaction Analytics/APM Peak licenses to consume the raw data. Viewing metrics and the dashboard does not require PEAK licenses.
  * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes.
- It may be necessary to increase the threshold for metric ingestion in the machine agent configuration (**-Dappdynamics.agent.maxMetrics**).
+ It may be necessary to increase the threshold for metric ingestion in the machine agent configuration:
+ ```
+ -Dappdynamics.agent.maxMetrics=2000
+ ```
  The current metric collection rate is:
    * Cluster-specific: 52
    * Node-specific: 15
@@ -84,7 +85,7 @@ Either [Download the Extension from the latest Github release](https://github.co
     controllerAPIUser: ""
 
     # Controller URL to access REST API
-    controllerUrl: "http://staging.demo.appdynamics.com/controller/"
+    controllerUrl: "http://example.appdynamics.com/controller/"
   ```
   Optional settings:
 
