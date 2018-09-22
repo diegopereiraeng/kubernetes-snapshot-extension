@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d68e8ee8-67f9-4a7f-8c8a-3520cac4a034" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ADQLSearchGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ADQLSearchGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ClusterDashboardGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ClusterDashboardGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DaemonSnapshotRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DaemonSnapshotRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DeploymentSnapshotRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DeploymentSnapshotRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EndpointSnapshotRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EndpointSnapshotRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/ReplicaSnapshotRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/ReplicaSnapshotRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/conf/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/conf/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/k8s_dashboard_template.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/k8s_dashboard_template.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/DashboardTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/DashboardTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/conf/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/conf/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/antrun/build-main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/antrun/build-main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/conf/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/conf/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.MD" beforeDir="false" afterPath="$PROJECT_DIR$/README.MD" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -123,8 +109,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.MD">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2">
-              <caret line="88" column="39" lean-forward="true" selection-start-line="88" selection-start-column="39" selection-end-line="88" selection-end-column="39" />
+            <state relative-caret-position="247">
+              <caret line="46" column="181" selection-start-line="46" selection-start-column="181" selection-end-line="46" selection-end-column="181" />
             </state>
           </provider>
         </entry>
@@ -433,7 +419,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537638281097" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537638715155" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -658,7 +644,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.40462428" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32485548" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.35028902" />
+      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.27052024" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.1202454" />
@@ -1194,8 +1180,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.MD">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2">
-          <caret line="88" column="39" lean-forward="true" selection-start-line="88" selection-start-column="39" selection-end-line="88" selection-end-column="39" />
+        <state relative-caret-position="247">
+          <caret line="46" column="181" selection-start-line="46" selection-start-column="181" selection-end-line="46" selection-end-column="181" />
         </state>
       </provider>
     </entry>
