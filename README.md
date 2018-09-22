@@ -59,16 +59,16 @@ Either [Download the Extension from the latest Github release](https://github.co
     kubeClientConfig:
 
     # Name of the application. It can be an existing application or a new application.
-    #All collected metrics will be associated with it
+    # All collected metrics will be associated with it
     # The extension will first look for **APPLICATION_NAME** environmental variable.
-    #It it is already defined for the machine agent configuration,
+    # It it is already defined for the machine agent configuration,
     # this value can be left blank.
     appName: "Kubernetes-Cluster-01"
 
     # Name of the tier where metrics will be stored. The tier will be associated
-    #with the application configured earlier
+    # with the application configured earlier
     # The extension will first look for **TIER_NAME** environmental variable.
-    #It it is already defined for the machine agent configuration,
+    # It it is already defined for the machine agent configuration,
     # this value can be left blank.
     appTierName: "ClusterAgent"
 
@@ -103,10 +103,10 @@ Either [Download the Extension from the latest Github release](https://github.co
   - type: "event"
   - type: "endpoint"
 
-  # Path to the template used to create the default dashboard
+  # Absolute path to the json template for the default dashboard
   dashboardTemplatePath: "templates/k8s_dashboard_template.json"
 
-  # Path to the template used to create node widgets on the default dashboard. Not Enabled.
+  # Absolute path to the json template for node widgets on the default dashboard. Not Enabled.
   nodeTemplatePath: "templates/k8s_node_template.json"
 
   # Dashboard name suffix

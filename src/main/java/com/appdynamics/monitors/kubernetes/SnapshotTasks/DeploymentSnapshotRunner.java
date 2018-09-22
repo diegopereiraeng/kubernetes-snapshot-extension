@@ -27,6 +27,12 @@ import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_D
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
 
 public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
+
+    public DeploymentSnapshotRunner(){
+
+    }
+
+
     public DeploymentSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
         super(serviceProvider, config, countDownLatch);
     }

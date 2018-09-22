@@ -52,8 +52,7 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             //cache searches
             ADQLSearchGenerator.loadAllSearches(config);
             //if not, read template
-            String currentDirectory = Utilities.getRootDirectory();
-            String path = String.format("%s/%s", currentDirectory, config.get(CONFIG_DASH_TEMPLATE_PATH));
+            String path = config.get(CONFIG_DASH_TEMPLATE_PATH);
             logger.info("Reading the dashboard template from {}", path);
             JsonNode template = readTemplate(path);
             JsonNode widgets = template.get("widgetTemplates");
@@ -62,7 +61,8 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             //create Dashboard
             logger.info("Creating the dashboard...");
             buildDashboard(metrics,  widgets);
-            writeTemplate(config, template,  currentDirectory);
+            String updatedPath = writeTemplate(config, template);
+            RestClient.createDashboard(config, updatedPath);
         }
         else{
             logger.info("Dashboard exists");
@@ -101,23 +101,24 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
         return node;
     }
 
-    private void writeTemplate(Map<String, String> config, JsonNode template, String currentDirectory){
+    public String writeTemplate(Map<String, String> config, JsonNode template){
+        String path = "";
         try{
+
             String originalPath = config.get(CONFIG_DASH_TEMPLATE_PATH);
             String ext = ".json";
             if (originalPath.contains(ext)) {
                 originalPath = originalPath.substring(0, originalPath.length() - ext.length());
             }
-
-            String path = String.format("%s/%s_UPDATED.json", currentDirectory, originalPath);
+            path = String.format("%s_UPDATED.json", originalPath);
             ObjectMapper mapper = new ObjectMapper();
             ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
             writer.writeValue(new File(path), template);
-            RestClient.createDashboard(config, path);
         }
         catch (Exception ex){
             logger.error("Unable to save the updated dashboard template", ex);
         }
+        return path;
     }
 
     public void buildDashboard(ArrayList<AppDMetricObj> metrics, JsonNode widgets){
@@ -153,22 +154,25 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             }
     }
 
-    private JsonNode findMetricNode(JsonNode metricTemplate, String metricPath){
+    private JsonNode updateMetricNode(JsonNode metricTemplate, String metricPath, AppDMetricObj metricObj, JsonNode parentWidget ){
         JsonNode metricNode = null;
         if (metricTemplate == null){
             return metricNode;
         }
         if (metricTemplate.get("metricPath") == null){
             //expression
-            metricNode = findExpression(metricTemplate, metricPath);
+            metricNode = updateExpression(metricTemplate, metricPath, metricObj);
         }
         else if (metricTemplate.get("metricPath").asText().equals(metricPath)){
             metricNode = metricTemplate;
+            updateMetricPath(config, metricNode, metricObj);
+            AdqlSearchObj adqlSearchObj =  ADQLSearchGenerator.getSearchForMetric(config, metricObj);
+            updateDrillDown(config, parentWidget, adqlSearchObj);
         }
         return metricNode;
     }
 
-    private JsonNode findExpression(JsonNode parentExpression, String metricPath){
+    private JsonNode updateExpression(JsonNode parentExpression, String metricPath, AppDMetricObj metricObj){
         JsonNode theNode = null;
         for(int i = 0; i < 2; i++){
             String expNodeName = String.format("expression%d", i+1);
@@ -176,10 +180,10 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             if (expNode != null){
                 if (expNode.get("metricPath") != null && expNode.get("metricPath").asText().equals(metricPath)){
                     theNode = expNode;
-                    break;
+                    updateMetricPath(config, expNode, metricObj);
                 }
                 else{
-                    theNode = findExpression(expNode, metricPath);
+                    theNode = updateExpression(expNode, metricPath, metricObj);
                 }
             }
         }
@@ -194,18 +198,11 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
                 for (JsonNode t : templates) {
                     JsonNode match = t.get("metricMatchCriteriaTemplate");
                     if (match != null) {
-                        JsonNode metricTemplate = match.get("metricExpressionTemplate");
-                        JsonNode metric = findMetricNode(metricTemplate, path);
-                        if (metric != null) {
-                            boolean isExpression = metricTemplate.get("metricPath") == null;
+                        if (match.has("applicationName")){
                             ((ObjectNode) match).put("applicationName", config.get(CONFIG_APP_NAME));
-                            //token replace metric path
-                            updateMetricPath(config, metric, metricObj);
-                            if (!isExpression){
-                                AdqlSearchObj adqlSearchObj =  ADQLSearchGenerator.getSearchForMetric(config, metricObj);
-                                updateDrillDown(config, widget, adqlSearchObj);
-                            }
                         }
+                        JsonNode metricTemplate = match.get("metricExpressionTemplate");
+                        updateMetricNode(metricTemplate, path, metricObj, widget);
                     }
                 }
             }

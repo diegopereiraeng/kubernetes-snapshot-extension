@@ -56,9 +56,6 @@ public class ADQLSearchGenerator{
             if (query == null || query.isEmpty()){
                 return null;
             }
-            if (config.get(CONFIG_SCHEMA_NAME_EVENT).equals(metricObj.getParentSchema())){
-                logger.info("Events metric: {}, query: {}", metricObj.getName(), metricObj.getQuery());
-            }
             logger.debug("Processing search for metric {}", metricObj.getName());
             String clusterName = Utilities.getClusterApplicationName(config);
             String levelName = metricObj.getLevelName();
@@ -70,9 +67,6 @@ public class ADQLSearchGenerator{
 
             if (adqlSearchObj == null) {
                 String path = "restui/analyticsSavedSearches/createAnalyticsSavedSearch";
-                if (config.get(CONFIG_SCHEMA_NAME_EVENT).equals(metricObj.getParentSchema())){
-                    logger.info("Events search {} does not exist", searchName);
-                }
 
                 ArrayList<String> columns = getColumns(config, metricObj.getParentSchemaDefinition());
                 ObjectNode requestBody = buildSearchObj(searchName, query, columns);

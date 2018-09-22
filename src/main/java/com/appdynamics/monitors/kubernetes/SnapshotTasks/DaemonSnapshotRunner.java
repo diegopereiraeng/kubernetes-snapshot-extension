@@ -29,6 +29,10 @@ import static com.appdynamics.monitors.kubernetes.Utilities.*;
 
 public class DaemonSnapshotRunner extends SnapshotRunnerBase{
 
+    public DaemonSnapshotRunner(){
+
+    }
+
     public DaemonSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
         super(serviceProvider, config, countDownLatch);
     }

@@ -29,6 +29,10 @@ import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_R
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
 
 public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
+    public ReplicaSnapshotRunner(){
+
+    }
+
     public ReplicaSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
         super(serviceProvider, config, countDownLatch);
     }

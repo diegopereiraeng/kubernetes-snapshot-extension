@@ -32,6 +32,11 @@ import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_E
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
 
 public class EndpointSnapshotRunner extends SnapshotRunnerBase {
+
+    public EndpointSnapshotRunner(){
+
+    }
+
     public EndpointSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
         super(serviceProvider, config, countDownLatch);
     }

@@ -48,13 +48,24 @@ entities:
 - type: "event"
 - type: "endpoint"
 
-dashboardTemplatePath: "templates/k8s_dashboard_template.json"
-nodeTemplatePath: "templates/k8s_node_template.json"
-dashboardNameSuffix: "SUMMARY"
-controllerAPIUser: ""   # REST_API_CREDENTIALS env var
-controllerUrl: "http://staging.demo.appdynamics.com/controller/"
-dashboardCheckInterval: "600"  #time in seconds between the checks if the default dashboard exists
+# Absolute path to the dashboard template.
+dashboardTemplatePath: "templates/k8s_dashboard_template.json.json"
 
+# Absolute path to the node widget template.
+nodeTemplatePath: "templates/k8s_node_template.json"
+
+#Suffix appended to the generated dashboard name
+dashboardNameSuffix: "SUMMARY"
+
+# REST API user credentials. The use should have rights to create dashboards and analytics searches.
+# Format: <username>@<accountname>:<password>
+controllerAPIUser: ""   # REST_API_CREDENTIALS env var
+
+# Controller url, including the protocol
+controllerUrl: "http://staging.demo.appdynamics.com/controller/"
+
+#Time in seconds between the checks if the default dashboard exists
+dashboardCheckInterval: "600"
 
 # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
 eventsUrl: "https://analytics.api.appdynamics.com"
