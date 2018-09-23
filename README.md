@@ -154,7 +154,7 @@ Either [Download the Extension from the latest Github release](https://github.co
     <execution-frequency-in-seconds>200</execution-frequency-in-seconds>
 ```
 
-4. (#restart-the-machine-agent) Restart the Machine Agent.
+4. Restart the Machine Agent
 
 A sample startup script for the machine agent with an elevated metrics threshold:
 
