@@ -53,6 +53,7 @@ Either [Download the Extension from the latest Github release](https://github.co
 2. Set up `config.yml`.
 
 **Required settings**
+
   ```
     # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config",
     # but it may differ on your machine
@@ -60,19 +61,19 @@ Either [Download the Extension from the latest Github release](https://github.co
 
     # Name of the application. It can be an existing application or a new application.
     # All collected metrics will be associated with it
-    # The extension will first look for **APPLICATION_NAME** environmental variable.
+    # The extension will first look for APPLICATION_NAME environmental variable.
     # The application name in the machine agent configuration must match this value
     appName: "Cluster-01"
 
     # Name of the tier where metrics will be stored. The tier will be associated
     # with the application configured earlier
-    # The extension will first look for **TIER_NAME** environmental variable.
+    # The extension will first look for TIER_NAME environmental variable.
     # The tier name in the machine agent configuration must match this value.
     appTierName: "ClusterAgent"
 
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
     # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
-    # **EVENT_ACCESS_KEY** environmental variable can be used to populate the field
+    # EVENT_ACCESS_KEY environmental variable can be used to populate the field
     eventsApiKey: ""
 
     # Global Account Name obtained from
@@ -81,7 +82,7 @@ Either [Download the Extension from the latest Github release](https://github.co
     accountName: ""
 
     # REST API credentials. The account must have rights to login, create dashboards and saved searches
-    # **REST_API_CREDENTIALS** environmental variable can be used to populate the field
+    # REST_API_CREDENTIALS environmental variable can be used to populate the field
     controllerAPIUser: ""
 
     # Controller URL to access REST API
@@ -92,7 +93,7 @@ Either [Download the Extension from the latest Github release](https://github.co
 
   ```
   Note that the node name parameter *-Dappdynamics.agent.nodeName* must be defined for the machine agent startup, as shown
-  in the [example start-up script](#Sample-startup-script) below.
+  in the [example start-up script](#restart-the-machine-agent) below.
 
 
 
@@ -155,7 +156,7 @@ Either [Download the Extension from the latest Github release](https://github.co
 
 4. Restart the Machine Agent.
 
-(#Sample-startup-script)
+(#sample-startup-script)
 A sample startup script for the machine agent with an elevated metrics threshold:
 
 ```
@@ -194,6 +195,10 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 <tr>
 <td class='confluenceTd'> src/main/resources/config </td>
 <td class='confluenceTd'> Contains monitor.xml and config.yml</td>
+</tr>
+<tr>
+<td class='confluenceTd'> src/main/resources/config/templates </td>
+<td class='confluenceTd'> Contains the default dashboard template k8s_dashboard_template.json</td>
 </tr>
 <tr>
 <td class='confluenceTd'> src/main/java </td>
