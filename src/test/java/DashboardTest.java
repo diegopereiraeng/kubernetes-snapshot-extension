@@ -19,74 +19,59 @@ import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_DASH_TEMPLATE
 import static com.appdynamics.monitors.kubernetes.Utilities.ALL;
 
 public class DashboardTest {
-//    @Test
-//    public void testNonExistingDashboard() {
-//        try{
-//            File conFile = new File("src/test/resources/conf/config.yml");
-//            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
-//            ClusterDashboardGenerator gen = new ClusterDashboardGenerator();
-//            boolean exists = gen.dashboardExists("Dummy", config);
-//
-//            Assert.assertTrue(!exists);
-//        }
-//        catch (Exception ex){
-//            Assert.fail(ex.getMessage());
-//        }
-//    }
+    @Test
+    public void testNonExistingDashboard() {
+        try{
+            File conFile = new File("src/test/resources/conf/config.yml");
+            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
+            ClusterDashboardGenerator gen = new ClusterDashboardGenerator(config, null);
+            boolean exists = gen.dashboardExists("Dummy", config);
 
-//    @Test
-//    public void testCreteDashboard() {
-//        try{
-//            File conFile = new File("src/test/resources/conf/config.yml");
-//            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
-//            JsonNode answer = RestClient.createDashboard(config);
-//
-//            Assert.assertTrue(answer != null);
-//        }
-//        catch (Exception ex){
-//            Assert.fail(ex.getMessage());
-//        }
-//    }
+            Assert.assertTrue(!exists);
+        }
+        catch (Exception ex){
+            Assert.fail(ex.getMessage());
+        }
+    }
 
-//    @Test
-//    public void readDashboardTempate() {
-//        try{
-//            File conFile = new File("src/test/resources/conf/config.yml");
-//            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
-//            Utilities.ClusterName = Utilities.getClusterApplicationName(config);
-//            PodSnapshotRunner podSnapshotRunner = new PodSnapshotRunner();
-//
-//            ArrayList<AppDMetricObj> list = podSnapshotRunner.initMetrics(config);
-//            ArrayList<AppDMetricObj> single = new ArrayList<>();
-//            single.add(list.get(0));
-//            ClusterDashboardGenerator generator = new ClusterDashboardGenerator(single);
-//            JsonNode widgets = generator.readTemplate(config.get(CONFIG_DASH_TEMPLATE_PATH));
-//            Assert.assertTrue(widgets != null);
-//        }
-//        catch (Exception ex){
-//            Assert.fail(ex.getMessage());
-//        }
-//    }
+    @Test
+    public void readDashboardTemplate() {
+        try{
+            File conFile = new File("src/test/resources/conf/config.yml");
+            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
+            Utilities.ClusterName = Utilities.getClusterApplicationName(config);
 
-//    @Test
-//    public void buildDashboardTest() {
-//        try{
-//            File conFile = new File("src/test/resources/conf/config.yml");
-//            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
-//            Utilities.ClusterName = Utilities.getClusterApplicationName(config);
-//            ADQLSearchGenerator.loadAllSearches(config);
-//
-//            PodSnapshotRunner podSnapshotRunner = new PodSnapshotRunner();
-//
-//            ArrayList<AppDMetricObj> list = podSnapshotRunner.initMetrics(config, ALL, ALL);
-//            ClusterDashboardGenerator generator = new ClusterDashboardGenerator(config, list);
-//            generator.validateDashboard(config);
-//            Assert.assertTrue(true);
-//        }
-//        catch (Exception ex){
-//            Assert.fail(ex.getMessage());
-//        }
-//    }
+            ArrayList<AppDMetricObj> list = PodSnapshotRunner.initMetrics(config, ALL, ALL);
+            ArrayList<AppDMetricObj> single = new ArrayList<>();
+            single.add(list.get(0));
+            ClusterDashboardGenerator generator = new ClusterDashboardGenerator(config, single);
+            JsonNode widgets = generator.readTemplate(config.get(CONFIG_DASH_TEMPLATE_PATH));
+            Assert.assertTrue(widgets != null);
+        }
+        catch (Exception ex){
+            Assert.fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void buildDashboardTest() {
+        try{
+            File conFile = new File("src/test/resources/conf/config.yml");
+            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
+            Utilities.ClusterName = Utilities.getClusterApplicationName(config);
+            ADQLSearchGenerator.loadAllSearches(config);
+
+            PodSnapshotRunner podSnapshotRunner = new PodSnapshotRunner();
+
+            ArrayList<AppDMetricObj> list = podSnapshotRunner.initMetrics(config, ALL, ALL);
+            ClusterDashboardGenerator generator = new ClusterDashboardGenerator(config, list);
+            generator.validateDashboard(config);
+            Assert.assertTrue(true);
+        }
+        catch (Exception ex){
+            Assert.fail(ex.getMessage());
+        }
+    }
 
     @Test
     public void generateDashboardTemplate(){

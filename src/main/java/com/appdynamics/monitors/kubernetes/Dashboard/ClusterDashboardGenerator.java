@@ -154,16 +154,16 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             }
     }
 
-    private JsonNode updateMetricNode(JsonNode metricTemplate, String metricPath, AppDMetricObj metricObj, JsonNode parentWidget ){
+    private JsonNode updateMetricNode(JsonNode metricTemplate, AppDMetricObj metricObj, JsonNode parentWidget ){
         JsonNode metricNode = null;
         if (metricTemplate == null){
             return metricNode;
         }
         if (metricTemplate.get("metricPath") == null){
             //expression
-            metricNode = updateExpression(metricTemplate, metricPath, metricObj);
+            metricNode = updateExpression(metricTemplate,  metricObj);
         }
-        else if (metricTemplate.get("metricPath").asText().equals(metricPath)){
+        else if (isMatchingPath(metricTemplate, metricObj)){
             metricNode = metricTemplate;
             updateMetricPath(config, metricNode, metricObj);
             AdqlSearchObj adqlSearchObj =  ADQLSearchGenerator.getSearchForMetric(config, metricObj);
@@ -172,18 +172,18 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
         return metricNode;
     }
 
-    private JsonNode updateExpression(JsonNode parentExpression, String metricPath, AppDMetricObj metricObj){
+    private JsonNode updateExpression(JsonNode parentExpression, AppDMetricObj metricObj){
         JsonNode theNode = null;
         for(int i = 0; i < 2; i++){
             String expNodeName = String.format("expression%d", i+1);
             JsonNode expNode = parentExpression.get(expNodeName);
             if (expNode != null){
-                if (expNode.get("metricPath") != null && expNode.get("metricPath").asText().equals(metricPath)){
+                if (isMatchingPath(expNode, metricObj)){
                     theNode = expNode;
                     updateMetricPath(config, expNode, metricObj);
                 }
                 else{
-                    theNode = updateExpression(expNode, metricPath, metricObj);
+                    theNode = updateExpression(expNode, metricObj);
                 }
             }
         }
@@ -194,7 +194,6 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
         for(JsonNode widget : widgets){
             JsonNode templates = widget.get("dataSeriesTemplates");
             if (templates != null) {
-                String path = metricObj.getPath();
                 for (JsonNode t : templates) {
                     JsonNode match = t.get("metricMatchCriteriaTemplate");
                     if (match != null) {
@@ -202,10 +201,14 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
                             ((ObjectNode) match).put("applicationName", config.get(CONFIG_APP_NAME));
                         }
                         JsonNode metricTemplate = match.get("metricExpressionTemplate");
-                        updateMetricNode(metricTemplate, path, metricObj, widget);
+                        updateMetricNode(metricTemplate, metricObj, widget);
                     }
                 }
             }
         }
+    }
+
+    private boolean isMatchingPath(JsonNode node, AppDMetricObj metricObj){
+        return node.get("metricPath") != null && String.format(node.get("metricPath").asText(), Utilities.getClusterTierName(config)).equals(metricObj.getPath());
     }
 }

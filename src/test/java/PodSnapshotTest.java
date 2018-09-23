@@ -1,3 +1,4 @@
+import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.yml.YmlReader;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
@@ -43,6 +44,21 @@ public class PodSnapshotTest {
 
             List<AppDMetricObj> metricsList=  podSnapshotRunner.deserializeMetrics("src/test/resources");
             Assert.assertTrue(metricsList.size() > 0);
+        }
+        catch (Exception ex){
+            Assert.fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void buildDefaultMetricsList() {
+        try{
+            File conFile = new File("src/test/resources/conf/config.yml");
+            Map<String, String> config = (Map<String, String>) YmlReader.readFromFile(conFile);
+            Utilities.ClusterName = Utilities.getClusterApplicationName(config);
+            PodSnapshotRunner podSnapshotRunner = new PodSnapshotRunner();
+            List<Metric> list = podSnapshotRunner.getMetricsFromSummary(podSnapshotRunner.getSummaryMap(),config);
+            Assert.assertTrue(list.size() > 0);
         }
         catch (Exception ex){
             Assert.fail(ex.getMessage());

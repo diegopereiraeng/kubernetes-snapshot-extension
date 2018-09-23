@@ -17,7 +17,7 @@ The extension automatically creates the dashboard below.
 
 ![The Default Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
 
-Other specialized dashboards can be built using the collected metrics.
+Other specialized dashboards with the metrics collected can be built in AppDynamics -> Dashboards & Reports.
 
 For each exposed metric, a named ADQL query is created by the extension along with the dashboard. Double-clicking on a dashboard widget will open the corresponding query.
 These automatically created queries can also be accessed under Analytics -> Searches. The search names are built in the following format:
@@ -61,12 +61,13 @@ Either [Download the Extension from the latest Github release](https://github.co
     # Name of the application. It can be an existing application or a new application.
     # All collected metrics will be associated with it
     # The extension will first look for **APPLICATION_NAME** environmental variable.
-    # If the application name is configured for the machine agent, it must match this value
+    # The application name in the machine agent configuration must match this value
     appName: "Cluster-01"
 
     # Name of the tier where metrics will be stored. The tier will be associated
     # with the application configured earlier
-    # The value must be set to **ClusterAgent**
+    # The extension will first look for **TIER_NAME** environmental variable.
+    # The tier name in the machine agent configuration must match this value.
     appTierName: "ClusterAgent"
 
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
@@ -90,6 +91,11 @@ Either [Download the Extension from the latest Github release](https://github.co
     dashboardTemplatePath: "<full path>/monitors/KubernetesSnapshotExtension/templates/k8s_dashboard_template.json"
 
   ```
+  Note that the node name parameter *-Dappdynamics.agent.nodeName* must be defined for the machine agent startup, as shown
+  in the [example start-up script](#Sample-startup-script) below.
+
+
+
   Optional settings:
 
   ```
@@ -149,15 +155,16 @@ Either [Download the Extension from the latest Github release](https://github.co
 
 4. Restart the Machine Agent.
 
-A sample start-up script for the machine agent with an elevated metrics threshold:
+(#Sample-startup-script)
+A sample startup script for the machine agent with an elevated metrics threshold:
 
 ```
 #!/bin/bash
 SVM_PROPERTIES="-Dappdynamics.controller.hostName=${CONTROLLER_HOST}"
 SVM_PROPERTIES+=" -Dappdynamics.controller.port=${CONTROLLER_PORT}"
 SVM_PROPERTIES+=" -Dappdynamics.agent.applicationName=${APPLICATION_NAME}" # must match the appName configuration value
-SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"  #must be set to "ClusterAgent"
-SVM_PROPERTIES+=" -Dappdynamics.agent.nodeName=${TIER_NAME}_node1"
+SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"  # must must match the appTierName configuration value
+SVM_PROPERTIES+=" -Dappdynamics.agent.nodeName=${TIER_NAME}_node1"  # must be defined for the metrics to be accepted
 SVM_PROPERTIES+=" -Dappdynamics.agent.accountName=${ACCOUNT_NAME}"
 SVM_PROPERTIES+=" -Dappdynamics.agent.accountAccessKey=${ACCOUNT_ACCESS_KEY}"
 SVM_PROPERTIES+=" -Dappdynamics.agent.uniqueHostId=Master-${APPLICATION_NAME}"
