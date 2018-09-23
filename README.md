@@ -181,7 +181,7 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 ## Upgrade
 1. Stop the machine agent
 2. Delete the existing default dashboard and the automatically generated searches in Analytics. They will be re-created by the extension.
-3. Deploy the new version of the extension as described in the [Installation](#Installation) section.
+3. Deploy the new version of the extension as described in the [Installation](#installation) section.
 
 ## Build from Source
 
