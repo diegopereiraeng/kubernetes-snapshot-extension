@@ -49,16 +49,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
         if (config != null) {
             String apiKey = Utilities.getEventsAPIKey(config);
             String accountName = Utilities.getGlobalAccountName(config);
-            URL publishUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/publish/" + config.get(CONFIG_SCHEMA_NAME_EVENT));
-            URL schemaUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/schema/" + config.get(CONFIG_SCHEMA_NAME_EVENT));
-            String requestBody = config.get(CONFIG_SCHEMA_DEF_EVENT);
-
-            if(RestClient.doRequest(schemaUrl, accountName, apiKey, "", "GET") == null){
-                logger.info("Schema Url {} does not exists", schemaUrl);
-                RestClient.doRequest(schemaUrl, accountName, apiKey, requestBody, "POST");
-                logger.info("Schema Url {} created", schemaUrl);
-            }
-
+            URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_EVENT, CONFIG_SCHEMA_DEF_EVENT);
 
             try {
                 ApiClient client = Utilities.initClient(config);
@@ -87,7 +78,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
                 //build and update metrics
 //                serializeMetrics();
-                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
+                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} event metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadEventMetricsTask", metricsTask);
@@ -237,6 +228,11 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
         return arrayNode;
     }
+
+    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+        return initEventSummaryObject(config, ALL);
+    }
+
     public  static SummaryObj initEventSummaryObject(Map<String, String> config, String namespace){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();

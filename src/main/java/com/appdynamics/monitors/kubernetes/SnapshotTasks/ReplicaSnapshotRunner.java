@@ -70,7 +70,7 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                 }
                 //build and update metrics
 //                serializeMetrics();
-                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
+                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} replica set metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadRSMetricsTask", metricsTask);
@@ -145,6 +145,10 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         }
 
         return arrayNode;
+    }
+
+    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+        return initRSSummaryObject(config, ALL);
     }
 
     public  static SummaryObj initRSSummaryObject(Map<String, String> config, String namespace){

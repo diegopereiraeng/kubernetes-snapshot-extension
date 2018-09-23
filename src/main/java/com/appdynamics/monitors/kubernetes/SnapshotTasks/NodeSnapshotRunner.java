@@ -77,7 +77,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
                 //build and update metrics
 //                serializeMetrics();
-                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
+                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} node metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadNodeMetricsTask", metricsTask);
@@ -266,6 +266,10 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         }
 
         return arrayNode;
+    }
+
+    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+        return initNodeSummaryObject(config, ALL);
     }
 
     public  static SummaryObj initNodeSummaryObject(Map<String, String> config, String node){

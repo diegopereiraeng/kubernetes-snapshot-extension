@@ -16,11 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
+
+import static com.appdynamics.monitors.kubernetes.Constants.METRIC_SEPARATOR;
+import static com.appdynamics.monitors.kubernetes.Utilities.ALL;
 
 public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
     protected CountDownLatch countDownLatch;
@@ -143,6 +143,57 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
         }
         return metricList;
     }
+
+    public  List<Metric> getMetricsFromSummary(HashMap<String, SummaryObj> summaryMap, Map<String, String> config){
+        List<Metric> metricList = new ArrayList<Metric>();
+        ArrayList<SummaryObj> objList = getSummaryDataList(summaryMap, config);
+        for(SummaryObj summaryObj : objList){
+            JsonNode obj = summaryObj.getData();
+            Iterator<Map.Entry<String, JsonNode>> nodes = obj.fields();
+            while (nodes.hasNext()){
+                Map.Entry<String, JsonNode> entry = nodes.next();
+                String fieldName = entry.getKey();
+                if (!fieldName.equals("batch_ts") && !fieldName.equals("nodename") && !fieldName.equals("namespace")) {
+                    String path = String.format("%s%s%s", summaryObj.getPath(), METRIC_SEPARATOR, fieldName);
+                    String val = entry.getValue().asText();
+                    Metric m = new Metric(fieldName, val, path, "OBSERVATION", "CURRENT", "INDIVIDUAL");
+                    metricList.add(m);
+                }
+            }
+        }
+        return metricList;
+    }
+
+    public  ArrayList getSummaryDataList(HashMap<String, SummaryObj> summaryMap, Map<String, String> config){
+        ArrayList list = new ArrayList();
+        Iterator it = summaryMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            SummaryObj summaryObj = (SummaryObj)pair.getValue();
+            list.add(summaryObj);
+        }
+        if (list.size() == 0) //no data, send defaults
+        {
+            logger.info("No data received from API. Initializing default summary object");
+            SummaryObj defaults = initDefaultSummaryMap(config);
+            list.add(defaults);
+        }
+        return list;
+    }
+
+    protected SummaryObj initDefaultSummaryMap(Map<String, String> config){
+        Utilities.ensureClusterName(config, "");
+
+        SummaryObj summary = getSummaryMap().get(ALL);
+        if (summary == null) {
+            summary = initDefaultSummaryObject(config);
+            getSummaryMap().put(ALL, summary);
+        }
+        return summary;
+    }
+
+    protected  abstract SummaryObj initDefaultSummaryObject(Map<String, String> config);
+
 
     public HashMap<String, SummaryObj> getSummaryMap() {
         return summaryMap;

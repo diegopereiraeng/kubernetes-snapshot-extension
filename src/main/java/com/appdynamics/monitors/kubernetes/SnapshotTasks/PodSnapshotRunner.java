@@ -83,7 +83,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 //build and update metrics
 
 //                serializeMetrics();
-                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
+                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} pod metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadMetricsTask", podMetricsTask);
@@ -451,6 +451,10 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             arrayNode.add(podObject);
         }
         return  arrayNode;
+    }
+
+    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+        return initPodSummaryObject(config, ALL, ALL);
     }
 
     public  static SummaryObj initPodSummaryObject(Map<String, String> config, String namespace, String node){

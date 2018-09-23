@@ -83,7 +83,7 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                 }
 
 //                serializeMetrics();
-                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
+                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} endpoints metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadEPMetricsTask", podMetricsTask);
@@ -176,6 +176,10 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         }
 
         return arrayNode;
+    }
+
+    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+        return initEPSummaryObject(config, ALL);
     }
 
     public  static SummaryObj initEPSummaryObject(Map<String, String> config, String namespace){

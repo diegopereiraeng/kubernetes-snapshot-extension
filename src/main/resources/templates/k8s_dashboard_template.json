@@ -5559,7 +5559,7 @@
   "canvasType" : "CANVAS_TYPE_ABSOLUTE",
   "minutesBeforeAnchorTime" : -1,
   "dashboardFormatVersion" : "4.0",
-  "name" : "-ClusterAgent-SUMMARY",
+  "name" : "",
   "width" : 1500,
   "associatedEntityTemplates" : null,
   "layoutType" : "",

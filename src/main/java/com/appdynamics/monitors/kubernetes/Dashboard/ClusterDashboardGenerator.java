@@ -135,7 +135,7 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
 
     private void updateDrillDown(Map<String, String> config, JsonNode widget, AdqlSearchObj adqlSearchObj){
         if (adqlSearchObj != null) {
-            String link = String.format(AdqlSearchObj.searchUrlTemplate, config.get(Constants.CONFIG_CONTROLLER_URL), adqlSearchObj.getId());
+            String link = String.format(AdqlSearchObj.searchUrlTemplate, Utilities.getControllerUrl(config), adqlSearchObj.getId());
             ((ObjectNode)widget).put("drillDownUrl", link);
             ((ObjectNode)widget).put("useMetricBrowserAsDrillDown", false);
         }

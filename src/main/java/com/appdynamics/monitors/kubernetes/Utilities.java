@@ -53,8 +53,8 @@ public class Utilities {
     }
 
     public static URL ensureSchema(Map<String, String> config, String apiKey, String accountName, String schemaName, String schemaDefinition){
-        URL publishUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/publish/" + config.get(schemaName));
-        URL schemaUrl = Utilities.getUrl(config.get("eventsUrl") + "/events/schema/" + config.get(schemaName));
+        URL publishUrl = Utilities.getUrl(getEventsAPIUrl(config) + "/events/publish/" + config.get(schemaName));
+        URL schemaUrl = Utilities.getUrl(getEventsAPIUrl(config) + "/events/schema/" + config.get(schemaName));
         String requestBody = config.get(schemaDefinition);
 //        ObjectNode existingSchema = null;
 //        try {
@@ -298,31 +298,6 @@ public class Utilities {
         return getMetricsPath(config);
     }
 
-    public static List<Metric> getMetricsFromSummary(HashMap<String, SummaryObj> summaryMap, Map<String, String> config){
-        List<Metric> metricList = new ArrayList<Metric>();
-        String pathMain = getMetricsPath(config);
-        ArrayList<SummaryObj> objList = getSummaryDataList(summaryMap);
-        for(SummaryObj summaryObj : objList){
-            JsonNode obj = summaryObj.getData();
-            Iterator<Map.Entry<String, JsonNode>> nodes = obj.fields();
-            while (nodes.hasNext()){
-                Map.Entry<String, JsonNode> entry = nodes.next();
-                String fieldName = entry.getKey();
-                if (!fieldName.equals("batch_ts") && !fieldName.equals("nodename") && !fieldName.equals("namespace")) {
-                    String path = String.format("%s%s%s", summaryObj.getPath(), METRIC_SEPARATOR, fieldName);
-                    String val = entry.getValue().asText();
-                    Metric m = new Metric(fieldName, val, path, "OBSERVATION", "CURRENT", "INDIVIDUAL");
-                    metricList.add(m);
-                }
-            }
-        }
-        return metricList;
-    }
-
-    public static void clearSummary(HashMap<String, ObjectNode> summaryMap){
-        //clear summary data
-        summaryMap.clear();
-    }
 
     public static String ensureClusterName(Map<String, String> config, String clusterName){
         if (clusterName == null || clusterName.isEmpty()){
@@ -386,9 +361,19 @@ public class Utilities {
 
     public static ApiClient initClient(Map<String, String> config) throws Exception{
         ApiClient client;
-        String apiMode = config.get("apiMode");
+        String apiMode = System.getenv("K8S_API_MODE");
+        if (StringUtils.isNotEmpty(apiMode) == false){
+            apiMode = config.get("apiMode");
+        }
+
         if (apiMode.equals("server")) {
-            client = Config.fromConfig(config.get("kubeClientConfig"));
+            try {
+                client = Config.fromConfig(config.get("kubeClientConfig"));
+            }
+            catch (Exception ex){
+                logger.info("K8s API client cannot be initialized form the config file {}. Reason {}. Trying cluster creds", config.get("kubeClientConfig"), ex.getMessage());
+                client = Config.fromCluster();
+            }
         }
         else if (apiMode.equals("cluster")){
             client = Config.fromCluster();
@@ -396,12 +381,31 @@ public class Utilities {
         else{
             throw new Exception("apiMode not supported. Must be server or cluster");
         }
+        if (client == null){
+            throw new Exception("Kubernetes API client is not initialized. Aborting...");
+        }
         return client;
     }
 
     public static String getRootDirectory(){
         File file = new File(".");
         return String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
+    }
+
+    public static String getControllerUrl(Map<String, String> config){
+        String url = System.getenv("REST_API_URL");
+        if (StringUtils.isNotEmpty(url) == false){
+            url = config.get(CONFIG_CONTROLLER_URL);
+        }
+        return  url;
+    }
+
+    public static String getEventsAPIUrl(Map<String, String> config){
+        String url = System.getenv("EVENTS_API_URL");
+        if (StringUtils.isNotEmpty(url) == false){
+            url = config.get(CONFIG_EVENTS_URL);
+        }
+        return  url;
     }
 
 }

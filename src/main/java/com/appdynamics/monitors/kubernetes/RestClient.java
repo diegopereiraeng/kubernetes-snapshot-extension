@@ -71,7 +71,7 @@ public class RestClient {
     public static AppDRestAuth getAuthToken(Map<String, String> config) {
         AppDRestAuth authObj = new AppDRestAuth();
         HttpURLConnection conn = null;
-        String path = config.get(CONFIG_CONTROLLER_URL) + "auth?action=login";
+        String path = Utilities.getControllerUrl(config) + "auth?action=login";
         URL url = Utilities.getUrl(path);
         String user = getRESTCredentials(config);
         try {
@@ -139,7 +139,7 @@ public class RestClient {
         AppDRestAuth authObj = getAuthToken(config);
         HttpURLConnection conn = null;
         try {
-            String path = config.get(CONFIG_CONTROLLER_URL) + urlPath;
+            String path = Utilities.getControllerUrl(config) + urlPath;
             URL url = Utilities.getUrl(path);
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
@@ -182,7 +182,7 @@ public class RestClient {
 
     public static JsonNode createDashboard(Map<String, String> config, String filePath) {
         HttpURLConnection conn = null;
-        String path = config.get(CONFIG_CONTROLLER_URL) + "CustomDashboardImportExportServlet";
+        String path = Utilities.getControllerUrl(config) + "CustomDashboardImportExportServlet";
         URL url = Utilities.getUrl(path);
         String user = getRESTCredentials(config);
         File templateFile = new File(filePath);

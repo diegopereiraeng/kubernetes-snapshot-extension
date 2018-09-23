@@ -69,8 +69,8 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                 }
 
 //                serializeMetrics();
-                List<Metric> metricList = Utilities.getMetricsFromSummary(getSummaryMap(), config);
-                logger.info("About to send {} Daemonset metrics", metricList.size());
+                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
+                logger.info("About to send {} Daemon set metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadDaemonMetricsTask", podMetricsTask);
 
@@ -171,6 +171,11 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
 
         return arrayNode;
     }
+
+    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+        return initDaemonSummaryObject(config, ALL);
+    }
+
 
     public  static SummaryObj initDaemonSummaryObject(Map<String, String> config, String namespace){
         ObjectMapper mapper = new ObjectMapper();
