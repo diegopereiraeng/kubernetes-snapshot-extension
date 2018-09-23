@@ -154,9 +154,8 @@ Either [Download the Extension from the latest Github release](https://github.co
     <execution-frequency-in-seconds>200</execution-frequency-in-seconds>
 ```
 
-4. Restart the Machine Agent.
+4. (#restart-the-machine-agent) Restart the Machine Agent.
 
-(#sample-startup-script)
 A sample startup script for the machine agent with an elevated metrics threshold:
 
 ```
@@ -193,11 +192,11 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 <th align = 'left'> Description </th>
 </tr>
 <tr>
-<td class='confluenceTd'> src/main/resources/config </td>
+<td class='confluenceTd'> src/main/resources/conf </td>
 <td class='confluenceTd'> Contains monitor.xml and config.yml</td>
 </tr>
 <tr>
-<td class='confluenceTd'> src/main/resources/config/templates </td>
+<td class='confluenceTd'> src/main/resources/templates </td>
 <td class='confluenceTd'> Contains the default dashboard template k8s_dashboard_template.json</td>
 </tr>
 <tr>

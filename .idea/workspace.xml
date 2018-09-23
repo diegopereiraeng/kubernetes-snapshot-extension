@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d68e8ee8-67f9-4a7f-8c8a-3520cac4a034" name="Default Changelist" comment="" />
+    <list default="true" id="d68e8ee8-67f9-4a7f-8c8a-3520cac4a034" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/README.MD" beforeDir="false" afterPath="$PROJECT_DIR$/README.MD" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -48,7 +50,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="MD" value="6537" />
+          <entry key="MD" value="6538" />
           <entry key="class" value="1" />
           <entry key="dummy" value="17" />
           <entry key="java" value="28771" />
@@ -64,7 +66,7 @@
           <entry key="CLASS" value="1" />
           <entry key="JAVA" value="28771" />
           <entry key="JSON" value="44" />
-          <entry key="PLAIN_TEXT" value="6564" />
+          <entry key="PLAIN_TEXT" value="6565" />
           <entry key="XML" value="105" />
           <entry key="YAML" value="2092" />
         </counts>
@@ -130,8 +132,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.MD">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="200" column="80" selection-start-line="200" selection-start-column="80" selection-end-line="200" selection-end-column="80" />
+            <state relative-caret-position="439">
+              <caret line="157" lean-forward="true" selection-start-line="157" selection-end-line="157" />
             </state>
           </provider>
         </entry>
@@ -384,14 +386,6 @@
             <path>
               <item name="kubernetes-snapshot-extension" type="b2602c69:ProjectViewProjectNode" />
               <item name="kubernetes-snapshot-extension" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="conf" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="kubernetes-snapshot-extension" type="b2602c69:ProjectViewProjectNode" />
-              <item name="kubernetes-snapshot-extension" type="462c0819:PsiDirectoryNode" />
               <item name="target" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -411,7 +405,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537716089529" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537716201651" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -1165,8 +1159,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.MD">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="200" column="80" selection-start-line="200" selection-start-column="80" selection-end-line="200" selection-end-column="80" />
+        <state relative-caret-position="439">
+          <caret line="157" lean-forward="true" selection-start-line="157" selection-end-line="157" />
         </state>
       </provider>
     </entry>
