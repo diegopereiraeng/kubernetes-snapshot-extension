@@ -61,15 +61,12 @@ Either [Download the Extension from the latest Github release](https://github.co
     # Name of the application. It can be an existing application or a new application.
     # All collected metrics will be associated with it
     # The extension will first look for **APPLICATION_NAME** environmental variable.
-    # It it is already defined for the machine agent configuration,
-    # this value can be left blank.
-    appName: "Kubernetes-Cluster-01"
+    # If the application name is configured for the machine agent, it must match this value
+    appName: "Cluster-01"
 
     # Name of the tier where metrics will be stored. The tier will be associated
     # with the application configured earlier
-    # The extension will first look for **TIER_NAME** environmental variable.
-    # It it is already defined for the machine agent configuration,
-    # this value can be left blank.
+    # The value must be set to **ClusterAgent**
     appTierName: "ClusterAgent"
 
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
@@ -88,6 +85,10 @@ Either [Download the Extension from the latest Github release](https://github.co
 
     # Controller URL to access REST API
     controllerUrl: "http://example.appdynamics.com/controller/"
+
+    # Absolute path to the json template for the default dashboard
+    dashboardTemplatePath: "<full path>/monitors/KubernetesSnapshotExtension/templates/k8s_dashboard_template.json"
+
   ```
   Optional settings:
 
@@ -102,12 +103,6 @@ Either [Download the Extension from the latest Github release](https://github.co
   - type: "replica"
   - type: "event"
   - type: "endpoint"
-
-  # Absolute path to the json template for the default dashboard
-  dashboardTemplatePath: "templates/k8s_dashboard_template.json"
-
-  # Absolute path to the json template for node widgets on the default dashboard. Not Enabled.
-  nodeTemplatePath: "templates/k8s_node_template.json"
 
   # Dashboard name suffix
   dashboardNameSuffix: "SUMMARY"
@@ -160,12 +155,12 @@ A sample start-up script for the machine agent with an elevated metrics threshol
 #!/bin/bash
 SVM_PROPERTIES="-Dappdynamics.controller.hostName=${CONTROLLER_HOST}"
 SVM_PROPERTIES+=" -Dappdynamics.controller.port=${CONTROLLER_PORT}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.applicationName=${APPLICATION_NAME}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.applicationName=${APPLICATION_NAME}" # must match the appName configuration value
+SVM_PROPERTIES+=" -Dappdynamics.agent.tierName=${TIER_NAME}"  #must be set to "ClusterAgent"
 SVM_PROPERTIES+=" -Dappdynamics.agent.nodeName=${TIER_NAME}_node1"
 SVM_PROPERTIES+=" -Dappdynamics.agent.accountName=${ACCOUNT_NAME}"
 SVM_PROPERTIES+=" -Dappdynamics.agent.accountAccessKey=${ACCOUNT_ACCESS_KEY}"
-SVM_PROPERTIES+=" -Dappdynamics.agent.uniqueHostId=Openshift_Master-${APPLICATION_NAME}"
+SVM_PROPERTIES+=" -Dappdynamics.agent.uniqueHostId=Master-${APPLICATION_NAME}"
 SVM_PROPERTIES+=" -Dappdynamics.controller.ssl.enabled=true"
 SVM_PROPERTIES+=" -Dappdynamics.sim.enabled=true"
 SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
