@@ -67,16 +67,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         null,
                         null,
                         null);
-                String payload = createNodePayload(nodeList, config).toString();
-
-                logger.debug("About to push Nodes to Events API: {}", payload);
-
-                if(!payload.equals("[]")){
-                    RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
+                createNodePayload(nodeList, config, publishUrl, accountName, apiKey);
 
                 //build and update metrics
-//                serializeMetrics();
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} node metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
@@ -95,10 +88,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         }
     }
 
-     ArrayNode createNodePayload(V1NodeList nodeList, Map<String, String> config) {
+     ArrayNode createNodePayload(V1NodeList nodeList, Map<String, String> config, URL publishUrl, String accountName, String apiKey) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
 
+        long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
         for(V1Node nodeObj : nodeList.getItems()) {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();
@@ -263,7 +257,26 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             }
 
             arrayNode.add(nodeObject);
+            if (arrayNode.size() >= batchSize){
+                logger.info("Sending batch of {} Node records", arrayNode.size());
+                String payload = arrayNode.toString();
+                arrayNode = arrayNode.removeAll();
+                if(!payload.equals("[]")){
+                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                    getConfiguration().getExecutorService().execute("UploadNodeData", uploadEventsTask);
+                }
+            }
         }
+
+         if (arrayNode.size() > 0){
+             logger.info("Sending last batch of {} Node records", arrayNode.size());
+             String payload = arrayNode.toString();
+             arrayNode = arrayNode.removeAll();
+             if(!payload.equals("[]")){
+                 UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                 getConfiguration().getExecutorService().execute("UploadNodeData", uploadEventsTask);
+             }
+         }
 
         return arrayNode;
     }

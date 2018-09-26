@@ -13,7 +13,8 @@ The extension aggregates metrics at the cluster level with further categorizatio
 If you want to monitor events only, use [Kubernetes Events Extension](https://github.com/Appdynamics/kubernetes-events-extension).
 If you are interested in automated metric collection for events and other cluster resources, this extensions is self-sufficient. The event collection is enabled by default.
 
-The extension automatically creates the dashboard below.
+The extension automatically creates the dashboard below. The first attempt to create the dashboard is made
+after the number of seconds defined in the *dashboardCheckInterval* setting has passed since the first run of the extension.
 
 ![The Default Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
 
@@ -44,7 +45,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
 ## Installation
 
-Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.0.61/KubernetesSnapshotExtension-0.61.zip) or Build from Source.
+Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.0.71/KubernetesSnapshotExtension-0.71.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
@@ -116,6 +117,9 @@ Either [Download the Extension from the latest Github release](https://github.co
 
   # Time in seconds between the checks if the default dashboard needs to be recreated
   dashboardCheckInterval: "600"
+
+  # Number of records in a batch posted to AppD events API
+  batchSize: "100"
 
 
   # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise

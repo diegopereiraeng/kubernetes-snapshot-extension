@@ -47,4 +47,6 @@ public class Constants {
 
     public static final String CONFIG_SCHEMA_DEF_EP = "endpointSchemaDefinition";
     public static final String CONFIG_SCHEMA_NAME_EP = "endpointSchemaName";
+
+    public static final String CONFIG_RECS_BATCH_SIZE = "batchSize";
 }

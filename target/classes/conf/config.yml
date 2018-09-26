@@ -38,6 +38,8 @@ rsSchemaName: "k8s_rs_snapshots"
 
 endpointSchemaName: "k8s_endpoint_snapshots"
 
+batchSize: "100"
+
 
 entities:
 - type: "pod"

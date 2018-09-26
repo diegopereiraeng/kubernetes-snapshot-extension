@@ -115,7 +115,12 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
     private boolean shoudldBuildDashboard(Map<String, String> config){
         long now = new Date().getTime();
         long interval = Long.parseLong(config.get(CONFIG_DASH_CHECK_INTERVAL));
-        return Globals.lastDashboardCheck == 0 || (now - Globals.lastDashboardCheck) > interval * 1000;
+        if (Globals.lastDashboardCheck == 0){
+            logger.info("Skipping dashboard creation till the next cycle");
+            Globals.lastDashboardCheck = now;
+            return false;
+        }
+        return (now - Globals.lastDashboardCheck) > interval * 1000;
     }
 
     public void buildDashboard(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, ArrayList<AppDMetricObj> metrics){

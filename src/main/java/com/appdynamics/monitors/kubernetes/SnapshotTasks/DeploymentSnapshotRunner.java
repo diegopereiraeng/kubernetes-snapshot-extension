@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
+import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_RECS_BATCH_SIZE;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_DEF_DEPLOY;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_DEPLOY;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -61,16 +62,9 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
                 ExtensionsV1beta1DeploymentList deployList =
                         api.listDeploymentForAllNamespaces(null, null, true, null, null, null, null, null, null);
 
-                String payload = createDeployPayload(deployList, config).toString();
-
-                logger.debug("About to push Deployments to Events API: {}", payload);
-
-                if(!payload.equals("[]")){
-                    RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
+                createDeployPayload(deployList, config, publishUrl, accountName, apiKey);
 
                 //build and update metrics
-//                serializeMetrics();
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} deployment metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
@@ -86,9 +80,11 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
     }
 
 
-    private ArrayNode createDeployPayload(ExtensionsV1beta1DeploymentList deployList, Map<String, String> config){
+    private ArrayNode createDeployPayload(ExtensionsV1beta1DeploymentList deployList, Map<String, String> config, URL publishUrl, String accountName, String apiKey){
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
+
+        long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
 
         for(ExtensionsV1beta1Deployment deployItem : deployList.getItems()) {
             ObjectNode deployObject = mapper.createObjectNode();
@@ -182,6 +178,25 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
 
             arrayNode.add(deployObject);
+            if (arrayNode.size() >= batchSize){
+                logger.info("Sending batch of {} Deploy records", arrayNode.size());
+                String payload = arrayNode.toString();
+                arrayNode = arrayNode.removeAll();
+                if(!payload.equals("[]")){
+                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                    getConfiguration().getExecutorService().execute("UploadDeployData", uploadEventsTask);
+                }
+            }
+        }
+
+        if (arrayNode.size() > 0){
+            logger.info("Sending last batch of {} Deploy records", arrayNode.size());
+            String payload = arrayNode.toString();
+            arrayNode = arrayNode.removeAll();
+            if(!payload.equals("[]")){
+                UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                getConfiguration().getExecutorService().execute("UploadDeployData", uploadEventsTask);
+            }
         }
 
 

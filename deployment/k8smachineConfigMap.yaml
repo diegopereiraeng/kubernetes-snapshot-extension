@@ -1,1 +1,1 @@
-#kubectl create configmap k8smachineConfigMap --from-file=config.yml
+#kubectl create configmap k8smachine-config --from-file=config.yml

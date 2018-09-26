@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_RECS_BATCH_SIZE;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_DEF_EP;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_EP;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -73,16 +74,9 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                         null,
                         null,
                         null);
-                String payload = createEndpointPayload(epList, config).toString();
-
-                logger.debug("About to push Endpoints to Events API: {}", payload);
+                createEndpointPayload(epList, config, publishUrl, accountName, apiKey);
 
 
-                if(!payload.equals("[]")) {
-                    RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-
-//                serializeMetrics();
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} endpoints metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
@@ -97,10 +91,10 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         }
     }
 
-     ArrayNode createEndpointPayload(V1EndpointsList epList, Map<String, String> config) {
-        Long loadTime = new Date().getTime();
+     ArrayNode createEndpointPayload(V1EndpointsList epList, Map<String, String> config, URL publishUrl, String accountName, String apiKey) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
+        long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
 
         for (V1Endpoints ep : epList.getItems()) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -173,7 +167,27 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
             }
 
             arrayNode.add(objectNode);
+
+            if (arrayNode.size() >= batchSize){
+                logger.info("Sending batch of {} Endpoint records", arrayNode.size());
+                String payload = arrayNode.toString();
+                arrayNode = arrayNode.removeAll();
+                if(!payload.equals("[]")){
+                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                    getConfiguration().getExecutorService().execute("UploadEndpointData", uploadEventsTask);
+                }
+            }
         }
+
+         if (arrayNode.size() > 0){
+             logger.info("Sending last batch of {} Endpoint records", arrayNode.size());
+             String payload = arrayNode.toString();
+             arrayNode = arrayNode.removeAll();
+             if(!payload.equals("[]")){
+                 UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                 getConfiguration().getExecutorService().execute("UploadEndpointData", uploadEventsTask);
+             }
+         }
 
         return arrayNode;
     }

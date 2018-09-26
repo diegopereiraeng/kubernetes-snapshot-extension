@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_RECS_BATCH_SIZE;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_DEF_RS;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_RS;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -61,15 +62,10 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                 V1beta1ReplicaSetList rsList =
                         api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
 
-                String payload = createReplicasetPayload(rsList, config).toString();
+                createReplicasetPayload(rsList, config, publishUrl, accountName, apiKey);
 
-                logger.debug("About to push ReplicaSet to Events API: {}", payload);
 
-                if(!payload.equals("[]")){
-                    RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
                 //build and update metrics
-//                serializeMetrics();
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} replica set metrics", metricList.size());
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
@@ -85,9 +81,11 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         }
     }
 
-     ArrayNode createReplicasetPayload(V1beta1ReplicaSetList rsList, Map<String, String> config) {
+     ArrayNode createReplicasetPayload(V1beta1ReplicaSetList rsList, Map<String, String> config, URL publishUrl, String accountName, String apiKey) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
+
+        long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
 
         for (V1beta1ReplicaSet deployItem : rsList.getItems()) {
             ObjectNode deployObject = mapper.createObjectNode();
@@ -142,7 +140,26 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
 
 
             arrayNode.add(deployObject);
+            if (arrayNode.size() >= batchSize){
+                logger.info("Sending batch of {} Replica Set records", arrayNode.size());
+                String payload = arrayNode.toString();
+                arrayNode = arrayNode.removeAll();
+                if(!payload.equals("[]")){
+                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                    getConfiguration().getExecutorService().execute("UploadReplicaData", uploadEventsTask);
+                }
+            }
         }
+
+         if (arrayNode.size() > 0){
+             logger.info("Sending last batch of {} Replica Set records", arrayNode.size());
+             String payload = arrayNode.toString();
+             arrayNode = arrayNode.removeAll();
+             if(!payload.equals("[]")){
+                 UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                 getConfiguration().getExecutorService().execute("UploadReplicaData", uploadEventsTask);
+             }
+         }
 
         return arrayNode;
     }

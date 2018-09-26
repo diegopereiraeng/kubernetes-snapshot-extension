@@ -60,15 +60,8 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                 V1beta1DaemonSetList dsList =
                         api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
 
-                String payload = createDaemonsetPayload(dsList, config).toString();
+                createDaemonsetPayload(dsList, config, publishUrl, accountName, apiKey);
 
-                logger.debug("About to push Daemonsets to Events API: {}", payload);
-
-                if(!payload.equals("[]")){
-                    RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
-                }
-
-//                serializeMetrics();
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} Daemon set metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
@@ -84,9 +77,11 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
         }
     }
 
-    private ArrayNode createDaemonsetPayload(V1beta1DaemonSetList dsList, Map<String, String> config){
+    private ArrayNode createDaemonsetPayload(V1beta1DaemonSetList dsList, Map<String, String> config, URL publishUrl, String accountName, String apiKey){
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
+        long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
+
         for(V1beta1DaemonSet deployItem : dsList.getItems()) {
             ObjectNode deployObject = mapper.createObjectNode();
 
@@ -166,6 +161,25 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
             }
 
             arrayNode.add(deployObject);
+
+            if (arrayNode.size() >= batchSize){
+                logger.info("Sending batch of {} Daemon Set records", arrayNode.size());
+                String payload = arrayNode.toString();
+                arrayNode = arrayNode.removeAll();
+                if(!payload.equals("[]")){
+                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                    getConfiguration().getExecutorService().execute("UploadDaemonData", uploadEventsTask);
+                }
+            }
+        }
+        if (arrayNode.size() > 0){
+            logger.info("Sending last batch of {} Daemon Set records", arrayNode.size());
+            String payload = arrayNode.toString();
+            arrayNode = arrayNode.removeAll();
+            if(!payload.equals("[]")){
+                UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                getConfiguration().getExecutorService().execute("UploadDaemonData", uploadEventsTask);
+            }
         }
 
 
