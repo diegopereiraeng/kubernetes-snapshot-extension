@@ -1,1 +1,0 @@
-#kubectl create configmap k8smachine-config --from-file=config.yml

@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d68e8ee8-67f9-4a7f-8c8a-3520cac4a034" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.MD" beforeDir="false" afterPath="$PROJECT_DIR$/README.MD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployment/k8smachineConfigMap.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/conf/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/conf/config.yml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -19,44 +24,46 @@
     <session id="-2133812785">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
           <entry key="project.open.time.10" value="1" />
+          <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="MD" value="10" />
-          <entry key="class" value="43" />
+          <entry key="MD" value="11" />
+          <entry key="class" value="44" />
           <entry key="iml" value="1" />
-          <entry key="java" value="320" />
+          <entry key="java" value="323" />
           <entry key="json" value="28" />
           <entry key="k8s_dashboard_template" value="1" />
-          <entry key="xml" value="15" />
-          <entry key="yaml" value="6" />
+          <entry key="xml" value="17" />
+          <entry key="yaml" value="10" />
           <entry key="yml" value="36" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="43" />
+          <entry key="CLASS" value="44" />
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="320" />
+          <entry key="JAVA" value="323" />
           <entry key="JSON" value="28" />
-          <entry key="PLAIN_TEXT" value="11" />
-          <entry key="XML" value="15" />
-          <entry key="YAML" value="42" />
+          <entry key="PLAIN_TEXT" value="12" />
+          <entry key="XML" value="17" />
+          <entry key="YAML" value="46" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="MD" value="7168" />
+          <entry key="MD" value="7365" />
           <entry key="class" value="1" />
           <entry key="dummy" value="17" />
-          <entry key="java" value="29456" />
+          <entry key="java" value="29522" />
           <entry key="json" value="44" />
           <entry key="txt" value="10" />
-          <entry key="xml" value="107" />
+          <entry key="xml" value="108" />
           <entry key="yaml" value="206" />
           <entry key="yml" value="1954" />
         </counts>
@@ -64,10 +71,10 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CLASS" value="1" />
-          <entry key="JAVA" value="29456" />
+          <entry key="JAVA" value="29522" />
           <entry key="JSON" value="44" />
-          <entry key="PLAIN_TEXT" value="7195" />
-          <entry key="XML" value="107" />
+          <entry key="PLAIN_TEXT" value="7392" />
+          <entry key="XML" value="108" />
           <entry key="YAML" value="2160" />
         </counts>
       </usages-collector>
@@ -76,10 +83,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/KubernetesSnapshotExtension.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="455">
-              <caret line="456" column="39" selection-start-line="456" selection-start-column="39" selection-end-line="456" selection-end-column="39" />
+            <state relative-caret-position="3">
+              <caret line="62" column="100" selection-start-line="62" selection-start-column="88" selection-end-line="62" selection-end-column="100" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -88,25 +95,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/ReplicaSnapshotRunner.java">
+        <entry file="jar://$MAVEN_REPOSITORY$/com/appdynamics/appd-exts-commons/2.0.0/appd-exts-commons-2.0.0.jar!/com/appdynamics/extensions/conf/MonitorConfiguration.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="148" column="86" selection-start-line="148" selection-start-column="86" selection-end-line="148" selection-end-column="86" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/NodeSnapshotRunner.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2779">
-              <caret line="56" column="47" lean-forward="true" selection-start-line="56" selection-start-column="47" selection-end-line="56" selection-end-column="47" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="600">
+              <caret line="72" column="26" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -114,8 +106,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EventSnapshotRunner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1873">
-              <caret line="69" column="85" lean-forward="true" selection-start-line="69" selection-start-column="52" selection-end-line="69" selection-end-column="85" />
+            <state relative-caret-position="1020">
+              <caret line="91" column="20" selection-start-line="91" selection-start-column="20" selection-end-line="91" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ClusterDashboardGenerator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="825">
+              <caret line="55" column="72" selection-start-line="55" selection-start-column="72" selection-end-line="55" selection-end-column="72" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/conf/monitor.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="7" column="39" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -123,32 +136,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.MD">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="47" column="180" selection-start-line="47" selection-start-column="180" selection-end-line="47" selection-end-column="180" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EndpointSnapshotRunner.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="181" column="9" selection-start-line="181" selection-start-column="9" selection-end-line="181" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DeploymentSnapshotRunner.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="236">
-              <caret line="192" column="56" selection-start-line="192" selection-start-column="56" selection-end-line="192" selection-end-column="56" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="586">
+              <caret line="254" column="17" selection-start-line="254" selection-start-column="17" selection-end-line="254" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -156,29 +145,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/resources/conf/config.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="141">
-              <caret line="40" selection-start-line="40" selection-end-line="40" selection-end-column="16" />
+            <state relative-caret-position="240">
+              <caret line="16" column="17" selection-start-line="16" selection-end-line="16" selection-end-column="17" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DaemonSnapshotRunner.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="449">
-              <caret line="180" column="81" selection-start-line="180" selection-start-column="81" selection-end-line="180" selection-end-column="81" />
+            <state relative-caret-position="-2313">
+              <caret line="222" column="33" selection-start-line="222" selection-start-column="33" selection-end-line="222" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/UploadEventsTask.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="36" column="85" selection-start-line="36" selection-start-column="85" selection-end-line="36" selection-end-column="85" />
             </state>
           </provider>
         </entry>
@@ -194,8 +174,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getRootDirectory</find>
-      <find>buildDashboard</find>
       <find>UPDATED</find>
       <find>writeTemplate</find>
       <find>expression2</find>
@@ -224,6 +202,8 @@
       <find>CONFIG_DASH_CHECK_INTERVAL</find>
       <find>lastDashboardCheck</find>
       <find>batchSize</find>
+      <find>SUFFIX</find>
+      <find>execution-frequency-in-seconds</find>
     </findStrings>
     <replaceStrings>
       <replace>Utilities.incrementField</replace>
@@ -279,17 +259,17 @@
         <option value="$PROJECT_DIR$/deployment/k8smachineConfigMap.yaml" />
         <option value="$PROJECT_DIR$/deployment/k8smachine.yaml" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Constants.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/conf/config.yml" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/KubernetesSnapshotExtension.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/UploadEventsTask.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/NodeSnapshotRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/ReplicaSnapshotRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EventSnapshotRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DaemonSnapshotRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/DeploymentSnapshotRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EndpointSnapshotRunner.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/conf/config.yml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/README.MD" />
       </list>
     </option>
@@ -298,7 +278,7 @@
     <option name="x" value="15" />
     <option name="y" value="23" />
     <option name="width" value="1605" />
-    <option name="height" value="948" />
+    <option name="height" value="947" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -314,11 +294,6 @@
             <path>
               <item name="kubernetes-snapshot-extension" type="b2602c69:ProjectViewProjectNode" />
               <item name="kubernetes-snapshot-extension" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="kubernetes-snapshot-extension" type="b2602c69:ProjectViewProjectNode" />
-              <item name="kubernetes-snapshot-extension" type="462c0819:PsiDirectoryNode" />
-              <item name="deployment" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="kubernetes-snapshot-extension" type="b2602c69:ProjectViewProjectNode" />
@@ -392,7 +367,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537982261891" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538418742979" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -604,10 +579,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="15" y="23" width="1605" height="948" extended-state="0" />
+    <frame x="15" y="23" width="1605" height="947" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25207934" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20473449" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -623,7 +598,7 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.1202454" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32883435" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" visible="true" weight="0.16238318" />
+      <window_info anchor="bottom" id="Version Control" order="9" visible="true" weight="0.1625731" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.2450867" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -748,26 +723,11 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/io/kubernetes/client-java-api/1.0.0/client-java-api-1.0.0-sources.jar!/io/kubernetes/client/models/V1SecurityContext.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="100" column="17" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
-          <folding>
-            <element signature="e#4155#4156#0" expanded="true" />
-            <element signature="e#4182#4183#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/paypod.json" />
     <entry file="jar://$MAVEN_REPOSITORY$/io/kubernetes/client-java-api/1.0.0/client-java-api-1.0.0-sources.jar!/io/kubernetes/client/custom/Quantity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="249">
           <caret line="40" column="22" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="22" />
-          <folding>
-            <element signature="e#974#975#0" expanded="true" />
-            <element signature="e#1003#1004#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -777,13 +737,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="41" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/appdynamics/appd-exts-commons/2.0.0/appd-exts-commons-2.0.0.jar!/com/appdynamics/extensions/conf/MonitorConfiguration.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="21" column="51" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="51" />
         </state>
       </provider>
     </entry>
@@ -802,13 +755,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/templates/k8s_dashboard_template.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1170">
-          <caret line="5742" column="37" selection-start-line="5742" selection-start-column="37" selection-end-line="5742" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Models/SummaryObj.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -821,13 +767,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Downloads/CustomDashboard_LCT-ClusterAgent-SUMMARY_1537555558894.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1160">
-          <caret line="1264" column="52" selection-start-line="1264" selection-start-column="32" selection-end-line="1264" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/Downloads/CustomDashboard_LCT-ClusterAgent-SUMMARY_1537555558894.json" />
     <entry file="jar://$MAVEN_REPOSITORY$/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar!/ch/qos/logback/classic/Logger.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="179">
@@ -873,13 +813,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/conf/monitor.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="43" selection-start-line="7" selection-start-column="43" selection-end-line="7" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/ADQLSearchTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="359">
@@ -894,9 +827,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="16" selection-end-column="95" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -911,9 +841,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="23" column="48" selection-start-line="23" selection-start-column="48" selection-end-line="23" selection-end-column="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -928,16 +855,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="194">
           <caret line="325" column="25" selection-start-line="325" selection-start-column="25" selection-end-line="325" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ClusterDashboardGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="167" selection-start-line="167" selection-end-line="167" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -971,13 +888,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/k8s_dashboard_template_UPDATED.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4983">
-          <caret line="5196" column="40" selection-start-line="5196" selection-start-column="28" selection-end-line="5196" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/k8s_dashboard_template_UPDATED.json" />
     <entry file="file://$PROJECT_DIR$/src/main/resources/templates/k8s_dashboard_template.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="325">
@@ -985,46 +896,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deployment/machine-agent.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-219" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deployment/k8smachineConfigMap.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="66" selection-start-column="66" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deployment/k8smachine.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="47" column="33" selection-start-line="47" selection-start-column="33" selection-end-line="47" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Constants.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="580">
           <caret line="50" column="53" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/KubernetesSnapshotExtension.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="118" column="72" selection-start-line="118" selection-start-column="72" selection-end-line="118" selection-end-column="72" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1079,27 +954,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EventSnapshotRunner.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1873">
-          <caret line="69" column="85" lean-forward="true" selection-start-line="69" selection-start-column="52" selection-end-line="69" selection-end-column="85" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/NodeSnapshotRunner.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2779">
           <caret line="56" column="47" lean-forward="true" selection-start-line="56" selection-start-column="47" selection-end-line="56" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="455">
-          <caret line="456" column="39" selection-start-line="456" selection-start-column="39" selection-end-line="456" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1129,17 +987,79 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/deployment/k8smachineConfigMap.yaml" />
+    <entry file="file://$PROJECT_DIR$/deployment/k8smachine.yaml" />
+    <entry file="file://$PROJECT_DIR$/deployment/k8smonitor.yaml" />
+    <entry file="file://$PROJECT_DIR$/deployment/machine-agent.yaml" />
+    <entry file="jar://$MAVEN_REPOSITORY$/com/appdynamics/appd-exts-commons/2.0.0/appd-exts-commons-2.0.0.jar!/com/appdynamics/extensions/conf/MonitorConfiguration.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="72" column="26" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/EventSnapshotRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="91" column="20" selection-start-line="91" selection-start-column="20" selection-end-line="91" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/Dashboard/ClusterDashboardGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="825">
+          <caret line="55" column="72" selection-start-line="55" selection-start-column="72" selection-end-line="55" selection-end-column="72" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/conf/monitor.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="39" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/SnapshotTasks/PodSnapshotRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2313">
+          <caret line="222" column="33" selection-start-line="222" selection-start-column="33" selection-end-line="222" selection-end-column="33" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2286">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/appdynamics/monitors/kubernetes/KubernetesSnapshotExtension.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3">
+          <caret line="62" column="100" selection-start-line="62" selection-start-column="88" selection-end-line="62" selection-end-column="100" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/conf/config.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="141">
-          <caret line="40" selection-start-line="40" selection-end-line="40" selection-end-column="16" />
+        <state relative-caret-position="240">
+          <caret line="16" column="17" selection-start-line="16" selection-end-line="16" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.MD">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="47" column="180" selection-start-line="47" selection-start-column="180" selection-end-line="47" selection-end-column="180" />
+        <state relative-caret-position="586">
+          <caret line="254" column="17" selection-start-line="254" selection-start-column="17" selection-end-line="254" selection-end-column="17" />
         </state>
       </provider>
     </entry>

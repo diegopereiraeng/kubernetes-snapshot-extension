@@ -45,7 +45,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
 ## Installation
 
-Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.071/KubernetesSnapshotExtension-0.71.zip) or Build from Source.
+Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.072/KubernetesSnapshotExtension-0.72.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
@@ -93,12 +93,14 @@ Either [Download the Extension from the latest Github release](https://github.co
     dashboardTemplatePath: "<full path>/monitors/KubernetesSnapshotExtension/templates/k8s_dashboard_template.json"
 
   ```
-  Note that the node name parameter *-Dappdynamics.agent.nodeName* must be defined for the machine agent startup, as shown
+  **Note** that the node name parameters *-Dappdynamics.agent.tierName* and *-Dappdynamics.agent.nodeName* must be defined for the machine agent startup, as shown
   in the [example start-up script](#restart-the-machine-agent) below.
+  When running MA with this extension in Kubernetes, do not deploy as Daemon Set. Make it a 1 replica Deployment. Set *apiMode* config variable to *cluster*
 
 
 
   Optional settings:
+
 
   ```
   # List of resources that will be monitored. Comment out individual items to exclude
@@ -244,4 +246,10 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 
 ## Support
 
-For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).
+This extension is provided as a beta feature: it is our intention to incorporate this into the AppDynamics Platform
+to provide additional integration with our APM and Business iQ products.
+AppDynamics reserves the right to change beta features at any time before making them generally available
+as well as never making them generally available. Any buying decisions should be made based on features and products
+that are currently generally available.
+
+For any questions, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).

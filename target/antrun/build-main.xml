@@ -18,7 +18,7 @@
   <copy todir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
     <fileset includes="kubernetes-snapshot-extension.jar" dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target"/>
   </copy>
-  <zip destfile="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension-0.71.zip">
+  <zip destfile="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension-0.72.zip">
     <zipfileset prefix="KubernetesSnapshotExtension/" filemode="755" dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
   </zip>
   <delete dir="/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>

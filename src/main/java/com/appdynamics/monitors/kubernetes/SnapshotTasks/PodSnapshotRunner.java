@@ -203,17 +203,25 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     Utilities.incrementField(summaryNode, "HasNodeAffinity");
                     String nodeAffinityPreferred = "";
 
-                    for (V1PreferredSchedulingTerm t : affinity.getPreferredDuringSchedulingIgnoredDuringExecution()) {
-                        nodeAffinityPreferred += String.format("%s;", t.toString());
+                    if (affinity.getPreferredDuringSchedulingIgnoredDuringExecution() != null) {
+                        for (V1PreferredSchedulingTerm t : affinity.getPreferredDuringSchedulingIgnoredDuringExecution()) {
+                            nodeAffinityPreferred += String.format("%s;", t.toString());
+                        }
                     }
                     podObject = checkAddObject(podObject, nodeAffinityPreferred, "nodeAffinityPreferred");
 
 
-                    V1NodeSelector nodeSelector = affinity.getRequiredDuringSchedulingIgnoredDuringExecution();
                     String nodeAffinityRequired = "";
-                    for (V1NodeSelectorTerm term : nodeSelector.getNodeSelectorTerms()) {
-                        for (V1NodeSelectorRequirement req : term.getMatchExpressions()) {
-                            nodeAffinityRequired += String.format("%s;", req.toString());
+                    V1NodeSelector nodeSelector = affinity.getRequiredDuringSchedulingIgnoredDuringExecution();
+                    if (nodeSelector != null) {
+                        if (nodeSelector.getNodeSelectorTerms() != null) {
+                            for (V1NodeSelectorTerm term : nodeSelector.getNodeSelectorTerms()) {
+                                if (term.getMatchExpressions() != null) {
+                                    for (V1NodeSelectorRequirement req : term.getMatchExpressions()) {
+                                        nodeAffinityRequired += String.format("%s;", req.toString());
+                                    }
+                                }
+                            }
                         }
                     }
                     podObject = checkAddObject(podObject, nodeAffinityRequired, "nodeAffinityRequired");
