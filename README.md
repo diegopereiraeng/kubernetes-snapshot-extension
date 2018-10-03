@@ -93,9 +93,11 @@ Either [Download the Extension from the latest Github release](https://github.co
     dashboardTemplatePath: "<full path>/monitors/KubernetesSnapshotExtension/templates/k8s_dashboard_template.json"
 
   ```
-  **Note** that the node name parameters *-Dappdynamics.agent.tierName* and *-Dappdynamics.agent.nodeName* must be defined for the machine agent startup, as shown
+  **Note:** node name parameters *-Dappdynamics.agent.tierName* and *-Dappdynamics.agent.nodeName* must be defined for the machine agent startup, as shown
   in the [example start-up script](#restart-the-machine-agent) below.
-  When running MA with this extension in Kubernetes, do not deploy as Daemon Set. Make it a 1 replica Deployment. Set *apiMode* config variable to *cluster*
+
+  When running MA with this extension in Kubernetes, do not deploy as Daemon Set. Make it a 1 replica Deployment.
+  Set *apiMode* config variable to *cluster*
 
 
 
