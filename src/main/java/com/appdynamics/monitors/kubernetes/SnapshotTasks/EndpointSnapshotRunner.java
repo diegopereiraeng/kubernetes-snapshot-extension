@@ -82,11 +82,11 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadEPMetricsTask", podMetricsTask);
             } catch (IOException e) {
+                countDownLatch.countDown();
                 logger.error("Failed to push End Points data", e);
-                e.printStackTrace();
             } catch (Exception e) {
+                countDownLatch.countDown();
                 logger.error("Failed to push End Points data", e);
-                e.printStackTrace();
             }
         }
     }

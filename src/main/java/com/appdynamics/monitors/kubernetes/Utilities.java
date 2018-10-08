@@ -1,7 +1,5 @@
 package com.appdynamics.monitors.kubernetes;
 
-import com.appdynamics.extensions.conf.MonitorConfiguration;
-import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.monitors.kubernetes.Models.AdqlSearchObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -145,77 +143,6 @@ public class Utilities {
         return objectNode;
     }
 
-    static ArrayNode checkSchemaForUpdates(JsonNode serverSchema, ObjectNode newSchema){
-
-        JsonNode serverNode = serverSchema.get("schema");
-        ArrayNode updateSchema = null;
-        ObjectNode updateNode = null;
-        ObjectNode addNode = null;
-        logger.info("Starting schema check");
-        Iterator<Map.Entry<String, JsonNode>> nodes = newSchema.get("schema").fields();
-        while (nodes.hasNext()){
-            Map.Entry<String, JsonNode> entry = nodes.next();
-            String fieldName = entry.getKey();
-            logger.info("Checking field {}", fieldName);
-            if (!serverNode.has(fieldName)) {
-                logger.info("Field {} does not exist. Adding", fieldName);
-                if (updateSchema == null) {
-                    ObjectMapper mapper = new ObjectMapper();
-                    updateSchema = mapper.createArrayNode();
-                    updateNode = mapper.createObjectNode();
-                    updateSchema.add(updateNode);
-                    addNode = mapper.createObjectNode();
-                    updateNode.set("add", addNode);
-                    ObjectNode renameNode = mapper.createObjectNode();
-                    updateNode.set("rename", renameNode);
-                    logger.info("Initialized change schema object");
-                }
-                String type = entry.getValue().asText();
-                addNode.put(fieldName, type);
-            }
-        }
-
-        return updateSchema;
-    }
-
-    public  static ObjectNode initSummaryObject(long batchTS, String namespace, String node){
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode summary = mapper.createObjectNode();
-        summary.put("batch_ts", batchTS);
-        summary.put("namespace", namespace);
-        summary.put("nodename", node);
-        summary.put("pods", 0);
-        summary.put("containers", 0);
-        summary.put("initcontainers", 0);
-        summary.put("evictions", 0);
-        summary.put("limits", 0);
-        summary.put("rprobe", 0);
-        summary.put("lprobe", 0);
-        summary.put("endpoints", 0);
-        summary.put("endpoints_healthy", 0);
-        summary.put("ip_up", 0);
-        summary.put("ip_down", 0);
-        summary.put("deploys", 0);
-        summary.put("deployReplicas", 0);
-        summary.put("deployReplicasAvailable", 0);
-        summary.put("deployReplicasUnAvailable", 0);
-        summary.put("deployCollisionCount", 0);
-        summary.put("deployReplicasReady", 0);
-        summary.put("daemons", 0);
-        summary.put("daemonReplicasAvailable", 0);
-        summary.put("daemonReplicasUnAvailable", 0);
-        summary.put("daemonCollisionCount", 0);
-        summary.put("daemonReplicasReady", 0);
-        summary.put("daemonNumberScheduled", 0);
-        summary.put("daemonDesiredNumber", 0);
-        summary.put("daemonMissScheduled", 0);
-        summary.put("rs", 0);
-        summary.put("rsReplicas", 0);
-        summary.put("rsReplicasAvailable", 0);
-        summary.put("privilegedPods", 0);
-
-        return summary;
-    }
 
     public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName){
         ObjectNode obj = summaryObj.getData();
@@ -379,7 +306,7 @@ public class Utilities {
             client = Config.fromCluster();
         }
         else{
-            throw new Exception("apiMode not supported. Must be server or cluster");
+            throw new Exception(String.format("apiMode %s not supported. Must be server or cluster", apiMode));
         }
         if (client == null){
             throw new Exception("Kubernetes API client is not initialized. Aborting...");

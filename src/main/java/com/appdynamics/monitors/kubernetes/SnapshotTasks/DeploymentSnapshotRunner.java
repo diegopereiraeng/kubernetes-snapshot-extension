@@ -70,11 +70,11 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
                 UploadMetricsTask metricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadDeployMetricsTask", metricsTask);
             } catch (IOException e) {
+                countDownLatch.countDown();
                 logger.error("Failed to push Deployments data", e);
-                e.printStackTrace();
             } catch (Exception e) {
+                countDownLatch.countDown();
                 logger.error("Failed to push Deployments data", e);
-                e.printStackTrace();
             }
         }
     }

@@ -55,14 +55,19 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             String path = config.get(CONFIG_DASH_TEMPLATE_PATH);
             logger.info("Reading the dashboard template from {}", path);
             JsonNode template = readTemplate(path);
-            JsonNode widgets = template.get("widgetTemplates");
-            //update name
-            ((ObjectNode)template).put("name", dashName);
-            //create Dashboard
-            logger.info("Creating the dashboard...");
-            buildDashboard(metrics,  widgets);
-            String updatedPath = writeTemplate(config, template);
-            RestClient.createDashboard(config, updatedPath);
+            if (template != null) {
+                JsonNode widgets = template.get("widgetTemplates");
+                //update name
+                ((ObjectNode) template).put("name", dashName);
+                //create Dashboard
+                logger.info("Creating the dashboard...");
+                buildDashboard(metrics, widgets);
+                String updatedPath = writeTemplate(config, template);
+                RestClient.createDashboard(config, updatedPath);
+            }
+            else {
+                logger.info("Skipping dashboard creation because the template does not exist");
+            }
         }
         else{
             logger.info("Dashboard exists");

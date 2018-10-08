@@ -1,5 +1,5 @@
 # Number of Threads for the Extension
-numberOfThreads: 3
+numberOfThreads: 23 # 7 tasks x 3 sub tasks + 2 extra
 
 # This will create it in specific Tier aka Component. Replace <COMPONENT_ID>.
 # Please make sure to have a trailing |.

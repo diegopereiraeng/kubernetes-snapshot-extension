@@ -84,11 +84,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             } catch (IOException e) {
                 countDownLatch.countDown();
                 logger.error("Failed to push POD data", e);
-                e.printStackTrace();
             } catch (Exception e) {
                 countDownLatch.countDown();
                 logger.error("Failed to push POD data", e);
-                e.printStackTrace();
             }
         }
     }

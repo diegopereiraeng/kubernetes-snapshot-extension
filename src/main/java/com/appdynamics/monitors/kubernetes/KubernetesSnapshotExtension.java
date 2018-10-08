@@ -3,6 +3,7 @@ package com.appdynamics.monitors.kubernetes;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.util.AssertUtils;
+import com.appdynamics.extensions.util.StringUtils;
 import com.appdynamics.monitors.kubernetes.Dashboard.ClusterDashboardGenerator;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
@@ -58,52 +59,55 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
             logger.info("Taking cluster snapshot");
             Map<String, String> config = (Map<String, String>)configuration.getConfigYml();
             //populate Tier ID and cache of searched
-            initClusterMonitoring(config);
-            ArrayList<SnapshotRunnerBase> tasks = new ArrayList<SnapshotRunnerBase>();
-            List<Map<String,String>> entities = (List<Map<String,String>>)configuration.getConfigYml().get(CONFIG_NODE_ENTITIES);
-            if(entities != null) {
-                logger.info("Requested entities: {}", entities.toString());
-                int count = entities.size();
-                latch = new CountDownLatch(count);
+            if (initClusterMonitoring(config)) {
+                ArrayList<SnapshotRunnerBase> tasks = new ArrayList<SnapshotRunnerBase>();
+                List<Map<String, String>> entities = (List<Map<String, String>>) configuration.getConfigYml().get(CONFIG_NODE_ENTITIES);
+                if (entities != null) {
+                    logger.info("Requested entities: {}", entities.toString());
+                    int count = entities.size();
+                    latch = new CountDownLatch(count);
 
-                for(String taskName : TASKS){
-                    Map<String, String> taskConfig = Utilities.getEntityConfig(entities, taskName);
-                    if (taskConfig != null){
-                        tasks.add(initTask(tasksExecutionServiceProvider, taskConfig, taskName));
-                    }
-                }
-
-                for (SnapshotRunnerBase task : tasks) {
-                    executeSnapshotTask(tasksExecutionServiceProvider, task);
-                }
-
-                try {
-                    logger.info("Waiting for tasks to complete");
-                    latch.await();
-                } catch (InterruptedException ex) {
-                    logger.error("Snapshot execution is interrupted", ex.toString());
-                }
-
-
-                long finish = new Date().getTime();
-                long duration = finish - start;
-                logger.info("All tasks complete {} millisec. Checking the dashboard", duration);
-                //check dashboard
-                //if does not exist, create from template
-                if (shoudldBuildDashboard(config)) {
-                    Globals.lastDashboardCheck = finish;
-                    ArrayList<AppDMetricObj> metrics = new ArrayList<AppDMetricObj>();
-                    for (SnapshotRunnerBase t : tasks) {
-                        for(SummaryObj summaryObj : t.getMetricsBundle()){
-                            metrics.addAll(summaryObj.getMetricsMetadata());
+                    for (String taskName : TASKS) {
+                        Map<String, String> taskConfig = Utilities.getEntityConfig(entities, taskName);
+                        if (taskConfig != null) {
+                            tasks.add(initTask(tasksExecutionServiceProvider, taskConfig, taskName));
                         }
                     }
-                    logger.info("Starting dashboard build with collected {} metric metadata", metrics.size());
-                    buildDashboard(tasksExecutionServiceProvider, config, metrics);
+
+                    for (SnapshotRunnerBase task : tasks) {
+                        executeSnapshotTask(tasksExecutionServiceProvider, task);
+                    }
+
+                    try {
+                        logger.info("Waiting for tasks to complete");
+                        latch.await();
+                    } catch (InterruptedException ex) {
+                        logger.error("Snapshot execution is interrupted", ex.toString());
+                    }
+
+
+                    long finish = new Date().getTime();
+                    long duration = finish - start;
+                    logger.info("All tasks complete {} millisec. Checking the dashboard", duration);
+                    //check dashboard
+                    //if does not exist, create from template
+                    if (shoudldBuildDashboard(config)) {
+                        Globals.lastDashboardCheck = finish;
+                        ArrayList<AppDMetricObj> metrics = new ArrayList<AppDMetricObj>();
+                        for (SnapshotRunnerBase t : tasks) {
+                            for (SummaryObj summaryObj : t.getMetricsBundle()) {
+                                metrics.addAll(summaryObj.getMetricsMetadata());
+                            }
+                        }
+                        logger.info("Starting dashboard build with collected {} metric metadata", metrics.size());
+                        buildDashboard(tasksExecutionServiceProvider, config, metrics);
+                    } else {
+                        logger.info("No action necessary. Done");
+                    }
                 }
-                else {
-                    logger.info("No action necessary. Done");
-                }
+            }
+            else{
+                logger.error("Initialization failed. Aborting...");
             }
         }
         catch(Exception e) {
@@ -177,9 +181,15 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
         return entities.size();
     }
 
-    public void initClusterMonitoring(Map<String, String> config){
+    public boolean initClusterMonitoring(Map<String, String> config){
+        boolean init = false;
         try {
             String clusterName = Utilities.getClusterApplicationName(config);
+            if (clusterName == null || clusterName.isEmpty()){
+                logger.error("Application name cannot be empty. Set appName value in config.yml or via APPLICATION_NAME environmental variable");
+                return false;
+            }
+
             logger.info("Initializing Monitoring. Cluster {}", clusterName);
             //does the app exist?
             if (Utilities.tierID == 0) {
@@ -199,11 +209,13 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     checkAppTier(config, appID);
                 }
             }
-            logger.info("Application and App Tier for cluster monitoring created");
+            logger.info("Application and App Tier for cluster monitoring validated");
+            init = true;
         }
         catch (Exception ex){
             logger.error("Unable to initialize cluster monitoring");
         }
+        return init;
     }
 
     private void checkAppTier(Map<String, String> config, int appID){

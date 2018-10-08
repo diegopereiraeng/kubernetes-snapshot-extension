@@ -76,11 +76,11 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                 getConfiguration().getExecutorService().execute("UploadEventMetricsTask", metricsTask);
 
             } catch (IOException e) {
+                countDownLatch.countDown();
                 logger.error("Failed to push events", e);
-                e.printStackTrace();
             } catch (Exception e) {
+                countDownLatch.countDown();
                 logger.error("Failed to push events", e);
-                e.printStackTrace();
             }
         }
     }

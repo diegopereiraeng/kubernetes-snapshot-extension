@@ -34,7 +34,7 @@ public class RestClient {
     }
 
     public static JsonNode doRequest(URL url, String accountName, String apiKey, String requestBody, String method) {
-
+        BufferedReader br = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
@@ -54,7 +54,7 @@ public class RestClient {
                 OutputStream output = conn.getOutputStream();
                 output.write(requestBody.getBytes("UTF-8"));
             }
-            BufferedReader br = new BufferedReader(new InputStreamReader(
+            br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
             String response = "";
             //noinspection StatementWithEmptyBody
@@ -66,6 +66,16 @@ public class RestClient {
             logger.error("Error while processing {} on URL {}. Reason {}", method, url, e.toString());
             return null;
         }
+        finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            }
+            catch (IOException ex){
+
+            }
+        }
     }
 
     public static AppDRestAuth getAuthToken(Map<String, String> config) {
@@ -74,6 +84,10 @@ public class RestClient {
         String path = Utilities.getControllerUrl(config) + "auth?action=login";
         URL url = Utilities.getUrl(path);
         String user = getRESTCredentials(config);
+        if (user == null || user.isEmpty()){
+            logger.error("Credentials for Controller API are not defined. Configure user credentials in config.yml (controllerAPIUser) or in REST_API_CREDENTIALS environmental variable");
+            return null;
+        }
         try {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -95,7 +109,6 @@ public class RestClient {
             in.close();
 
             if (responseCode == 200) {
-//                Cookie: X-CSRF-TOKEN=8701b4cf97ee0e6b08dc003495f46c8028c87c23; JSESSIONID=0b904b9034e1e853a4674de94885
                 String sessionID = "";
                 for (Map.Entry<String, List<String>> headers : conn.getHeaderFields().entrySet()) {
                     if (headers != null) {
@@ -125,8 +138,13 @@ public class RestClient {
                     authObj.setCookie(String.format("X-CSRF-TOKEN=%s; JSESSIONID=%s", authObj.getToken(), sessionID));
                 }
             }
+            else{
+                logger.error("Authentication with Controller API failed. Check Controller API user credentials in config.yml or in REST_API_CREDENTIALS environmental variable");
+                return null;
+            }
         } catch (Exception ex) {
             logger.error("Issues when getting the auth token for restui calls", ex);
+            return null;
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -137,7 +155,11 @@ public class RestClient {
 
     public static JsonNode callControllerAPI(String urlPath, Map<String, String> config, String requestBody, String method) {
         AppDRestAuth authObj = getAuthToken(config);
+        if (authObj == null){
+            return null;
+        }
         HttpURLConnection conn = null;
+        BufferedReader br = null;
         try {
             String path = Utilities.getControllerUrl(config) + urlPath;
             URL url = Utilities.getUrl(path);
@@ -161,7 +183,7 @@ public class RestClient {
                 OutputStream output = conn.getOutputStream();
                 output.write(requestBody.getBytes("UTF-8"));
             }
-            BufferedReader br = new BufferedReader(new InputStreamReader(
+            br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
             String response = "";
 
@@ -177,6 +199,14 @@ public class RestClient {
             if (conn != null) {
                 conn.disconnect();
             }
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            }
+            catch (IOException ex){
+
+            }
         }
     }
 
@@ -184,7 +214,14 @@ public class RestClient {
         HttpURLConnection conn = null;
         String path = Utilities.getControllerUrl(config) + "CustomDashboardImportExportServlet";
         URL url = Utilities.getUrl(path);
+        DataOutputStream request = null;
+        FileInputStream inputStream = null;
+        BufferedReader br = null;
         String user = getRESTCredentials(config);
+        if (user == null || user.isEmpty()){
+            logger.error("Credentials for Controller API are not defined. Configure user credentials in config.yml (controllerAPIUser) or in REST_API_CREDENTIALS environmental variable");
+            return null;
+        }
         File templateFile = new File(filePath);
         try {
             conn = (HttpURLConnection) url.openConnection();
@@ -199,10 +236,10 @@ public class RestClient {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
-            DataOutputStream request = new DataOutputStream(conn.getOutputStream());
+            request = new DataOutputStream(conn.getOutputStream());
             request.writeBytes("--" + boundary + "\r\n");
             request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + templateFile.getName() + "\"\r\n\r\n");
-            FileInputStream inputStream = new FileInputStream(templateFile);
+            inputStream = new FileInputStream(templateFile);
             byte[] buffer = new byte[4096];
             int bytesRead = -1;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -213,22 +250,40 @@ public class RestClient {
             request.writeBytes("--" + boundary + "--\r\n");
             request.flush();
 
+
             int respCode = conn.getResponseCode();
             logger.info("Dashboard create response code = {}", respCode);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(
+            br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
             String response = "";
 
             for (String line; (line = br.readLine()) != null; response += line) ;
 
+
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readTree(response);
         }
         catch (Exception ex) {
-
             logger.error("Error while creating dashboard from template {} . Reason {}", config.get(CONFIG_DASH_TEMPLATE_PATH),  ex.toString());
             return null;
+        }
+        finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (inputStream != null){
+                    inputStream.close();
+                }
+
+                if (request != null){
+                    request.close();
+                }
+            }
+            catch (IOException ex){
+
+            }
         }
     }
 }
