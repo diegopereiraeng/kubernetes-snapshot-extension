@@ -32,7 +32,7 @@ public class Utilities {
         try {
             url = new URL(input);
         } catch (MalformedURLException e) {
-            logger.error("Error forming our from String {}", input, e);
+            logger.error("Error forming URL from String {}", input, e);
         }
         return url;
     }

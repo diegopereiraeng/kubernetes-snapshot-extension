@@ -154,7 +154,7 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
             if (metric != null) {
                 ((ObjectNode) metric).put("metricPath", metricObj.getPath());
                 JsonNode scope = metric.get("scopeEntity");
-                ((ObjectNode) scope).put("applicationName", config.get(CONFIG_APP_NAME));
+                ((ObjectNode) scope).put("applicationName", Utilities.getClusterApplicationName(config));
                 ((ObjectNode) scope).put("entityName", Utilities.getClusterTierName(config));
             }
     }
@@ -203,7 +203,7 @@ public class ClusterDashboardGenerator implements AMonitorTaskRunnable {
                     JsonNode match = t.get("metricMatchCriteriaTemplate");
                     if (match != null) {
                         if (match.has("applicationName")){
-                            ((ObjectNode) match).put("applicationName", config.get(CONFIG_APP_NAME));
+                            ((ObjectNode) match).put("applicationName", Utilities.getClusterApplicationName(config));
                         }
                         JsonNode metricTemplate = match.get("metricExpressionTemplate");
                         updateMetricNode(metricTemplate, metricObj, widget);

@@ -57,7 +57,6 @@ public class RestClient {
             br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
             String response = "";
-            //noinspection StatementWithEmptyBody
             for (String line; (line = br.readLine()) != null; response += line) ;
             conn.disconnect();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -73,7 +72,7 @@ public class RestClient {
                 }
             }
             catch (IOException ex){
-
+                logger.error("Error while cleaning up streams and buffers in doRequest");
             }
         }
     }
@@ -205,7 +204,7 @@ public class RestClient {
                 }
             }
             catch (IOException ex){
-
+                logger.error("Error while cleaning up streams and buffers in callControllerAPI");
             }
         }
     }
@@ -282,7 +281,7 @@ public class RestClient {
                 }
             }
             catch (IOException ex){
-
+                logger.error("Error while cleaning up streams and buffers in createDashboard");
             }
         }
     }
