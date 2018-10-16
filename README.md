@@ -1,6 +1,6 @@
 # AppDynamics Kubernetes Snapshot Extension
 
-# Note:
+### Note:
 For the official version, please refer to the [AppDynamics repo](https://github.com/Appdynamics/kubernetes-snapshot-extension)
 
 ## Use Case
