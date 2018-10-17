@@ -1,8 +1,5 @@
 # AppDynamics Kubernetes Snapshot Extension
 
-### Note:
-For the official version, please refer to the [AppDynamics repo](https://github.com/Appdynamics/kubernetes-snapshot-extension)
-
 ## Use Case
 
 The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
