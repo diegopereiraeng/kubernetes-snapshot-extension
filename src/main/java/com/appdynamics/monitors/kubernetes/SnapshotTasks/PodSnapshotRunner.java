@@ -98,9 +98,18 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
 
         for(V1Pod podItem : podList.getItems()){
+
             ObjectNode podObject = mapper.createObjectNode();
             String namespace = podItem.getMetadata().getNamespace();
             String nodeName = podItem.getSpec().getNodeName();
+
+            if (namespace == null || namespace.isEmpty()){
+                logger.info(String.format("Pod %s missing namespace attribution", podItem.getMetadata().getName()));
+            }
+
+            if (nodeName == null || nodeName.isEmpty()){
+                logger.info(String.format("Pod %s missing node attribution", podItem.getMetadata().getName()));
+            }
 
             String clusterName = Utilities.ensureClusterName(config, podItem.getMetadata().getClusterName());
 
@@ -487,7 +496,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         summary.put("Running", 0);
         summary.put("Failed", 0);
         summary.put("Pending", 0);
-        if (namespace.equals(ALL) && node.equals(ALL)) {
+        if (namespace != null && namespace.equals(ALL) && node != null && node.equals(ALL)) {
             summary.put("Containers", 0);
             summary.put("InitContainers", 0);
             summary.put("NoLimits", 0);
@@ -523,17 +532,17 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
         String namespacesCondition = "";
         String nodeCondition = "";
-        if(!namespace.equals(ALL)){
+        if(namespace != null && !namespace.equals(ALL)){
             namespacesCondition = String.format("and namespace = \"%s\"", namespace);
         }
 
-        if(!node.equals(ALL)){
+        if(node != null && !node.equals(ALL)){
             nodeCondition = String.format("and nodeName = \"%s\"", node);
         }
 
         String filter = namespacesCondition.isEmpty() ? nodeCondition : namespacesCondition;
 
-        if (namespace.equals(ALL) && node.equals(ALL)) {
+        if (namespace != null && namespace.equals(ALL) && node != null && node.equals(ALL)) {
 
             metricsList.add(new AppDMetricObj("Pods", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
