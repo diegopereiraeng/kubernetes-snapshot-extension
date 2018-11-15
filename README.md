@@ -1,8 +1,5 @@
 # AppDynamics Kubernetes Snapshot Extension
 
-### Note:
-For the official version, please refer to the [AppDynamics repo](https://github.com/Appdynamics/kubernetes-snapshot-extension)
-
 ## Use Case
 
 The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
@@ -52,7 +49,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
 ## Installation
 
-Either [Download the Extension from the latest Github release](https://github.com/sashaPM/kubernetes-snapshot-extension/releases/download/v.072/KubernetesSnapshotExtension-0.72.zip) or Build from Source.
+Either [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/v.080/KubernetesSnapshotExtension-0.80.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
