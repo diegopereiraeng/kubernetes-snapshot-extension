@@ -14,6 +14,8 @@ public class Constants {
     public static final String CONFIG_APP_NAME = "appName";
     public static final String CONFIG_APP_TIER_NAME = "appTierName";
     public static final String CONFIG_NODE_ENTITIES = "entities";
+    public static final String CONFIG_NODE_NODES = "nodes";
+    public static final String CONFIG_NODE_NAMESPACES = "namespaces";
     public static final String CONFIG_EVENTS_URL = "eventsUrl";
     public static final String CONFIG_CONTROLLER_URL = "controllerUrl";
     public static final String CONFIG_CONTROLLER_API_USER = "controllerAPIUser";

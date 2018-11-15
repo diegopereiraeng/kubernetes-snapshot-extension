@@ -95,9 +95,11 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
             }
 
             SummaryObj summaryNamespace = getSummaryMap().get(namespace);
-            if (summaryNamespace == null){
-                summaryNamespace = initDaemonSummaryObject(config, namespace);
-                getSummaryMap().put(namespace, summaryNamespace);
+            if (Utilities.shouldCollectMetricsForNamespace(getConfiguration(), namespace)) {
+                if (summaryNamespace == null) {
+                    summaryNamespace = initDaemonSummaryObject(config, namespace);
+                    getSummaryMap().put(namespace, summaryNamespace);
+                }
             }
 
             incrementField(summary, "DaemonSets");

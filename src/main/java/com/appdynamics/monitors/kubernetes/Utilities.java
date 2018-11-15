@@ -1,5 +1,6 @@
 package com.appdynamics.monitors.kubernetes;
 
+import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.monitors.kubernetes.Models.AdqlSearchObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,6 +49,44 @@ public class Utilities {
             }
         }
         return entityConfig;
+    }
+
+    public static boolean shouldCollectMetricsForNode(MonitorConfiguration configuration, String node){
+        boolean should = false;
+        try {
+            List<Map<String, String>> nodes = (List<Map<String, String>>) configuration.getConfigYml().get(CONFIG_NODE_NODES);
+            if (nodes != null) {
+                for (Map<String, String> map : nodes) {
+                    if (map.get("name").equals(node) || map.get("name").equals(ALL)) {
+                        should = true;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception ex){
+            logger.error("Issues when parsing nodes config", ex);
+        }
+        return should;
+    }
+
+    public static boolean shouldCollectMetricsForNamespace(MonitorConfiguration configuration, String ns){
+        boolean should = false;
+        try {
+            List<Map<String, String>> namespaces = (List<Map<String, String>>) configuration.getConfigYml().get(CONFIG_NODE_NAMESPACES);
+            if (namespaces != null) {
+                for (Map<String, String> map : namespaces) {
+                    if (map.get("name").equals(ns) || map.get("name").equals(ALL)) {
+                        should = true;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception ex){
+            logger.error("Issues when parsing namespace config", ex);
+        }
+        return should;
     }
 
     public static URL ensureSchema(Map<String, String> config, String apiKey, String accountName, String schemaName, String schemaDefinition){
@@ -145,6 +184,9 @@ public class Utilities {
 
 
     public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName){
+        if (summaryObj == null){
+            return null;
+        }
         ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt() + 1;
@@ -155,6 +197,9 @@ public class Utilities {
     }
 
     public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName, int increment){
+        if (summaryObj == null){
+            return null;
+        }
         ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt();
@@ -165,6 +210,9 @@ public class Utilities {
     }
 
     public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName, float increment){
+        if (summaryObj == null){
+            return null;
+        }
         ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt();
@@ -175,6 +223,9 @@ public class Utilities {
     }
 
     public static ObjectNode incrementField(SummaryObj summaryObj,  String fieldName, BigDecimal increment){
+        if (summaryObj == null){
+            return null;
+        }
         ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             BigDecimal val = new BigDecimal(obj.get(fieldName).asDouble());

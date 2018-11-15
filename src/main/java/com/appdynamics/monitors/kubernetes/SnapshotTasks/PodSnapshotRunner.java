@@ -120,15 +120,19 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
 
             SummaryObj summaryNamespace = getSummaryMap().get(namespace);
-            if (summaryNamespace == null){
-                summaryNamespace = initPodSummaryObject(config, namespace, ALL);
-                getSummaryMap().put(namespace, summaryNamespace);
+            if (Utilities.shouldCollectMetricsForNamespace(getConfiguration(), namespace)) {
+                if (summaryNamespace == null) {
+                    summaryNamespace = initPodSummaryObject(config, namespace, ALL);
+                    getSummaryMap().put(namespace, summaryNamespace);
+                }
             }
 
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
-            if (summaryNode == null){
-                summaryNode = initPodSummaryObject(config, ALL, nodeName);
-                getSummaryMap().put(nodeName, summaryNode);
+            if (Utilities.shouldCollectMetricsForNode(getConfiguration(), nodeName)) {
+                if (summaryNode == null) {
+                    summaryNode = initPodSummaryObject(config, ALL, nodeName);
+                    getSummaryMap().put(nodeName, summaryNode);
+                }
             }
 
             Utilities.incrementField(summary, "Pods");

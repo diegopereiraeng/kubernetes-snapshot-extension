@@ -50,6 +50,14 @@ entities:
 - type: "event"
 - type: "endpoint"
 
+# list of nodes to collect metrics for. If all nodes need to be monitored, set name to ALL
+nodes:
+#- name:
+
+# list of namaspaces to collect metrics for. If all namespaces need to be monitored, set name to ALL
+namespaces:
+#- name:
+
 # Absolute path to the dashboard template.
 dashboardTemplatePath: "templates/k8s_dashboard_template.json"
 

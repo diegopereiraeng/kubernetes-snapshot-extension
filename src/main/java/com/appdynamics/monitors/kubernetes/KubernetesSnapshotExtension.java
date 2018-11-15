@@ -205,7 +205,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                 }
                 else if (appObj != null && appObj.get("id") != null) {
                     int appID = appObj.get("id").asInt();
-                    logger.info("Application Tier {} created", appID);
+                    logger.info("Application {} created", appID);
                     checkAppTier(config, appID);
                 }
             }
