@@ -50,11 +50,11 @@ entities:
 - type: "event"
 - type: "endpoint"
 
-# list of nodes to collect metrics for. If all nodes need to be monitored, set name to ALL
+# list of nodes to collect metrics for. If all nodes need to be monitored, set name to "all"
 nodes:
 #- name:
 
-# list of namaspaces to collect metrics for. If all namespaces need to be monitored, set name to ALL
+# list of namespaces to collect metrics for. If all namespaces need to be monitored, set name to "all"
 namespaces:
 #- name:
 

@@ -47,7 +47,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
    * Namespace-specific: 39
 
  By default, the extension will collect the cluster-level metrics only. To monitor specific nodes or namespaces add the names of the desired nodes or namespaces
- to the `node` and `namespace` arrays respectively. See specific instruction below in the *Optional settings" section.
+ to the `node` and `namespace` arrays of the config.yml respectively. See specific instruction below in the *Optional settings* section.
  If you request metric collection for some or all nodes or namespaces, make sure to adjust the maxMetric parameter accordingly.
 
 ## Installation
@@ -123,11 +123,11 @@ Either [Download the Extension from the latest Github release](https://github.co
   - type: "event"
   - type: "endpoint"
 
-  # list of nodes to collect metrics for. If all nodes need to be monitored, set name to ALL
+  # list of nodes to collect metrics for. If all nodes need to be monitored, set name to "all"
   nodes:
   #- name:
 
-  # list of namaspaces to collect metrics for. If all namespaces need to be monitored, set name to ALL
+  # list of namespaces to collect metrics for. If all namespaces need to be monitored, set name to "all"
   namespaces:
   #- name:
 
