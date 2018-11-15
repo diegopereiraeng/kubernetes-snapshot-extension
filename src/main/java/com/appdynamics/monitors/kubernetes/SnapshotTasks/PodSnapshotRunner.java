@@ -189,7 +189,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
 
             podObject = checkAddObject(podObject, nodeName, "nodeName");
-            podObject = checkAddObject(podObject, podItem.getSpec().getPriority(), "priority");
+            podObject = checkAddInt(podObject, podItem.getSpec().getPriority(), "priority");
             podObject = checkAddObject(podObject, podItem.getSpec().getRestartPolicy(), "restartPolicy");
             podObject = checkAddObject(podObject, podItem.getSpec().getServiceAccountName(), "serviceAccountName");
             podObject = checkAddLong(podObject, podItem.getSpec().getTerminationGracePeriodSeconds(), "terminationGracePeriodSeconds");
