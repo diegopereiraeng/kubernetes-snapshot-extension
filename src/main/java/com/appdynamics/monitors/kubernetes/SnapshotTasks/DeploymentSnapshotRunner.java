@@ -129,7 +129,7 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
             if (deployItem.getMetadata().getAnnotations() != null){
                 String annotations = "";
-                Iterator it = deployItem.getMetadata().getLabels().entrySet().iterator();
+                Iterator it = deployItem.getMetadata().getAnnotations().entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry pair = (Map.Entry)it.next();
                     annotations += String.format("%s:%s;", pair.getKey(), pair.getValue());
@@ -155,7 +155,7 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
             deployObject = checkAddObject(deployObject, deployItem.getSpec().getStrategy().getType(), "strategy");
 
-            if (deployItem.getSpec().getStrategy().getRollingUpdate() != null){
+            if (deployItem.getSpec().getStrategy() != null && deployItem.getSpec().getStrategy().getRollingUpdate() != null){
                 deployObject = checkAddObject(deployObject, deployItem.getSpec().getStrategy().getRollingUpdate().getMaxSurge(), "maxSurge");
                 deployObject = checkAddObject(deployObject, deployItem.getSpec().getStrategy().getRollingUpdate().getMaxUnavailable(), "maxUnavailable");
             }
