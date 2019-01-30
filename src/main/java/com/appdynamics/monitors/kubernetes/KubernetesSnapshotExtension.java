@@ -189,6 +189,12 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                 logger.error("Application name cannot be empty. Set appName value in config.yml or via APPLICATION_NAME environmental variable");
                 return false;
             }
+            //check if tier name is already in the metricsPath
+            String path = Utilities.getMetricsPath(config);
+            if (path.contains(Utilities.getClusterTierName(config))){
+                logger.info("Tier name {} is already configured in the metricPath. Validation complete");
+                return true;
+            }
 
             logger.info("Initializing Monitoring. Cluster {}", clusterName);
             //does the app exist?
@@ -205,11 +211,16 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                 }
                 else if (appObj != null && appObj.get("id") != null) {
                     int appID = appObj.get("id").asInt();
-                    logger.info("Application {} created", appID);
+                    logger.info("Application {} exists", appID);
                     checkAppTier(config, appID);
                 }
             }
-            logger.info("Application and App Tier for cluster monitoring validated");
+            if (Utilities.tierID > 0) {
+                logger.info("Application and App Tier for cluster monitoring validated");
+            }
+            else{
+                logger.info("App Tier identifier is missing. Metrics will not be properly saved in the controller");
+            }
             init = true;
         }
         catch (Exception ex){
@@ -223,6 +234,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
         JsonNode tierObj = findAppTier(config, appID);
         if (tierObj != null && tierObj.get("id") != null){
             Utilities.tierID = tierObj.get("id").asInt();
+            logger.info("App tier {} discovered.", Utilities.tierID);
         }
         else {
             logger.info("Creating Application Tier for cluster metrics...");
@@ -230,6 +242,9 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
             if (tierObj != null && tierObj.get("id") != null) {
                 Utilities.tierID = tierObj.get("id").asInt();
                 logger.info("Tier ID = {}", Utilities.tierID);
+            }
+            else{
+                logger.info("App tier is not discovered. It may be necessary to add tier name to the configured path value 'metricPrefix'");
             }
         }
     }

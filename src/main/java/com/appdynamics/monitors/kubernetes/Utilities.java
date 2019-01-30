@@ -17,6 +17,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
@@ -27,6 +28,7 @@ public class Utilities {
     public static int tierID = 0;
     public static String ClusterName = "";
     public static ArrayList<AdqlSearchObj> savedSearches = new ArrayList<AdqlSearchObj>();
+    public static int FIELD_LENGTH_LIMIT = 4000;
 
     public static URL getUrl(String input){
         URL url = null;
@@ -130,8 +132,16 @@ public class Utilities {
 
 
     public static ObjectNode checkAddObject(ObjectNode objectNode, Object object, String fieldName){
-        if(object != null){
-            objectNode.put(fieldName, object.toString());
+        if(object != null && object.toString() != null){
+            String objString = object.toString();
+            byte[] bytes = objString.getBytes(Charset.forName("UTF-8"));
+            if (bytes.length >= FIELD_LENGTH_LIMIT){
+                logger.info("Field {} is greater than the allowed size of 4K. Skipping....", fieldName);
+                objectNode.put(fieldName, "");
+            }
+            else{
+                objectNode.put(fieldName, objString);
+            }
         }
         return objectNode;
     }

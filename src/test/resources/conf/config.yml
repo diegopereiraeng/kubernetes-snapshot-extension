@@ -7,8 +7,8 @@ numberOfThreads: 3
 metricPrefix: "Server|Component:%s|Custom Metrics|Cluster Stats|"
 #metricPrefix:  "Custom Metrics|Cluster Stats|"
 
-appName: "Openshift-Cluster-01"
-appTierName: "ClusterAgent"
+appName: "k8s-cluster-agent"
+appTierName: "KUBERNETES"
 
 # Path to your kubectl Client configuration
 kubeClientConfig: "/home/origin/.kube/config"
@@ -52,7 +52,7 @@ dashboardTemplatePath: "/Users/sasha.jeltuhin/dev/kubernetes-snapshot-extension/
 nodeTemplatePath: "templates/k8s_node_template.json"
 dashboardNameSuffix: "SUMMARY"
 controllerAPIUser: "k8sresty@customer1:k8sresty"
-controllerUrl: "http://staging.demo.appdynamics.com/controller/"
+controllerUrl: "http://451controllerbase-oscert-aoaz7jqm.srv.ravcloud.com:8090/controller/"
 dashboardCheckInterval: "600"  # time in seconds between the checks if the default dashboard exists
 
 
