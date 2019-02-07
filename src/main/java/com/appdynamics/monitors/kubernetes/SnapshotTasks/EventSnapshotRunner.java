@@ -156,7 +156,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNamespace, "CrashLoops");
                     }
 
-                    if (reason.equals("FailedCreate") && message.contains("failed quota")){
+                    if (reason.equals("FailedCreate") && message.contains("quota")){
                         Utilities.incrementField(summary, "QuotaViolations");
                         Utilities.incrementField(summaryNamespace, "QuotaViolations");
                     }
