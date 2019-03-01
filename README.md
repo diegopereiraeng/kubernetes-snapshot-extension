@@ -281,13 +281,13 @@ artifacts
    docker build -t <image-name> .
 ```
 * Create a secret for the necessary access keys.
-..* Obtain controller access key License - Account - Access key
-..* Obtain events API key AppDynamics --> Analytics --> Configuration API Keys --> Add
+  * Obtain controller access key License - Account - Access key
+  * Obtain events API key AppDynamics --> Analytics --> Configuration API Keys --> Add
 
 The API Key needs to be able to Manage and Publish Custom Analytics Events
 ![New Event Key](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/events_key.png?raw=true)
 
-..* Create a new user for rest API access
+  * Create a new user for rest API access
 Administration - Users - New
 When creating the account for rest API access, you can setup a role with the following permissions and assign the user to it
 
