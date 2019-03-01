@@ -257,7 +257,7 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 ## Deploying to a Kubernetes cluster
 
 The extension bundled with the machine agent can run in the cluster as a deployment.
-* Download the desired version of the machine agent from [!The official downloads side](https://downloads.appdynamics.com)
+* Download the desired version of the machine agent from ![The official downloads side](https://download.appdynamics.com)
 * Unzip the contents of the archive in the deployment/artifacts folder so that the artifacts folder becomes the machine agent root directory
 * [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.85/KubernetesSnapshotExtension-0.85.zip)
 * Unzip its contents into the artifacts/monitors folder.
@@ -284,17 +284,17 @@ artifacts
 ** Obtain controller access key License - Account - Access key
 ** Obtain events API key AppDynamics --> Analytics --> Configuration API Keys --> Add
 The API Key needs to be able to Manage and Publish Custom Analytics Events
-![New Event Key](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/events_key.png)
+![New Event Key](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/events_key.png?raw=true)
 
 ** Create a new user for rest API access
 Administration - Users - New
 When creating the account for rest API access, you can setup a role with the following permissions and assign the user to it
-![New Role](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role.png)
-![App permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-app.png)
-![Dashboard permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-dashboards.png)
-![Events permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-events.png)
-![Searches permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role.png)
-![Assign role](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-assign.png)
+![New Role](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role.png?raw=true)
+![App permissions](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role-app.png?raw=true)
+![Dashboard permissions](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role-dashboards.png?raw=true)
+![Events permissions](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role-events.png?raw=true)
+![Searches permissions](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role_searches.png?raw=true)
+![Assign role](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role-assign.png?raw=true)
 
 ** Run the following command to create a secret
 ```
