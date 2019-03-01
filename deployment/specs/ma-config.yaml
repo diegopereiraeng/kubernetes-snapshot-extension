@@ -4,10 +4,11 @@ data:
   APPLICATION_NAME: #<name of the application where metrics will be stored>  e.g. Cluster-01
   TIER_NAME: "ClusterAgent"  # if you change this value, it must be also updated in k8sext-config.yaml
   GLOBAL_ACCOUNT_NAME:  #<global account name>
-  CONTROLLER_HOST: #<controller host>
+  CONTROLLER_HOST: #<controller dns>
   CONTROLLER_PORT: #<controller port> e.g. "8090"
   CONTROLLER_SSL_ENABLED: #"true" if https, otherwise "false"
   EVENTS_API_URL: #<event service endpoint in format protocol://host:port>
+  REST_API_URL: #<protocol://controller dns>/controller/ e.g. https://saas.appdynamics.com/controller/
   METRIC_LIMIT: "4000"
   UNIQUE_HOSTID: "K8s-Monitor"
 kind: ConfigMap

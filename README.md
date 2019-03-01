@@ -257,7 +257,7 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 ## Deploying to a Kubernetes cluster
 
 The extension bundled with the machine agent can run in the cluster as a deployment.
-* Download the desired version of the machine agent from ![The official downloads side](https://download.appdynamics.com)
+* Download the desired version of the machine agent from [The official downloads side](https://download.appdynamics.com)
 * Unzip the contents of the archive in the deployment/artifacts folder so that the artifacts folder becomes the machine agent root directory
 * [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.85/KubernetesSnapshotExtension-0.85.zip)
 * Unzip its contents into the artifacts/monitors folder.
