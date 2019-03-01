@@ -8,7 +8,7 @@ data:
   CONTROLLER_PORT: #<controller port> e.g. "8090"
   CONTROLLER_SSL_ENABLED: #"true" if https, otherwise "false"
   EVENTS_API_URL: #<event service endpoint in format protocol://host:port>
-  REST_API_URL: #<protocol://controller dns>/controller/ e.g. https://saas.appdynamics.com/controller/
+  REST_API_URL: #<protocol://controller dns>:<port>/controller/ e.g. https://myappd.com:8090/controller/
   METRIC_LIMIT: "4000"
   UNIQUE_HOSTID: "K8s-Monitor"
 kind: ConfigMap

@@ -12,7 +12,7 @@ spec:
       serviceAccountName: k8s-monitor-sa
       containers:
       - name: appd-infra-agent
-        image: #<image reference>
+        image: sashaz/mak8s@sha256:8f92c7992de5daebff19e0daf85113867e99ce0d4e3870ed1cdf911101f70e0d #<image reference>
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
