@@ -303,7 +303,7 @@ When creating the account for rest API access, you can setup a role with the fol
 
 ![Assign role](https://github.com/Appdynamics/kubernetes-snapshot-extension/blob/master/assets/role-assign.png?raw=true)
 
-** Run the following command to create a secret
+  * Run the following command to create a secret
 ```
 oc create secret generic appd-secret --from-literal=ACCOUNT_ACCESS_KEY=<controller access key> --from-literal=EVENT_ACCESS_KEY=<event api key> --from-literal=REST_API_CREDENTIALS=<username@accountname:password>
 ```
