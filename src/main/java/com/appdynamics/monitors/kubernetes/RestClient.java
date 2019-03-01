@@ -8,8 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +32,38 @@ public class RestClient {
         return  creds;
     }
 
-    public static JsonNode doRequest(URL url, String accountName, String apiKey, String requestBody, String method) {
+    private static HttpURLConnection openConnection(URL url,  Map<String, String> config) throws IOException {
+        HttpURLConnection conn = null;
+        String proxyHost = Utilities.getProxyHost(config);
+        String proxyPort = Utilities.getProxyPort(config);
+        if(StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort)){
+            Integer portNumber = Integer.parseInt(proxyPort);
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, portNumber));
+            System.setProperty("https.proxyHost", proxyHost);
+            System.setProperty("https.proxyPort", proxyPort);
+            conn = (HttpURLConnection) url.openConnection(proxy);
+        }
+        else{
+            conn = (HttpURLConnection) url.openConnection();
+        }
+        String proxyUser = Utilities.getProxyUser(config);
+        String proxyPass = Utilities.getProxyPass(config);
+
+        if(StringUtils.isNotEmpty(proxyUser) && StringUtils.isNotEmpty(proxyPass)) {
+            Authenticator.setDefault(new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication("proxyUser", proxyPass.toCharArray());
+                }
+            });
+        }
+
+        return conn;
+    }
+
+    public static JsonNode doRequest(URL url, Map<String, String> config, String accountName, String apiKey, String requestBody, String method) {
         BufferedReader br = null;
         try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection conn = openConnection(url, config);
             conn.setDoOutput(true);
             if (method.equals("PATCH")) {
                 conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
@@ -88,7 +115,7 @@ public class RestClient {
             return null;
         }
         try {
-            conn = (HttpURLConnection) url.openConnection();
+            conn =  openConnection(url, config);
             conn.setRequestMethod("GET");
 
             byte[] message = (user).getBytes("UTF-8");
@@ -162,7 +189,7 @@ public class RestClient {
         try {
             String path = Utilities.getControllerUrl(config) + urlPath;
             URL url = Utilities.getUrl(path);
-            conn = (HttpURLConnection) url.openConnection();
+            conn = openConnection(url, config);
             conn.setDoOutput(true);
             if (method.equals("PATCH")) {
                 conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
@@ -223,7 +250,7 @@ public class RestClient {
         }
         File templateFile = new File(filePath);
         try {
-            conn = (HttpURLConnection) url.openConnection();
+            conn = openConnection(url, config);
             conn.setRequestMethod("GET");
 
             byte[] message = (user).getBytes("UTF-8");

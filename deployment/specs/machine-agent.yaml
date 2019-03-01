@@ -1,0 +1,59 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: k8s-monitor
+spec: 
+  replicas: 1
+  template: 
+    metadata: 
+      labels: 
+        name: k8s-monitor
+    spec:
+      serviceAccountName: k8s-monitor-sa
+      containers:
+      - name: appd-infra-agent
+        image: #<image reference>
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: ma-config
+        - secretRef:
+            name: appd-secret
+        resources:
+          limits:
+            cpu: "0.6"
+            memory: "2Gi"
+          requests:
+            cpu: "0.3"
+            memory: "1G"
+        ports:
+          - containerPort: 9090
+        volumeMounts:
+        - name: ma-config-volume
+          mountPath: /opt/appdynamics/MachineAgent/conf/logging/log4j.xml
+          subPath: log4j.xml
+        - name: config-volume
+          mountPath: /opt/appdynamics/MachineAgent/monitors/KubernetesSnapshotExtension/config.yml
+          subPath: config.yml
+      restartPolicy: Always
+      volumes:
+      - name: ma-config-volume
+        configMap:
+          name: ma-log-config
+      - name: config-volume
+        configMap:
+          name: k8sext-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-monitor-service
+spec:
+  selector:
+    name: k8s-monitor
+  ports:
+  - name: "9090"
+    port: 9090
+    targetPort: 9090
+status:
+  loadBalancer: {}

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class UploadEventsTask implements Runnable{
@@ -19,14 +20,16 @@ public class UploadEventsTask implements Runnable{
     private String accountName;
     private String apiKey;
     private String taskName;
+    private Map<String, String> config;
 
     private static final Logger logger = LoggerFactory.getLogger(UploadEventsTask.class);
-    public UploadEventsTask(String taskName, URL url, String accountName, String apiKey, String requestBody) {
+    public UploadEventsTask(String taskName, Map<String, String> config, URL url, String accountName, String apiKey, String requestBody) {
         this.publishUrl = url;
         this.payload = requestBody;
         this.accountName = accountName;
         this.apiKey = apiKey;
         this.taskName = taskName;
+        this.config = config;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class UploadEventsTask implements Runnable{
             if(!payload.equals("[]")){
                 logger.info("Task {}. Sending data to AppD events API", this.taskName);
                 logger.debug("Upload task: about to push Events API: {}", payload);
-                RestClient.doRequest(publishUrl, accountName, apiKey, payload, "POST");
+                RestClient.doRequest(publishUrl, config, accountName, apiKey, payload, "POST");
             }
         }
         catch(Exception e){

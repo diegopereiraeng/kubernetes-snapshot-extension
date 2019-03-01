@@ -103,12 +103,12 @@ public class Utilities {
 //            logger.error("Unable to determine the latest Pod schema", ioEX);
 //        }
 
-        JsonNode serverSchema = RestClient.doRequest(schemaUrl, accountName, apiKey, "", "GET");
+        JsonNode serverSchema = RestClient.doRequest(schemaUrl, config,accountName, apiKey, "", "GET");
         if(serverSchema == null){
 
             logger.debug("Schema Url {} does not exists. creating {}", schemaUrl, requestBody);
 
-            RestClient.doRequest(schemaUrl, accountName, apiKey, requestBody, "POST");
+            RestClient.doRequest(schemaUrl, config,accountName, apiKey, requestBody, "POST");
         }
         else {
             logger.info("Schema exists");
@@ -317,6 +317,39 @@ public class Utilities {
             appName = config.get(CONFIG_APP_TIER_NAME);
         }
         return  appName;
+    }
+
+    public static String getProxyHost(Map<String, String> config){
+        String proxyHost = System.getenv("APPD_PROXY_HOST");
+        if (StringUtils.isNotEmpty(proxyHost) == false){
+            proxyHost = config.get("proxyHost");
+        }
+
+        return  proxyHost;
+    }
+
+    public static String getProxyPort(Map<String, String> config){
+        String proxyPort = System.getenv("APPD_PROXY_PORT");
+        if (StringUtils.isNotEmpty(proxyPort) == false){
+            proxyPort = config.get("proxyPort");
+        }
+        return  proxyPort;
+    }
+
+    public static String getProxyUser(Map<String, String> config){
+        String proxyUser = System.getenv("APPD_PROXY_USER");
+        if (StringUtils.isNotEmpty(proxyUser) == false){
+            proxyUser = config.get("proxyUser");
+        }
+        return  proxyUser;
+    }
+
+    public static String getProxyPass(Map<String, String> config){
+        String proxyPass = System.getenv("APPD_PROXY_PASS");
+        if (StringUtils.isNotEmpty(proxyPass) == false){
+            proxyPass = config.get("proxyPass");
+        }
+        return  proxyPass;
     }
 
 

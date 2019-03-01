@@ -49,7 +49,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
 ## Installation
 
-Either [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.83/KubernetesSnapshotExtension-0.84.zip) or Build from Source.
+Either [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.85/KubernetesSnapshotExtension-0.85.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
@@ -119,6 +119,17 @@ Either [Download the Extension from the latest Github release](https://github.co
   - type: "replica"
   - type: "event"
   - type: "endpoint"
+
+  # Proxy host. Env Var: APPD_PROXY_HOST
+  proxyHost: ""
+
+  # Proxy port. Env Var: APPD_PROXY_PORT
+  proxyPort: ""
+  # Proxy user name. Env Var: APPD_PROXY_USER
+  proxyUser: ""
+
+  # Proxy password. Env Var: APPD_PROXY_PASS
+  proxyPass: ""
 
   # list of nodes to collect metrics for. If all nodes need to be monitored, set name to "all"
   nodes:
@@ -242,6 +253,61 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 </tr>
 </tbody>
 </table>
+
+## Deploying to a Kubernetes cluster
+
+The extension bundled with the machine agent can run in the cluster as a deployment.
+* Download the desired version of the machine agent from [!The official downloads side](https://downloads.appdynamics.com)
+* Unzip the contents of the archive in the deployment/artifacts folder so that the artifacts folder becomes the machine agent root directory
+* [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.85/KubernetesSnapshotExtension-0.85.zip)
+* Unzip its contents into the artifacts/monitors folder.
+
+The resulting directory structure will look as follows
+artifacts
+```
+  ...
+  machineagent.jar
+  ...
+  monitors
+     KubernetesSnapshotExtension
+        config.yml
+        monitor.yml
+        templates
+          k8s_dashboard_template.json
+```
+
+* Navigate to deployment directory and run the command below to create the image. Provide the desired image name and tag
+```
+   docker build -t <image-name> .
+```
+* Create a secret for the necessary access keys.
+** Obtain controller access key License - Account - Access key
+** Obtain events API key AppDynamics --> Analytics --> Configuration API Keys --> Add
+The API Key needs to be able to Manage and Publish Custom Analytics Events
+![New Event Key](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/events_key.png)
+
+** Create a new user for rest API access
+Administration - Users - New
+When creating the account for rest API access, you can setup a role with the following permissions and assign the user to it
+![New Role](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role.png)
+![App permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-app.png)
+![Dashboard permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-dashboards.png)
+![Events permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-events.png)
+![Searches permissions](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role.png)
+![Assign role](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/assets/role-assign.png)
+
+** Run the following command to create a secret
+```
+oc create secret generic appd-secret --from-literal=ACCOUNT_ACCESS_KEY=<controller access key> --from-literal=EVENT_ACCESS_KEY=<event api key> --from-literal=REST_API_CREDENTIALS=<username@accountname:password>
+```
+* Open ma-config.yaml and update the settings with the information specific to your controller and save
+* Open ma-sa-rbac.yaml and update ClusterRoleBinding subject namespace with the namespace where k8s-monitor-sa account was created
+* Open machine-agent.yaml and update the image reference
+* Run the deployment
+```
+  kubectl create -f specs/
+```
+
 
 
 ## Contributing

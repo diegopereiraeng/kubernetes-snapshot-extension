@@ -262,7 +262,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 String payload = arrayNode.toString();
                 arrayNode = arrayNode.removeAll();
                 if(!payload.equals("[]")){
-                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
                     getConfiguration().getExecutorService().execute("UploadNodeData", uploadEventsTask);
                 }
             }
@@ -273,7 +273,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
              String payload = arrayNode.toString();
              arrayNode = arrayNode.removeAll();
              if(!payload.equals("[]")){
-                 UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), publishUrl, accountName, apiKey, payload);
+                 UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
                  getConfiguration().getExecutorService().execute("UploadNodeData", uploadEventsTask);
              }
          }
