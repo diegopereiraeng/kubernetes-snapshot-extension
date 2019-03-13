@@ -60,21 +60,25 @@ Either [Download the Extension from the latest Github release](https://github.co
 **Required settings**
 
   ```
+    # Prefix for metrics. Replace <appTierName> with the value in *appTierName* setting.
+    metricPrefix: "Server|Component:<appTierName>|Custom Metrics|Cluster Stats|"
+
+
     # Path to your kubectl client configuration. A typical location is "$HOME/.kube/config",
-    # but it may differ on your machine
+    # but it may differ on your machine. Can be left blank, if apiMode is set to "cluster"
     kubeClientConfig:
 
     # Name of the application. It can be an existing application or a new application.
     # All collected metrics will be associated with it
     # The extension will first look for APPLICATION_NAME environmental variable.
     # The application name in the machine agent configuration must match this value
-    appName: "Cluster-01"
+    appName: ""
 
     # Name of the tier where metrics will be stored. The tier will be associated
     # with the application configured earlier
     # The extension will first look for TIER_NAME environmental variable.
     # The tier name in the machine agent configuration must match this value.
-    appTierName: "ClusterAgent"
+    appTierName: ""
 
     # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
     # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
@@ -101,7 +105,7 @@ Either [Download the Extension from the latest Github release](https://github.co
   in the [example start-up script](#restart-the-machine-agent) below.
 
   When running MA with this extension in Kubernetes, do not deploy as Daemon Set. Make it a 1 replica Deployment.
-  Set *apiMode* config variable to *cluster*
+  Set *apiMode* config variable to *cluster*. See detailed instructions below.
 
 
 
