@@ -60,7 +60,7 @@ Either [Download the Extension from the latest Github release](https://github.co
 **Required settings**
 
   ```
-    # Prefix for metrics. Replace <appTierName> with the value in *appTierName* setting.
+    # Prefix for metrics. Replace <appTierName> with the value in appTierName setting.
     metricPrefix: "Server|Component:<appTierName>|Custom Metrics|Cluster Stats|"
 
 
@@ -105,7 +105,7 @@ Either [Download the Extension from the latest Github release](https://github.co
   in the [example start-up script](#restart-the-machine-agent) below.
 
   When running MA with this extension in Kubernetes, do not deploy as Daemon Set. Make it a 1 replica Deployment.
-  Set *apiMode* config variable to *cluster*. See detailed instructions below.
+  Set *apiMode* config variable to *cluster*. See detailed instructions [below](https://github.com/Appdynamics/kubernetes-snapshot-extension#deploying-to-a-kubernetes-cluster).
 
 
 
