@@ -1,12 +1,13 @@
 # Number of Threads for the Extension
 numberOfThreads: 23 # 7 tasks x 3 sub tasks + 2 extra
 
-metricPrefix: "Server|Component:ClusterAgent|Custom Metrics|Cluster Stats|"
+# <appTierName> must match the value in appTierName setting
+metricPrefix: "Server|Component:<appTierName>|Custom Metrics|Cluster Stats|"
 
-appName: "Cluster-01" # APPLICATION_NAME env var
-appTierName: "ClusterAgent"  # TIER_NAME en var
+appName: "" # APPLICATION_NAME env var
+appTierName: ""  # TIER_NAME en var
 
-# Path to your kubectl Client configuration
+# Path to your kubectl Client configuration. Can be blank, if apiMode is set to "cluster"
 kubeClientConfig: "/home/origin/.kube/config"
 
 #server or cluster

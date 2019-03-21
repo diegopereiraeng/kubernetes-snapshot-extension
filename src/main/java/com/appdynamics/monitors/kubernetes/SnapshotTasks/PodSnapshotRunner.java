@@ -330,9 +330,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 podObject = checkAddObject(podObject, termReasons, "termReasons");
 
                 podObject = checkAddInt(podObject, podRestarts, "podRestarts");
-                Utilities.incrementField(summary, "podRestarts");
-                Utilities.incrementField(summaryNamespace, "podRestarts");
-                Utilities.incrementField(summaryNode, "podRestarts");
+                Utilities.incrementField(summary, "PodRestarts", podRestarts);
+                Utilities.incrementField(summaryNamespace, "PodRestarts", podRestarts);
+                Utilities.incrementField(summaryNode, "PodRestarts", podRestarts);
             }
 
             boolean limitsDefined = false;
