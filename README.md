@@ -49,7 +49,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
 
 ## Installation
 
-Either [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.86/KubernetesSnapshotExtension-0.86.zip) or Build from Source.
+Either [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.87/KubernetesSnapshotExtension-0.87.zip) or Build from Source.
 
 1. Deploy the `KubernetesSnapshotExtension-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
@@ -263,7 +263,7 @@ SVM_PROPERTIES+=" -Dappdynamics.agent.maxMetrics=2000"
 The extension bundled with the machine agent can run in the cluster as a deployment.
 * Download the desired version of the machine agent from [The official downloads site](https://download.appdynamics.com)
 * Unzip the contents of the archive in the deployment/artifacts folder so that the artifacts folder becomes the machine agent root directory
-* [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.86/KubernetesSnapshotExtension-0.86.zip)
+* [Download the Extension from the latest Github release](https://github.com/Appdynamics/kubernetes-snapshot-extension/releases/download/0.87/KubernetesSnapshotExtension-0.87.zip)
 * Unzip its contents into the artifacts/monitors folder.
 
 The resulting directory structure will look as follows
