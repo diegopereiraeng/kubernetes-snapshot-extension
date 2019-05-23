@@ -335,12 +335,12 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
    the complete path
 5. Collect Debug Logs: Edit the file, *<MachineAgent>/conf/logging/log4j.xml* and update the level of the appender *com.appdynamics* and *com.singularity* to debug. Let it run for 5-10 minutes and attach the logs to a support ticket.
 
-## Support
+    ## Support
 
-This extension is provided as a beta feature: it is our intention to incorporate this into the AppDynamics Platform
-to provide additional integration with our APM and Business iQ products.
-AppDynamics reserves the right to change beta features at any time before making them generally available
-as well as never making them generally available. Any buying decisions should be made based on features and products
-that are currently generally available.
+    This extension is provided as a beta feature: it is our intention to incorporate this into the AppDynamics Platform
+    to provide additional integration with our APM and Business iQ products.
+    AppDynamics reserves the right to change beta features at any time before making them generally available
+    as well as never making them generally available. Any buying decisions should be made based on features and products
+    that are currently generally available.
 
-For any questions, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).
+    Support is provided by the author. Please post your inquiries and bug reports in the [Issues](https://github.com/Appdynamics/kubernetes-snapshot-extension/issues) area.

@@ -6,7 +6,7 @@
 
     <groupId>com.appdynamics.monitors</groupId>
     <artifactId>kubernetes-snapshot-extension</artifactId>
-    <version>0.86</version>
+    <version>0.87</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.8</version>
+            <version>2.9.9</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
