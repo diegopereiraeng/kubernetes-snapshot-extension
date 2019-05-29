@@ -337,10 +337,4 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 
     ## Support
 
-    This extension is provided as a beta feature: it is our intention to incorporate this into the AppDynamics Platform
-    to provide additional integration with our APM and Business iQ products.
-    AppDynamics reserves the right to change beta features at any time before making them generally available
-    as well as never making them generally available. Any buying decisions should be made based on features and products
-    that are currently generally available.
-
     Support is provided by the author. Please post your inquiries and bug reports in the [Issues](https://github.com/Appdynamics/kubernetes-snapshot-extension/issues) area.
