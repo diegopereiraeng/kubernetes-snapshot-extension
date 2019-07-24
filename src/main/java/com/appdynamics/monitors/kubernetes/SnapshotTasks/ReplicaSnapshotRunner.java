@@ -54,13 +54,18 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
             URL publishUrl = ensureSchema(config, apiKey, accountName, CONFIG_SCHEMA_NAME_RS, CONFIG_SCHEMA_DEF_RS);
 
             try {
-                ApiClient client = Utilities.initClient(config);
+                V1beta1ReplicaSetList rsList;
+                try {
+                    ApiClient client = Utilities.initClient(config);
 
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
+                    Configuration.setDefaultApiClient(client);
+                    ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
 
-                V1beta1ReplicaSetList rsList =
-                        api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
+                    rsList = api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
+                }
+                catch (Exception ex){
+                    throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
+                }
 
                 createReplicasetPayload(rsList, config, publishUrl, accountName, apiKey);
 

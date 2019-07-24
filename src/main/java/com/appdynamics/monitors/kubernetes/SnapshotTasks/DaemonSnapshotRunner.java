@@ -53,12 +53,17 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
             URL publishUrl = ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_DAEMON, CONFIG_SCHEMA_DEF_DAEMON);
 
             try {
-                ApiClient client = Utilities.initClient(config);
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
+                V1beta1DaemonSetList dsList;
+                try {
+                    ApiClient client = Utilities.initClient(config);
+                    Configuration.setDefaultApiClient(client);
+                    ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
 
-                V1beta1DaemonSetList dsList =
-                        api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
+                    dsList = api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
+                }
+                catch (Exception ex){
+                    throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
+                }
 
                 createDaemonsetPayload(dsList, config, publishUrl, accountName, apiKey);
 

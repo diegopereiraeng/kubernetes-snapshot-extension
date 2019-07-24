@@ -54,13 +54,21 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
             URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_DEPLOY, CONFIG_SCHEMA_DEF_DEPLOY);
 
             try {
-                ApiClient client = Utilities.initClient(config);
+                ExtensionsV1beta1DeploymentList deployList;
 
-                Configuration.setDefaultApiClient(client);
-                ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
+                try {
 
-                ExtensionsV1beta1DeploymentList deployList =
-                        api.listDeploymentForAllNamespaces(null, null, true, null, null, null, null, null, null);
+                    ApiClient client = Utilities.initClient(config);
+
+                    Configuration.setDefaultApiClient(client);
+                    ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
+
+                    deployList =
+                            api.listDeploymentForAllNamespaces(null, null, true, null, null, null, null, null, null);
+                }
+                catch (Exception ex){
+                    throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
+                }
 
                 createDeployPayload(deployList, config, publishUrl, accountName, apiKey);
 

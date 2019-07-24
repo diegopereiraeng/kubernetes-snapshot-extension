@@ -59,21 +59,29 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
             URL publishUrl = ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_EP, CONFIG_SCHEMA_DEF_EP);
 
             try {
-                ApiClient client = Utilities.initClient(config);
-
-                Configuration.setDefaultApiClient(client);
-                CoreV1Api api = new CoreV1Api();
-
                 V1EndpointsList epList;
-                epList = api.listEndpointsForAllNamespaces(null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
+                try {
+
+                    ApiClient client = Utilities.initClient(config);
+
+                    Configuration.setDefaultApiClient(client);
+                    CoreV1Api api = new CoreV1Api();
+
+
+                    epList = api.listEndpointsForAllNamespaces(null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+                }
+                catch (Exception ex){
+                    throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
+                }
+
                 createEndpointPayload(epList, config, publishUrl, accountName, apiKey);
 
 

@@ -57,21 +57,29 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_POD, CONFIG_SCHEMA_DEF_POD);
 
             try {
-                ApiClient client = Utilities.initClient(config);
-
-                Configuration.setDefaultApiClient(client);
-                CoreV1Api api = new CoreV1Api();
-
                 V1PodList podList;
-                podList = api.listPodForAllNamespaces(null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
+
+                try {
+                    ApiClient client = Utilities.initClient(config);
+
+                    Configuration.setDefaultApiClient(client);
+                    CoreV1Api api = new CoreV1Api();
+
+
+                    podList = api.listPodForAllNamespaces(null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+                }
+                catch (Exception ex){
+                    throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
+                }
+
                 createPodPayload(podList, config, publishUrl, accountName, apiKey);
 
                 //build and update metrics

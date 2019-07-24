@@ -52,21 +52,29 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName, CONFIG_SCHEMA_NAME_NODE, CONFIG_SCHEMA_DEF_NODE);
 
             try {
-                ApiClient client = Utilities.initClient(config);
-
-                Configuration.setDefaultApiClient(client);
-                CoreV1Api api = new CoreV1Api();
-
                 V1NodeList nodeList;
-                nodeList = api.listNode(null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
+
+                try {
+                    ApiClient client = Utilities.initClient(config);
+
+                    Configuration.setDefaultApiClient(client);
+                    CoreV1Api api = new CoreV1Api();
+
+
+                    nodeList = api.listNode(null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+                }
+                catch (Exception ex){
+                    throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
+                }
+
                 createNodePayload(nodeList, config, publishUrl, accountName, apiKey);
 
                 //build and update metrics
