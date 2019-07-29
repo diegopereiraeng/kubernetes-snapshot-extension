@@ -57,10 +57,10 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                 V1beta1ReplicaSetList rsList;
                 try {
                     ApiClient client = Utilities.initClient(config);
-
+                    this.setAPIServerTimeout(client, 240);
                     Configuration.setDefaultApiClient(client);
                     ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-
+                    this.setCoreAPIServerTimeout(api, 240);
                     rsList = api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
                 }
                 catch (Exception ex){

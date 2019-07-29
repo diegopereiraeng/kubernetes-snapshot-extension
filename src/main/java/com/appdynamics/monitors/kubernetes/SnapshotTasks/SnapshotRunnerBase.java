@@ -12,12 +12,16 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.kubernetes.client.ApiClient;
+import io.kubernetes.client.apis.CoreV1Api;
+import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.METRIC_SEPARATOR;
 import static com.appdynamics.monitors.kubernetes.Utilities.ALL;
@@ -113,6 +117,29 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
         }
         catch (Exception ex){
             logger.error(String.format("Unable to save metrics for task {} to disk", taskName), ex);
+        }
+    }
+    protected void setAPIServerTimeout(ApiClient client, long seconds){
+        if (client != null){
+            client.getHttpClient().setConnectTimeout(seconds, TimeUnit.SECONDS);
+            client.getHttpClient().setReadTimeout(seconds, TimeUnit.SECONDS);
+            client.getHttpClient().setWriteTimeout(seconds, TimeUnit.SECONDS);
+        }
+    }
+
+    protected void setCoreAPIServerTimeout(CoreV1Api api, long seconds){
+        if (api != null){
+            api.getApiClient().getHttpClient().setConnectTimeout(seconds, TimeUnit.SECONDS);
+            api.getApiClient().getHttpClient().setReadTimeout(seconds, TimeUnit.SECONDS);
+            api.getApiClient().getHttpClient().setWriteTimeout(seconds, TimeUnit.SECONDS);
+        }
+    }
+
+    protected void setCoreAPIServerTimeout(ExtensionsV1beta1Api api, long seconds){
+        if (api != null){
+            api.getApiClient().getHttpClient().setConnectTimeout(seconds, TimeUnit.SECONDS);
+            api.getApiClient().getHttpClient().setReadTimeout(seconds, TimeUnit.SECONDS);
+            api.getApiClient().getHttpClient().setWriteTimeout(seconds, TimeUnit.SECONDS);
         }
     }
 

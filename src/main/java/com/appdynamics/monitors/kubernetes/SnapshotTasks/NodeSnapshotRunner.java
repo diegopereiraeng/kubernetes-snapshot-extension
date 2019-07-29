@@ -56,11 +56,10 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
                 try {
                     ApiClient client = Utilities.initClient(config);
-
+                    this.setAPIServerTimeout(client, 240);
                     Configuration.setDefaultApiClient(client);
                     CoreV1Api api = new CoreV1Api();
-
-
+                    this.setCoreAPIServerTimeout(api, 240);
                     nodeList = api.listNode(null,
                             null,
                             null,

@@ -55,10 +55,10 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                 V1EventList eventList;
                 try {
                     ApiClient client = Utilities.initClient(config);
-
+                    this.setAPIServerTimeout(client, 240);
                     Configuration.setDefaultApiClient(client);
                     CoreV1Api api = new CoreV1Api();
-
+                    this.setCoreAPIServerTimeout(api, 240);
                     eventList = api.listEventForAllNamespaces(null,
                             null,
                             null,
