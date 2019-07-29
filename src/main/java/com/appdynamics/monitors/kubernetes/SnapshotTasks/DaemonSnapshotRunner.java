@@ -56,10 +56,10 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                 V1beta1DaemonSetList dsList;
                 try {
                     ApiClient client = Utilities.initClient(config);
-                    this.setAPIServerTimeout(client, 240);
+                    this.setAPIServerTimeout(client, K8S_API_TIMEOUT);
                     Configuration.setDefaultApiClient(client);
                     ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-                    this.setCoreAPIServerTimeout(api, 240);
+                    this.setCoreAPIServerTimeout(api, K8S_API_TIMEOUT);
 
                     dsList = api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);
                 }

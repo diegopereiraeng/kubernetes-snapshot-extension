@@ -35,6 +35,7 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
     private MonitorConfiguration configuration;
     private String taskName;
     private Map<String, String> entityConfig = null;
+    protected static int K8S_API_TIMEOUT = 240;
 
     public SnapshotRunnerBase(){
 
