@@ -173,14 +173,34 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         float val = s.getValue().getNumber().divide(new BigDecimal(1000000)).floatValue(); //MB
                         nodeObject = checkAddFloat(nodeObject, val, "memCapacity");
                         Utilities.incrementField(summaryNode, "CapacityMemory", val);
+                        Utilities.incrementField(summary, "CapacityMemory", val);
+                        if (isMaster) {
+                            Utilities.incrementField(summary, "MasterCapacityMemory", val);
+                        } else {
+                            Utilities.incrementField(summary, "WorkerCapacityMemory", val);
+                        }
                     }
                     if (s.getKey().equals("cpu")) {
-                        nodeObject = checkAddFloat(nodeObject, s.getValue().getNumber().floatValue(), "cpuCapacity");
-                        Utilities.incrementField(summaryNode, "CapacityCpu", s.getValue().getNumber().floatValue());
+                        float val = s.getValue().getNumber().floatValue();
+                        nodeObject = checkAddFloat(nodeObject, val, "cpuCapacity");
+                        Utilities.incrementField(summaryNode, "CapacityCpu", val);
+                        Utilities.incrementField(summary, "CapacityCpu", val);
+                        if (isMaster) {
+                            Utilities.incrementField(summary, "MasterCapacityCpu", val);
+                        } else {
+                            Utilities.incrementField(summary, "WorkerCapacityCpu", val);
+                        }
                     }
                     if (s.getKey().equals("pods")) {
-                        nodeObject = checkAddInt(nodeObject, s.getValue().getNumber().intValueExact(), "podCapacity");
-                        Utilities.incrementField(summaryNode, "CapacityPods", s.getValue().getNumber().intValueExact());
+                        int val = s.getValue().getNumber().intValueExact();
+                        nodeObject = checkAddInt(nodeObject, val, "podCapacity");
+                        Utilities.incrementField(summaryNode, "CapacityPods", val);
+                        Utilities.incrementField(summary, "CapacityPods", val);
+                        if (isMaster) {
+                            Utilities.incrementField(summary, "MasterCapacityPods", val);
+                        } else {
+                            Utilities.incrementField(summary, "WorkerCapacityPods", val);
+                        }
                     }
                 }
             }
@@ -192,13 +212,33 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         float val = s.getValue().getNumber().divide(new BigDecimal(1000000)).floatValue(); //MB
                         nodeObject = checkAddFloat(nodeObject, val, "memAllocations");
                         Utilities.incrementField(summaryNode, "AllocationsMemory", val);
+                        Utilities.incrementField(summary, "AllocationsMemory", val);
+                        if (isMaster) {
+                            Utilities.incrementField(summary, "MasterAllocationsMemory", val);
+                        } else {
+                            Utilities.incrementField(summary, "WorkerAllocationsMemory", val);
+                        }
                     }
                     if (s.getKey().equals("cpu")) {
-                        nodeObject = checkAddFloat(nodeObject, s.getValue().getNumber().floatValue(), "cpuAllocations");
-                        Utilities.incrementField(summaryNode, "AllocationsCpu", s.getValue().getNumber().floatValue());
+                        float val = s.getValue().getNumber().floatValue();
+                        nodeObject = checkAddFloat(nodeObject, val, "cpuAllocations");
+                        Utilities.incrementField(summaryNode, "AllocationsCpu", val);
+                        Utilities.incrementField(summary, "AllocationsMemory", val);
+                        if (isMaster) {
+                            Utilities.incrementField(summary, "MasterAllocationsMemory", val);
+                        } else {
+                            Utilities.incrementField(summary, "WorkerAllocationsMemory", val);
+                        }
                     }
                     if (s.getKey().equals("pods")) {
-                        nodeObject = checkAddInt(nodeObject, s.getValue().getNumber().intValueExact(), "podAllocations");
+                        int val = s.getValue().getNumber().intValueExact();
+                        nodeObject = checkAddInt(nodeObject, val , "podAllocations");
+                        Utilities.incrementField(summary, "AllocationsPods", val);
+                        if (isMaster) {
+                            Utilities.incrementField(summary, "MasterAllocationsPods", val);
+                        } else {
+                            Utilities.incrementField(summary, "WorkerAllocationsPods", val);
+                        }
                     }
                 }
             }
@@ -310,6 +350,23 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityPods", 0);
             summary.put("AllocationsMemory", 0);
             summary.put("AllocationsCpu", 0);
+            summary.put("AllocationsPods", 0);
+            summary.put("CapacityMemory", 0);
+            summary.put("CapacityCpu", 0);
+            summary.put("CapacityPods", 0);
+            summary.put("MasterAllocationsMemory", 0);
+            summary.put("MasterAllocationsCpu", 0);
+            summary.put("MasterAllocationsPods", 0);
+            summary.put("MasterCapacityMemory", 0);
+            summary.put("MasterCapacityCpu", 0);
+            summary.put("MasterCapacityPods", 0);
+            summary.put("WorkerAllocationsMemory", 0);
+            summary.put("WorkerAllocationsCpu", 0);
+            summary.put("WorkerAllocationsPods", 0);
+            summary.put("WorkerCapacityMemory", 0);
+            summary.put("WorkerCapacityCpu", 0);
+            summary.put("WorkerCapacityPods", 0);
+
         }
         else{
             summary.put("CapacityMemory", 0);

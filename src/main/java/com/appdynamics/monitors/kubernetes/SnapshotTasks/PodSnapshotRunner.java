@@ -280,9 +280,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
 
             if (phase.equals("Running")) {
-                Utilities.incrementField(summary, "Running");
-                Utilities.incrementField(summaryNamespace, "Running");
-                Utilities.incrementField(summaryNode, "Running");
+                Utilities.incrementField(summary, "RunningPods");
+                Utilities.incrementField(summaryNamespace, "RunningPods");
+                Utilities.incrementField(summaryNode, "RunningPods");
             }
 
             podObject = checkAddObject(podObject, podItem.getStatus().getPodIP(), "podIP");
@@ -505,7 +505,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         summary.put("Pods", 0);
         summary.put("Evictions", 0);
         summary.put("PodRestarts", 0);
-        summary.put("Running", 0);
+        summary.put("RunningPods", 0);
         summary.put("Failed", 0);
         summary.put("Pending", 0);
         if (namespace != null && namespace.equals(ALL) && node != null && node.equals(ALL)) {
@@ -566,7 +566,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     String.format("select * from %s where reason = \"Evicted\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
             metricsList.add(new AppDMetricObj("PodRestarts", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where podRestarts > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
-            metricsList.add(new AppDMetricObj("Running", parentSchema, CONFIG_SCHEMA_DEF_POD,
+            metricsList.add(new AppDMetricObj("RunningPods", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where phase = \"Running\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
             metricsList.add(new AppDMetricObj("Failed", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where phase = \"Failed\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
