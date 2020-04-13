@@ -253,7 +253,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
         JsonNode theTier = null;
         String tierName = Utilities.getClusterTierName(config);
         logger.info("Looking for tier {}", tierName);
-        String path = "restui/tiers/list/health";
+        String path = "restui/v1/tiers/list/health";
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode obj = mapper.createObjectNode();
         ArrayNode sorts = obj.putArray("columnSorts");
