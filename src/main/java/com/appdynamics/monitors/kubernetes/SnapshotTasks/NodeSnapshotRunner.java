@@ -305,6 +305,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("TaintsTotal", 0);
             summary.put("Masters", 0);
             summary.put("Workers", 0);
+            summary.put("CapacityMemory", 0);
+            summary.put("CapacityCpu", 0);
+            summary.put("CapacityPods", 0);
+            summary.put("AllocationsMemory", 0);
+            summary.put("AllocationsCpu", 0);
         }
         else{
             summary.put("CapacityMemory", 0);
