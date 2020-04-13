@@ -44,6 +44,8 @@ data:
     proxyUser: ""
     proxyPass: ""
 
+    # use "restui" only for < Controller 4.5.15
+    restuiTierPath: "restui/v1"
 
     entities:
     - type: "pod"
