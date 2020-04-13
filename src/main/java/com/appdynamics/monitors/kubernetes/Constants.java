@@ -19,6 +19,7 @@ public class Constants {
     public static final String CONFIG_EVENTS_URL = "eventsUrl";
     public static final String CONFIG_CONTROLLER_URL = "controllerUrl";
     public static final String CONFIG_CONTROLLER_API_USER = "controllerAPIUser";
+    public static final String CONFIG_CONTROLLER_RESTUI_TIER_PATH = "restuiTierPath";
 
     public static final String CONFIG_ENTITY_TYPE = "type";
     public static final String CONFIG_ENTITY_TYPE_POD = "pod";

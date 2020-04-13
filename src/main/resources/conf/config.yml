@@ -8,7 +8,7 @@ appName: "" # APPLICATION_NAME env var
 appTierName: ""  # TIER_NAME en var
 
 # Path to your kubectl Client configuration. Can be blank, if apiMode is set to "cluster"
-kubeClientConfig: "/home/origin/.kube/config"
+kubeClientConfig: "$USER/.kube/config"
 
 #server or cluster
 apiMode: "server"  #K8S_API_MODE env var
@@ -46,6 +46,8 @@ proxyUser: ""
 #APPD_PROXY_PASS
 proxyPass: ""
 
+# use "restui" only for < Controller 4.5.15
+restui_tier_path: "restui/v1"
 
 entities:
 - type: "pod"

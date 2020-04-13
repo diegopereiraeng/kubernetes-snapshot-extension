@@ -274,6 +274,14 @@ public class Utilities {
     public static String getMetricsPath(Map<String, String> config){
         return String.format(config.get(DEFAULT_METRIC_PREFIX_NAME), tierID);
     }
+    
+    public static String getRestUITierPath(Map<String, String> config){
+        String restuiTierPath = config.get(CONFIG_APP_TIER_NAME);
+        if (StringUtils.isNotEmpty(restuiTierPath) == false){
+            restuiTierPath = "restui";
+        }
+        return  restuiTierPath;
+    }
 
     public static String getMetricsPath(Map<String, String> config, String namespace, String node){
         if(!node.equals(ALL)){
