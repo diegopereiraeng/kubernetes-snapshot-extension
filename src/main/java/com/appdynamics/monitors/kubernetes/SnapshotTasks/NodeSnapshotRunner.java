@@ -102,12 +102,27 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
+
+
+
             String clusterName = Utilities.ensureClusterName(config, nodeObj.getMetadata().getClusterName());
 
             SummaryObj summary = getSummaryMap().get(ALL);
             if (summary == null) {
                 summary = initNodeSummaryObject(config, ALL);
                 getSummaryMap().put(ALL, summary);
+            }
+
+            SummaryObj summaryWorker = getSummaryMap().get("Worker");
+            if (summaryWorker == null) {
+                summaryWorker = initNodeSummaryObject(config, "Worker");
+                getSummaryMap().put("Worker", summaryWorker);
+            }
+
+            SummaryObj summaryMaster = getSummaryMap().get("Master");
+            if (summaryMaster == null) {
+                summaryMaster = initNodeSummaryObject(config, "Master");
+                getSummaryMap().put("Master", summaryMaster);
             }
 
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
@@ -175,9 +190,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNode, "CapacityMemory", val);
                         Utilities.incrementField(summary, "CapacityMemory", val);
                         if (isMaster) {
-                            Utilities.incrementField(summary, "MasterCapacityMemory", val);
+                            Utilities.incrementField(summaryMaster, "CapacityMemory", val);
                         } else {
-                            Utilities.incrementField(summary, "WorkerCapacityMemory", val);
+                            Utilities.incrementField(summaryWorker, "CapacityMemory", val);
                         }
                     }
                     if (s.getKey().equals("cpu")) {
@@ -186,9 +201,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNode, "CapacityCpu", val);
                         Utilities.incrementField(summary, "CapacityCpu", val);
                         if (isMaster) {
-                            Utilities.incrementField(summary, "MasterCapacityCpu", val);
+                            Utilities.incrementField(summaryMaster, "CapacityCpu", val);
                         } else {
-                            Utilities.incrementField(summary, "WorkerCapacityCpu", val);
+                            Utilities.incrementField(summaryWorker, "CapacityCpu", val);
                         }
                     }
                     if (s.getKey().equals("pods")) {
@@ -197,9 +212,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNode, "CapacityPods", val);
                         Utilities.incrementField(summary, "CapacityPods", val);
                         if (isMaster) {
-                            Utilities.incrementField(summary, "MasterCapacityPods", val);
+                            Utilities.incrementField(summaryMaster, "CapacityPods", val);
                         } else {
-                            Utilities.incrementField(summary, "WorkerCapacityPods", val);
+                            Utilities.incrementField(summaryWorker, "CapacityPods", val);
                         }
                     }
                 }
@@ -214,9 +229,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNode, "AllocationsMemory", val);
                         Utilities.incrementField(summary, "AllocationsMemory", val);
                         if (isMaster) {
-                            Utilities.incrementField(summary, "MasterAllocationsMemory", val);
+                            Utilities.incrementField(summaryMaster, "AllocationsMemory", val);
                         } else {
-                            Utilities.incrementField(summary, "WorkerAllocationsMemory", val);
+                            Utilities.incrementField(summaryWorker, "AllocationsMemory", val);
                         }
                     }
                     if (s.getKey().equals("cpu")) {
@@ -225,9 +240,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNode, "AllocationsCpu", val);
                         Utilities.incrementField(summary, "AllocationsMemory", val);
                         if (isMaster) {
-                            Utilities.incrementField(summary, "MasterAllocationsMemory", val);
+                            Utilities.incrementField(summaryMaster, "AllocationsMemory", val);
                         } else {
-                            Utilities.incrementField(summary, "WorkerAllocationsMemory", val);
+                            Utilities.incrementField(summaryWorker, "AllocationsMemory", val);
                         }
                     }
                     if (s.getKey().equals("pods")) {
@@ -235,9 +250,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         nodeObject = checkAddInt(nodeObject, val , "podAllocations");
                         Utilities.incrementField(summary, "AllocationsPods", val);
                         if (isMaster) {
-                            Utilities.incrementField(summary, "MasterAllocationsPods", val);
+                            Utilities.incrementField(summaryMaster, "AllocationsPods", val);
                         } else {
-                            Utilities.incrementField(summary, "WorkerAllocationsPods", val);
+                            Utilities.incrementField(summaryWorker, "AllocationsPods", val);
                         }
                     }
                 }
@@ -354,18 +369,18 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityMemory", 0);
             summary.put("CapacityCpu", 0);
             summary.put("CapacityPods", 0);
-            summary.put("MasterAllocationsMemory", 0);
-            summary.put("MasterAllocationsCpu", 0);
-            summary.put("MasterAllocationsPods", 0);
-            summary.put("MasterCapacityMemory", 0);
-            summary.put("MasterCapacityCpu", 0);
-            summary.put("MasterCapacityPods", 0);
-            summary.put("WorkerAllocationsMemory", 0);
-            summary.put("WorkerAllocationsCpu", 0);
-            summary.put("WorkerAllocationsPods", 0);
-            summary.put("WorkerCapacityMemory", 0);
-            summary.put("WorkerCapacityCpu", 0);
-            summary.put("WorkerCapacityPods", 0);
+            /* summary.put("AllocationsMemory", 0);
+            summary.put("AllocationsCpu", 0);
+            summary.put("AllocationsPods", 0);
+            summary.put("CapacityMemory", 0);
+            summary.put("CapacityCpu", 0);
+            summary.put("CapacityPods", 0);
+            summary.put("AllocationsMemory", 0);
+            summary.put("AllocationsCpu", 0);
+            summary.put("AllocationsPods", 0);
+            summary.put("CapacityMemory", 0);
+            summary.put("CapacityCpu", 0);
+            summary.put("CapacityPods", 0); */
 
         }
         else{
@@ -374,6 +389,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityPods", 0);
             summary.put("AllocationsMemory", 0);
             summary.put("AllocationsCpu", 0);
+            if (node.equals("Worker") || node.equals("Master") ) {
+                summary.put("AllocationsPods", 0);
+            }
         }
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, node);
@@ -412,6 +430,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             metricsList.add(new AppDMetricObj("AllocationsCpu", parentSchema, CONFIG_SCHEMA_DEF_NODE,
                     String.format("select * from %s where cpuAllocations > 0 and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
         }
+/*         if (nodeName.equals("Workers")) {
+            //global
+            metricsList.add(new AppDMetricObj("ReadyNodes", parentSchema, CONFIG_SCHEMA_DEF_NODE,
+                    String.format("select * from %s where ready = \"True\" and clusterName = \"%s\"", parentSchema, clusterName), rootPath, ALL, nodeName));
+        } */
 //        else {
 //            //node level
 //            String nodePath = String.format("%s|%s|", rootPath, METRIC_PATH_NODES, nodeName);
