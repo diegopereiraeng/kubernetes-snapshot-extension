@@ -113,16 +113,16 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 getSummaryMap().put(ALL, summary);
             }
 
-            SummaryObj summaryWorker = getSummaryMap().get("Worker");
+            SummaryObj summaryWorker = getSummaryMap().get("Workers");
             if (summaryWorker == null) {
-                summaryWorker = initNodeSummaryObject(config, "Worker");
-                getSummaryMap().put("Worker", summaryWorker);
+                summaryWorker = initNodeSummaryObject(config, "Workers");
+                getSummaryMap().put("Workers", summaryWorker);
             }
 
-            SummaryObj summaryMaster = getSummaryMap().get("Master");
+            SummaryObj summaryMaster = getSummaryMap().get("Masters");
             if (summaryMaster == null) {
-                summaryMaster = initNodeSummaryObject(config, "Master");
-                getSummaryMap().put("Master", summaryMaster);
+                summaryMaster = initNodeSummaryObject(config, "Masters");
+                getSummaryMap().put("Masters", summaryMaster);
             }
 
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
@@ -171,10 +171,10 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 nodeObject = checkAddObject(nodeObject, labels, "labels");
             }
             if (isMaster) {
-                nodeObject = checkAddObject(nodeObject, "master", "role");
+                nodeObject = checkAddObject(nodeObject, "Masters", "role");
                 masters++;
             } else {
-                nodeObject = checkAddObject(nodeObject, "worker", "role");
+                nodeObject = checkAddObject(nodeObject, "Workers", "role");
                 workers++;
             }
 
@@ -389,7 +389,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityPods", 0);
             summary.put("AllocationsMemory", 0);
             summary.put("AllocationsCpu", 0);
-            if (node.equals("Worker") || node.equals("Master") ) {
+            if (node.equals("Workers") || node.equals("Masters") ) {
                 summary.put("AllocationsPods", 0);
             }
         }
