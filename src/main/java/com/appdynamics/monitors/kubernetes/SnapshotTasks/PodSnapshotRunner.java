@@ -16,6 +16,7 @@ import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
+import io.sundr.shaded.org.apache.velocity.runtime.log.Log;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -354,6 +355,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 // File to read and save podRestart history
                 String podHistoryFile = Utilities.getRootDirectory()+"history.tmp";
+
+                logger.info("History file: " + podHistoryFile);
 
                 //JSON parser object to parse read file
                 JSONParser jsonParser = new JSONParser();
