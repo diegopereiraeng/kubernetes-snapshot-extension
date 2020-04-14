@@ -624,6 +624,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("HasNodeAffinity", 0);
             summary.put("HasPodAffinity", 0);
             summary.put("HasPodAntiAffinity", 0);
+            summary.put("Namespaces", 0);
         }
         else {
             summary.put("RequestCpu", 0);
