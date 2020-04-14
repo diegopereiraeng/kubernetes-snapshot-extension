@@ -136,7 +136,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         Integer namespacepodRestartsSum = 0;
         Integer podRestartsHist = 0;
 
-        boolean historyExist = podHistoryFile.exists();
+        /* boolean historyExist = podHistoryFile.exists();
         if(historyExist){
             try (FileReader reader = new FileReader(podHistoryFile))
             {
@@ -163,7 +163,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
                 logger.info("Sending PodRestarts as 0 because of Exception");
             }
-        }
+        } */
         
 
         for(V1Pod podItem : podList.getItems()){
@@ -557,7 +557,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
         }
         
-        //Save and Add PodRestarts history file
+        /* //Save and Add PodRestarts history file
 
         SummaryObj summary = getSummaryMap().get(ALL);
         if (summary == null) {
@@ -582,7 +582,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
         } catch (IOException e) {
             logger.error("Issues when saving podRestart History file", e.getMessage());
-        }
+        } */
                 
         if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Pod records", arrayNode.size());
