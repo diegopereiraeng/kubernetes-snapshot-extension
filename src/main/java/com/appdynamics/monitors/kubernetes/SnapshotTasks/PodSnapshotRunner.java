@@ -355,7 +355,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 
 
                 // File to read and save podRestart history
-                String podHistoryPath = Utilities.getRootDirectory();
+                String podHistoryPath = Utilities.getExtensionDirectory();
 
                 final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
 

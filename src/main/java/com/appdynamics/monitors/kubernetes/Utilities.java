@@ -434,6 +434,11 @@ public class Utilities {
         return String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
     }
 
+    public static String getExtensionDirectory(){
+        File file = new File(".");
+        return String.format("%s/monitors/KubernetesSnapshotExtension", file.getParent());
+    }
+
     public static String getControllerUrl(Map<String, String> config){
         String url = System.getenv("REST_API_URL");
         if (StringUtils.isNotEmpty(url) == false){
