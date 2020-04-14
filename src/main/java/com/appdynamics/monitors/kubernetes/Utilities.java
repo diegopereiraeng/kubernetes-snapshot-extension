@@ -307,6 +307,10 @@ public class Utilities {
         return getMetricsPath(config);
     }
 
+    public static String getMetricsPathV2(Map<String, String> config, String name, String specific){
+        return String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, name, METRIC_SEPARATOR, specific);
+    }
+
 
     public static String ensureClusterName(Map<String, String> config, String clusterName){
         if (clusterName == null || clusterName.isEmpty()){
