@@ -178,8 +178,10 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 workers++;
             }
 
+
             Utilities.incrementField(summary, "Masters", masters);
             Utilities.incrementField(summary, "Workers", workers);
+            Utilities.incrementField(summary, "Nodes", 1);
 
             if (nodeObj.getStatus().getCapacity() != null) {
                 Set<Map.Entry<String, Quantity>> set = nodeObj.getStatus().getCapacity().entrySet();
@@ -369,6 +371,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityMemory", 0);
             summary.put("CapacityCpu", 0);
             summary.put("CapacityPods", 0);
+            summary.put("Nodes", 0);
             /* summary.put("AllocationsMemory", 0);
             summary.put("AllocationsCpu", 0);
             summary.put("AllocationsPods", 0);

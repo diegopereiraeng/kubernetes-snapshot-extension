@@ -1322,7 +1322,7 @@
           "displayName" : "null",
           "functionType" : "VALUE",
           "inputMetricText" : false,
-          "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|Running",
+          "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|RunningPods",
           "scopeEntity" : {
             "subtype" : null,
             "entityType" : "APPLICATION_COMPONENT",
@@ -1333,7 +1333,7 @@
           },
           "metricExpressionType" : "Absolute"
         },
-        "metricDisplayNameCustomFormat" : "Running",
+        "metricDisplayNameCustomFormat" : "RunningPods",
         "expressionString" : "",
         "baselineName" : null,
         "applicationName" : "",
@@ -1358,10 +1358,10 @@
         "metricExpressionTemplate" : {
           "expression2" : {
             "inputMetricPath" : null,
-            "displayName" : "Running",
+            "displayName" : "RunningPods",
             "functionType" : "VALUE",
             "inputMetricText" : false,
-            "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|Running",
+            "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|RunningPods",
             "scopeEntity" : {
               "subtype" : null,
               "entityType" : "APPLICATION_COMPONENT",
@@ -1416,7 +1416,7 @@
           }
         },
         "metricDisplayNameCustomFormat" : "Failed",
-        "expressionString" : "{All}-{evic}-{Running}",
+        "expressionString" : "{All}-{evic}-{RunningPods}",
         "baselineName" : null,
         "applicationName" : "",
         "metricDisplayNameStyle" : "DISPLAY_STYLE_CUSTOM"

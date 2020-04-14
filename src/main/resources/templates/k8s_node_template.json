@@ -265,7 +265,7 @@
                                     "displayName": "limit",
                                     "inputMetricText": false,
                                     "inputMetricPath": null,
-                                    "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Nodes|openshift-node0.intra.os.netfront.io|Running",
+                                    "metricPath": "Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats|Nodes|openshift-node0.intra.os.netfront.io|RunningPods",
                                     "scopeEntity": {
                                         "applicationName": "Openshift-Cluster-01",
                                         "entityType": "APPLICATION_COMPONENT",
@@ -475,7 +475,7 @@
             "isGlobal": true,
             "propertiesMap": null,
             "dataSeriesTemplates": null,
-            "text": "Running",
+            "text": "RunningPods",
             "textAlign": "LEFT",
             "margin": 4
         },
