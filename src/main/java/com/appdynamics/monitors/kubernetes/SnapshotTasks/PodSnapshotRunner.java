@@ -121,6 +121,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         // Variable to count namespaces
         Map<String, Integer> namespaces = new HashMap<String, Integer>();
 
+        
+
         for(V1Pod podItem : podList.getItems()){
 
             ObjectNode podObject = mapper.createObjectNode();
@@ -354,13 +356,29 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }
                 
 
+                
+
+                
+
+                //container data
+                podObject = checkAddObject(podObject, contStates, "containerStates");
+                podObject = checkAddObject(podObject, images, "images");
+                podObject = checkAddObject(podObject, waitReasons, "waitReasons");
+                podObject = checkAddObject(podObject, termReasons, "termReasons");
+
+                podObject = checkAddInt(podObject, podRestarts, "podRestarts");
+                //podObject = checkAddInt(podObject, podRestarstSum, "podRestarstSum");
+                Utilities.incrementField(summary, "PodRestarts", podRestarts);
+                //Utilities.incrementField(summary, "podRestarstSum", podRestarstSum);
+                Utilities.incrementField(summaryNamespace, "PodRestarts", podRestarts);
+                Utilities.incrementField(summaryNode, "PodRestarts", podRestarts);
                 // File to read and save podRestart history
                 String podHistoryPath = Utilities.getExtensionDirectory();
 
                 final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
 
                 logger.info("History file: " + podHistoryFile);
-
+                /*
                 //JSON parser object to parse read file
                 JSONParser jsonParser = new JSONParser();
                 Integer podRestarstSum = podRestarts;
@@ -393,22 +411,6 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         logger.info("Sending PodRestarts as 0 because of Exception");
                     }
                 }
-
-                
-
-                //container data
-                podObject = checkAddObject(podObject, contStates, "containerStates");
-                podObject = checkAddObject(podObject, images, "images");
-                podObject = checkAddObject(podObject, waitReasons, "waitReasons");
-                podObject = checkAddObject(podObject, termReasons, "termReasons");
-
-                podObject = checkAddInt(podObject, podRestarts, "podRestarts");
-                podObject = checkAddInt(podObject, podRestarstSum, "podRestarstSum");
-                Utilities.incrementField(summary, "PodRestarts", podRestarts);
-                Utilities.incrementField(summary, "podRestarstSum", podRestarstSum);
-                Utilities.incrementField(summaryNamespace, "PodRestarts", podRestarts);
-                Utilities.incrementField(summaryNode, "PodRestarts", podRestarts);
-
                 //Save PodRestarts
                 JSONObject clusterHistory = new JSONObject();
                 clusterHistory.put("podRestarts", podRestarstSum);
@@ -420,6 +422,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 } catch (IOException e) {
                     logger.error("Issues when saving podRestart History file", e.getMessage());
                 }
+                */
             }
 
             boolean limitsDefined = false;
