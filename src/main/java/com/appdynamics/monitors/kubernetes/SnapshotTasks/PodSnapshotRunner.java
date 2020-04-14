@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -354,7 +355,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 
 
                 // File to read and save podRestart history
-                String podHistoryFile = Utilities.getRootDirectory()+"/history.tmp";
+                String podHistoryPath = Utilities.getRootDirectory();
+
+                final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
 
                 logger.info("History file: " + podHistoryFile);
 
@@ -362,29 +365,34 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 JSONParser jsonParser = new JSONParser();
                 Integer podRestarstSum = podRestarts;
 
-
-                try (FileReader reader = new FileReader(podHistoryFile))
-                {
-                    //Read JSON file
-                    Object obj = jsonParser.parse(reader);
-                    JSONObject podRestartHistoryJson = (JSONObject) obj;
-                    Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
-                    podRestarts = podRestarts - podRestartHistory;
-                    
-                } catch (FileNotFoundException e) {
-                    podRestarts = 0;
-                    logger.error("NotFound - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                    logger.info("Sending PodRestarts as 0 because PodRestarts history file doesn't exist and it will be created");
-                } catch (IOException e) {
-                    podRestarts = 0;
-                    logger.error("IOException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                    logger.info("Sending PodRestarts as 0 because of IOException");
-                } catch (ParseException e) {
-                    podRestarts = 0;
-                    logger.error("ParseException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                    logger.info("Sending PodRestarts as 0 because Could not parse the file, please delete the file "+podHistoryFile+" if its corrupt");
+                boolean historyExist = podHistoryFile.exists();
+                if(historyExist){
+                    try (FileReader reader = new FileReader(podHistoryFile))
+                    {
+                        //Read JSON file
+                        Object obj = jsonParser.parse(reader);
+                        JSONObject podRestartHistoryJson = (JSONObject) obj;
+                        Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
+                        podRestarts = podRestarts - podRestartHistory;
+                        
+                    } catch (FileNotFoundException e) {
+                        podRestarts = 0;
+                        logger.error("NotFound - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                        logger.info("Sending PodRestarts as 0 because PodRestarts history file doesn't exist and it will be created");
+                    } catch (IOException e) {
+                        podRestarts = 0;
+                        logger.error("IOException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                        logger.info("Sending PodRestarts as 0 because of IOException");
+                    } catch (ParseException e) {
+                        podRestarts = 0;
+                        logger.error("ParseException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                        logger.info("Sending PodRestarts as 0 because Could not parse the file, please delete the file "+podHistoryFile+" if its corrupt");
+                    } catch (Exception e){
+                        podRestarts = 0;
+                        logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                        logger.info("Sending PodRestarts as 0 because of Exception");
+                    }
                 }
-            
 
                 
 
@@ -403,14 +411,14 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 //Save PodRestarts
                 JSONObject clusterHistory = new JSONObject();
-                clusterHistory.put("podRestarts", podRestarts);
+                clusterHistory.put("podRestarts", podRestarstSum);
                 try (FileWriter file = new FileWriter(podHistoryFile)) {
     
                     file.write(clusterHistory.toJSONString());
                     file.flush();
         
                 } catch (IOException e) {
-                    logger.error("Issues when saving podRestart History", e.getMessage());
+                    logger.error("Issues when saving podRestart History file", e.getMessage());
                 }
             }
 
