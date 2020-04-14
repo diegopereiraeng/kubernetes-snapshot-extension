@@ -430,13 +430,13 @@ public class Utilities {
     }
 
     public static String getRootDirectory(){
-        File file = new File(".");
+        File file = new File("");
         return String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
     }
 
     public static String getExtensionDirectory(){
-        File file = new File(".");
-        return String.format("%s/monitors/KubernetesSnapshotExtension", file.getParent());
+        File file = new File("");
+        return String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
     }
 
     public static String getControllerUrl(Map<String, String> config){
