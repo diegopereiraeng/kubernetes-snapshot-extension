@@ -430,7 +430,7 @@ public class Utilities {
     }
 
     public static String getRootDirectory(){
-        File file = new File("");
+        File file = new File(".");
         return String.format("%s/monitors/KubernetesSnapshotExtension", file.getAbsolutePath());
     }
 
