@@ -98,13 +98,23 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         ArrayNode arrayNode = mapper.createArrayNode();
 
         long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
+
+        SummaryObj summaryWorker = getSummaryMap().get("Workers");
+        if (summaryWorker == null) {
+            summaryWorker = initNodeSummaryObject(config, "Workers");
+            getSummaryMap().put("Workers", summaryWorker);
+        }
+
+        SummaryObj summaryMaster = getSummaryMap().get("Masters");
+        if (summaryMaster == null) {
+            summaryMaster = initNodeSummaryObject(config, "Masters");
+            getSummaryMap().put("Masters", summaryMaster);
+        }
+
         for(V1Node nodeObj : nodeList.getItems()) {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
-
-            logger.debug("Node Name Check: "+nodeName);
-
             String clusterName = Utilities.ensureClusterName(config, nodeObj.getMetadata().getClusterName());
 
             SummaryObj summary = getSummaryMap().get(ALL);
@@ -116,25 +126,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
             if(Utilities.shouldCollectMetricsForNode(getConfiguration(), nodeName)) {
                 if (summaryNode == null) {
-                    logger.debug("Capturing Node Metricas - Node: "+nodeName);
                     summaryNode = initNodeSummaryObject(config, nodeName);
                     getSummaryMap().put(nodeName, summaryNode);
                 }
             }
 
-            SummaryObj summaryWorker = getSummaryMap().get("Workers");
-            if (summaryWorker == null) {
-                summaryWorker = initNodeSummaryObject(config, "Workers");
-                getSummaryMap().put("Workers", summaryWorker);
-            }
-
-            SummaryObj summaryMaster = getSummaryMap().get("Masters");
-            if (summaryMaster == null) {
-                summaryMaster = initNodeSummaryObject(config, "Masters");
-                getSummaryMap().put("Masters", summaryMaster);
-            }
-
-            
 
 
             nodeObject = checkAddObject(nodeObject, clusterName, "clusterName");
@@ -324,7 +320,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             }
 
             arrayNode.add(nodeObject);
-            logger.info("Number of nodes collected: "+arrayNode.size());
+            logger.info("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
             if (arrayNode.size() >= batchSize){
                 logger.info("Sending batch of {} Node records", arrayNode.size());
                 String payload = arrayNode.toString();
