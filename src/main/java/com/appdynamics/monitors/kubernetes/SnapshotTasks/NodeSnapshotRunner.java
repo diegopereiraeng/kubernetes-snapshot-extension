@@ -116,7 +116,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
             if(Utilities.shouldCollectMetricsForNode(getConfiguration(), nodeName)) {
                 if (summaryNode == null) {
-                    logger.info("Capturing Node Metricas - Node: "+nodeName);
+                    logger.debug("Capturing Node Metricas - Node: "+nodeName);
                     summaryNode = initNodeSummaryObject(config, nodeName);
                     getSummaryMap().put(nodeName, summaryNode);
                 }
@@ -324,6 +324,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             }
 
             arrayNode.add(nodeObject);
+            logger.info("Number of nodes collected: "+arrayNode.size());
             if (arrayNode.size() >= batchSize){
                 logger.info("Sending batch of {} Node records", arrayNode.size());
                 String payload = arrayNode.toString();
