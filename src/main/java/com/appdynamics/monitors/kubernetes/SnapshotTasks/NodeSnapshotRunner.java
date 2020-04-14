@@ -399,8 +399,14 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, node);
 
-        String path = Utilities.getMetricsPath(config, ALL, node);
+        String path = "";
 
+        if (node.equals("Workers") || node.equals("Masters")) {
+            path = Utilities.getMetricsPathV2(config, "Summary", node);
+        }
+        else{
+            path = Utilities.getMetricsPath(config, ALL, node);
+        }
         return new SummaryObj(summary, metricsList, path);
     }
 
