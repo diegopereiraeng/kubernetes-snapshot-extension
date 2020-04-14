@@ -207,7 +207,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
             Integer totalNamespaces =  namespaces.entrySet().size();
-            Utilities.setField(summary, "Namespaces", totalNamespaces);
+            logger.info("Namespaces : "+totalNamespaces);
+            Utilities.setField(summary, "NamespacesRunning", totalNamespaces);
             Utilities.incrementField(summary, "Pods");
             Utilities.incrementField(summaryNamespace, "Pods");
             Utilities.incrementField(summaryNode, "Pods");
@@ -624,7 +625,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("HasNodeAffinity", 0);
             summary.put("HasPodAffinity", 0);
             summary.put("HasPodAntiAffinity", 0);
-            summary.put("Namespaces", 0);
+            summary.put("NamespacesRunning", 0);
         }
         else {
             summary.put("RequestCpu", 0);
