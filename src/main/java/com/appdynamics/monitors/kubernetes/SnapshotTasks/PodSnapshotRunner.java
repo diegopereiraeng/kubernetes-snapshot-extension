@@ -121,6 +121,49 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         // Variable to count namespaces
         Map<String, Integer> namespaces = new HashMap<String, Integer>();
 
+        // File to read and save podRestart history
+        String podHistoryPath = Utilities.getExtensionDirectory();
+
+        final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
+
+        logger.info("History file: " + podHistoryFile);
+        
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+        Integer podRestartsSum = 0;
+        Integer clusterPodRestarts = 0;
+        Integer nodepodRestartsSum = 0;
+        Integer namespacepodRestartsSum = 0;
+        Integer podRestartsHist = 0;
+
+        boolean historyExist = podHistoryFile.exists();
+        if(historyExist){
+            try (FileReader reader = new FileReader(podHistoryFile))
+            {
+                //Read JSON file
+                Object obj = jsonParser.parse(reader);
+                JSONObject podRestartHistoryJson = (JSONObject) obj;
+                Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
+                podRestartsHist = podRestartHistory;
+                
+            } catch (FileNotFoundException e) {
+                podRestartsHist = 0;
+                logger.error("NotFound - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                logger.info("Sending PodRestarts as 0 because PodRestarts history file doesn't exist and it will be created");
+            } catch (IOException e) {
+                podRestartsHist = 0;
+                logger.error("IOException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                logger.info("Sending PodRestarts as 0 because of IOException");
+            } catch (ParseException e) {
+                podRestartsHist = 0;
+                logger.error("ParseException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                logger.info("Sending PodRestarts as 0 because Could not parse the file, please delete the file "+podHistoryFile+" if its corrupt");
+            } catch (Exception e){
+                podRestartsHist = 0;
+                logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
+                logger.info("Sending PodRestarts as 0 because of Exception");
+            }
+        }
         
 
         for(V1Pod podItem : podList.getItems()){
@@ -290,15 +333,15 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             String phase = podItem.getStatus().getPhase();
             podObject = checkAddObject(podObject, phase, "phase");
             if (phase.equals("Pending")) {
-                Utilities.incrementField(summary, "Pending");
-                Utilities.incrementField(summaryNamespace, "Pending");
-                Utilities.incrementField(summaryNode, "Pending");
+                Utilities.incrementField(summary, "PendingPods");
+                Utilities.incrementField(summaryNamespace, "PendingPods");
+                Utilities.incrementField(summaryNode, "PendingPods");
             }
 
             if (phase.equals("Failed")) {
-                Utilities.incrementField(summary, "Failed");
-                Utilities.incrementField(summaryNamespace, "Failed");
-                Utilities.incrementField(summaryNode, "Failed");
+                Utilities.incrementField(summary, "FailedPods");
+                Utilities.incrementField(summaryNamespace, "FailedPods");
+                Utilities.incrementField(summaryNode, "FailedPods");
             }
 
             if (phase.equals("Running")) {
@@ -330,7 +373,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             String contStates = "";
             String images = "";
             String waitReasons = "";
-            String termReasons = "";       
+            String termReasons = "";      
 
             if (podItem.getStatus().getContainerStatuses() != null){
                 for(V1ContainerStatus status : podItem.getStatus().getContainerStatuses()){
@@ -367,62 +410,13 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 podObject = checkAddObject(podObject, termReasons, "termReasons");
 
                 podObject = checkAddInt(podObject, podRestarts, "podRestarts");
-                //podObject = checkAddInt(podObject, podRestarstSum, "podRestarstSum");
+                podRestartsSum += podRestarts;
+                //podObject = checkAddInt(podObject, podRestartsSum, "podRestartsSum");
                 Utilities.incrementField(summary, "PodRestarts", podRestarts);
-                //Utilities.incrementField(summary, "podRestarstSum", podRestarstSum);
+                //Utilities.incrementField(summary, "podRestartsSum", podRestartsSum);
                 Utilities.incrementField(summaryNamespace, "PodRestarts", podRestarts);
                 Utilities.incrementField(summaryNode, "PodRestarts", podRestarts);
-                // File to read and save podRestart history
-                String podHistoryPath = Utilities.getExtensionDirectory();
-
-                final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
-
-                logger.info("History file: " + podHistoryFile);
-                /*
-                //JSON parser object to parse read file
-                JSONParser jsonParser = new JSONParser();
-                Integer podRestarstSum = podRestarts;
-
-                boolean historyExist = podHistoryFile.exists();
-                if(historyExist){
-                    try (FileReader reader = new FileReader(podHistoryFile))
-                    {
-                        //Read JSON file
-                        Object obj = jsonParser.parse(reader);
-                        JSONObject podRestartHistoryJson = (JSONObject) obj;
-                        Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
-                        podRestarts = podRestarts - podRestartHistory;
-                        
-                    } catch (FileNotFoundException e) {
-                        podRestarts = 0;
-                        logger.error("NotFound - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                        logger.info("Sending PodRestarts as 0 because PodRestarts history file doesn't exist and it will be created");
-                    } catch (IOException e) {
-                        podRestarts = 0;
-                        logger.error("IOException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                        logger.info("Sending PodRestarts as 0 because of IOException");
-                    } catch (ParseException e) {
-                        podRestarts = 0;
-                        logger.error("ParseException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                        logger.info("Sending PodRestarts as 0 because Could not parse the file, please delete the file "+podHistoryFile+" if its corrupt");
-                    } catch (Exception e){
-                        podRestarts = 0;
-                        logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                        logger.info("Sending PodRestarts as 0 because of Exception");
-                    }
-                }
-                //Save PodRestarts
-                JSONObject clusterHistory = new JSONObject();
-                clusterHistory.put("podRestarts", podRestarstSum);
-                try (FileWriter file = new FileWriter(podHistoryFile)) {
-    
-                    file.write(clusterHistory.toJSONString());
-                    file.flush();
-        
-                } catch (IOException e) {
-                    logger.error("Issues when saving podRestart History file", e.getMessage());
-                }
-                */
+                
             }
 
             boolean limitsDefined = false;
@@ -563,7 +557,34 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
         }
         
-         if (arrayNode.size() > 0){
+        //Save and Add PodRestarts history file
+
+        SummaryObj summary = getSummaryMap().get(ALL);
+        if (summary == null) {
+            summary = initPodSummaryObject(config, ALL, ALL);
+            getSummaryMap().put(ALL, summary);
+        }
+
+        if (podRestartsHist > 0) {
+            clusterPodRestarts = podRestartsSum - podRestartsHist;
+        }
+
+        Utilities.setField(summary, ALL, clusterPodRestarts);
+
+        
+        JSONObject clusterHistory = new JSONObject();
+        clusterHistory.put("podRestarts", podRestartsSum);
+        
+        try (FileWriter file = new FileWriter(podHistoryFile)) {
+
+            file.write(clusterHistory.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            logger.error("Issues when saving podRestart History file", e.getMessage());
+        }
+                
+        if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Pod records", arrayNode.size());
              String payload = arrayNode.toString();
              arrayNode = arrayNode.removeAll();
@@ -590,8 +611,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         summary.put("PodRestarts", 0);
         summary.put("PodRestartsSum", 0);
         summary.put("RunningPods", 0);
-        summary.put("Failed", 0);
-        summary.put("Pending", 0);
+        summary.put("FailedPods", 0);
+        summary.put("PendingPods", 0);
         if (namespace != null && namespace.equals(ALL) && node != null && node.equals(ALL)) {
             summary.put("Containers", 0);
             summary.put("InitContainers", 0);
@@ -652,9 +673,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     String.format("select * from %s where podRestarts > 0 and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
             metricsList.add(new AppDMetricObj("RunningPods", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where phase = \"Running\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
-            metricsList.add(new AppDMetricObj("Failed", parentSchema, CONFIG_SCHEMA_DEF_POD,
+            metricsList.add(new AppDMetricObj("FailedPods", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where phase = \"Failed\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
-            metricsList.add(new AppDMetricObj("Pending", parentSchema, CONFIG_SCHEMA_DEF_POD,
+            metricsList.add(new AppDMetricObj("PendingPods", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where phase = \"Pending\" and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));
             metricsList.add(new AppDMetricObj("NoLimits", parentSchema, CONFIG_SCHEMA_DEF_POD,
                     String.format("select * from %s where limitsDefined = false and clusterName = \"%s\" %s ORDER BY creationTimestamp DESC", parentSchema, clusterName, filter), rootPath, namespace, node));

@@ -1415,7 +1415,7 @@
             }
           }
         },
-        "metricDisplayNameCustomFormat" : "Failed",
+        "metricDisplayNameCustomFormat" : "FailedPods",
         "expressionString" : "{All}-{evic}-{RunningPods}",
         "baselineName" : null,
         "applicationName" : "",
@@ -4518,7 +4518,7 @@
               "displayName" : "pend",
               "functionType" : "VALUE",
               "inputMetricText" : false,
-              "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|Pending",
+              "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|PendingPods",
               "scopeEntity" : {
                 "subtype" : null,
                 "entityType" : "APPLICATION_COMPONENT",
@@ -4590,7 +4590,7 @@
     "removeZeros" : true,
     "drillDownUrl" : null,
     "startTime" : null,
-    "text" : "% Pending",
+    "text" : "% Pending Pods",
     "drillDownActionType" : null,
     "height" : 26,
     "numDecimals" : 0,
@@ -4845,7 +4845,7 @@
           "displayName" : "null",
           "functionType" : "VALUE",
           "inputMetricText" : false,
-          "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|Pending",
+          "metricPath" : "Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|PendingPods",
           "scopeEntity" : {
             "subtype" : null,
             "entityType" : "APPLICATION_COMPONENT",

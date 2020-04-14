@@ -116,6 +116,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
             if(Utilities.shouldCollectMetricsForNode(getConfiguration(), nodeName)) {
                 if (summaryNode == null) {
+                    logger.info("Capturing Node Metricas - Node: "+nodeName);
                     summaryNode = initNodeSummaryObject(config, nodeName);
                     getSummaryMap().put(nodeName, summaryNode);
                 }
