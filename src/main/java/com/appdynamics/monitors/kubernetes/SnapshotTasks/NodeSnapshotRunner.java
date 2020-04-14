@@ -73,7 +73,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 catch (Exception ex){
                     throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
                 }
-
+                logger.info("Analyzing Nodes - Number of nodes: "+ nodeList.getItems().size());
                 createNodePayload(nodeList, config, publishUrl, accountName, apiKey);
 
                 //build and update metrics
@@ -103,7 +103,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             String nodeName = nodeObj.getMetadata().getName();
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
 
-
+            logger.info("Node Name Check: "+nodeName);
 
             String clusterName = Utilities.ensureClusterName(config, nodeObj.getMetadata().getClusterName());
 
