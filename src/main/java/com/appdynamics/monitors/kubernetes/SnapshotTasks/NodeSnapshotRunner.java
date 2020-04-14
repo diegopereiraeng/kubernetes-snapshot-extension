@@ -353,7 +353,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
         summary.put("nodename", node);
-
+        logger.info("Init nodename: "+ node);
         if (node.equals(ALL)) {
             summary.put("ReadyNodes", 0);
             summary.put("OutOfDiskNodes", 0);
