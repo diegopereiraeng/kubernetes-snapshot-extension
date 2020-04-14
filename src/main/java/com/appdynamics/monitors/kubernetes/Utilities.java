@@ -193,19 +193,6 @@ public class Utilities {
     }
 
 
-    public static ObjectNode setField(SummaryObj summaryObj, String fieldName, Integer value){
-        if (summaryObj == null){
-            return null;
-        }
-        ObjectNode obj = summaryObj.getData();
-        if(obj != null && obj.has(fieldName)) {
-            int val = value;
-            obj.put(fieldName, val);
-        }
-
-        return obj;
-    }
-
     public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName){
         if (summaryObj == null){
             return null;
@@ -213,6 +200,19 @@ public class Utilities {
         ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt() + 1;
+            obj.put(fieldName, val);
+        }
+
+        return obj;
+    }
+
+    public static ObjectNode setField(SummaryObj summaryObj, String fieldName, int value){
+        if (summaryObj == null){
+            return null;
+        }
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            int val = value;
             obj.put(fieldName, val);
         }
 
