@@ -6,7 +6,7 @@
 
     <groupId>com.appdynamics.monitors</groupId>
     <artifactId>kubernetes-snapshot-extension</artifactId>
-    <version>0.89</version>
+    <version>1.00</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
