@@ -331,7 +331,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
         }
-
+        logger.info("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
          if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Node records", arrayNode.size());
              String payload = arrayNode.toString();
@@ -407,6 +407,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         else{
             path = Utilities.getMetricsPath(config, ALL, node);
         }
+
+        logger.info("Init path: "+ path);
+
         return new SummaryObj(summary, metricsList, path);
     }
 
