@@ -137,6 +137,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         JSONObject podRestartHistoryJson = (JSONObject) obj;
                         Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
                         podRestartsHist = podRestartHistory;
+                        reader.close();
                         
                     } catch (FileNotFoundException e) {
                         podRestartsHist = 0;
@@ -156,7 +157,6 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         logger.info("Sending PodRestarts as 0 because of Exception");
                     }
                 }
-
                 //Save and Add PodRestarts history file
 
 
