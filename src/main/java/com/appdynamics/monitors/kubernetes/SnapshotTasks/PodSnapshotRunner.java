@@ -173,7 +173,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     } catch (Exception e){
                         podRestartsHist = 0;
                         logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                        logger.info("Sending PodRestarts as 0 because of Exception");
+                        logger.info(e.getMessage());
+                        logger.info(e.getStackTrace().toString());
                     }
                 }
                 //Save and Add PodRestarts history file
