@@ -312,7 +312,7 @@ public class Utilities {
     }
 
     public static String getMetricsPathV2(Map<String, String> config, String name){
-        return String.format("%s%s", Utilities.getMetricsPath(config), name);
+        return String.format("%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, name);
     }
 
 
