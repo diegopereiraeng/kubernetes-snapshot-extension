@@ -33,6 +33,7 @@ import java.util.concurrent.CountDownLatch;
 import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 
@@ -139,7 +140,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 boolean historyExist = true; //podHistoryFile.exists();
                 String podHistoryFile = podHistoryPath+"/"+"history.tmp";
                 if(historyExist){
-                    try (InputStream inputStream = this.getClass().getResourceAsStream(podHistoryFile)) 
+                    //try (InputStream inputStream = this.getClass().getResourceAsStream(podHistoryFile)) 
+                    try (InputStream inputStream = new FileInputStream(new File(podHistoryFile)))
                     {
                         // To String
                         //creating an InputStreamReader object
@@ -158,6 +160,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
                         podRestartsHist = podRestartHistory;
                         reader.close();
+                        inputStream.close();
+                        isReader.close();
+                        
                         logger.info("File "+podHistoryFile+" loaded with success");
                         
                     } catch (FileNotFoundException e) {
