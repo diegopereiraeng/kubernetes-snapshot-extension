@@ -80,10 +80,10 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                 SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initEventSummaryObject(config, ALL);
-                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                    getSummaryMap().put("EventMetricsCollected", summaryMetrics);
                 }
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+                incrementField(summaryMetrics, "EventMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 
@@ -280,7 +280,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
         summary.put("ImagePullErrors", 0);
         summary.put("ImagePulls", 0);
         summary.put("StorageIssues", 0);
-        summary.put("MetricsCollected", 0);
+        summary.put("EventMetricsCollected", 0);
 
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace);

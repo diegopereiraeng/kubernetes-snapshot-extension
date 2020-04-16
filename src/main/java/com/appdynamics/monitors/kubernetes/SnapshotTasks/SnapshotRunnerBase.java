@@ -12,6 +12,8 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.apis.ExtensionsV1beta1Api;
@@ -171,6 +173,24 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
         }
         return metricList;
     }
+
+    // Script Metrics
+    public static SummaryObj initScriptSummaryObject(Map<String, String> config, String type){
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode summary = mapper.createObjectNode();
+        summary.put(type+"MetricsCollected", type);
+        //summary.put(type+"ResponseTime", 0);
+        
+
+        ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>(); 
+
+        String path = "";
+
+        path = Utilities.getMetricsPathV2(config, "Script");
+
+        return new SummaryObj(summary, metricsList, path);
+    }
+    // End Script Metrics
 
     public  List<Metric> getMetricsFromSummary(HashMap<String, SummaryObj> summaryMap, Map<String, String> config){
         List<Metric> metricList = new ArrayList<Metric>();

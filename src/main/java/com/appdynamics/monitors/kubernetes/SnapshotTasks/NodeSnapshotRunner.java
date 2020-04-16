@@ -81,10 +81,18 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initNodeSummaryObject(config, ALL);
-                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                    getSummaryMap().put("NodeMetricsCollected", summaryMetrics);
                 }
+
+                SummaryObj summaryScript = getSummaryMap().get(ALL);
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Node");
+                    getSummaryMap().put(ALL, summaryScript);
+                }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+                incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
+                incrementField(summaryScript, "NodeMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 
@@ -135,6 +143,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 summary = initNodeSummaryObject(config, ALL);
                 getSummaryMap().put(ALL, summary);
             }
+
+            
 
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
             if(Utilities.shouldCollectMetricsForNode(getConfiguration(), nodeName)) {
@@ -362,6 +372,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         return initNodeSummaryObject(config, ALL);
     }
 
+    
+
     public  static SummaryObj initNodeSummaryObject(Map<String, String> config, String node){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
@@ -385,7 +397,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityCpu", 0);
             summary.put("CapacityPods", 0);
             summary.put("Nodes", 0);
-            summary.put("MetricsCollected", 0);
+            summary.put("NodeMetricsCollected", 0);
         }
         else{
             summary.put("CapacityMemory", 0);

@@ -88,10 +88,10 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                 SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initEPSummaryObject(config, ALL);
-                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                    getSummaryMap().put("EndPointMetricsCollected", summaryMetrics);
                 }
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+                incrementField(summaryMetrics, "EndPointMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 
@@ -224,7 +224,7 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         summary.put("HealthyEndpoints", 0);
         summary.put("UnhealthyEndpoints", 0);
         summary.put("OrphanEndpoints", 0);
-        summary.put("MetricsCollected", 0);
+        summary.put("EndPointMetricsCollected", 0);
 
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace);

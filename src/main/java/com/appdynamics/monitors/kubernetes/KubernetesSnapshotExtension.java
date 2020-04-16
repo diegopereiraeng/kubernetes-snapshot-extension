@@ -3,7 +3,8 @@ package com.appdynamics.monitors.kubernetes;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.appdynamics.extensions.util.StringUtils;
+import com.appdynamics.extensions.MetricWriteHelper;
+import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.appdynamics.monitors.kubernetes.Dashboard.ClusterDashboardGenerator;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
@@ -17,11 +18,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
+
+
 
 
 @SuppressWarnings("WeakerAccess")
@@ -40,7 +46,13 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     private CountDownLatch latch;
     public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
+    
+    
+    // Script metrics
 
+    public ConcurrentHashMap<String, String> summaryMetrics = new ConcurrentHashMap<String, String>();
+
+    // End Script Metrics
 
     @Override
     protected String getDefaultMetricPrefix() {
@@ -85,10 +97,29 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                         logger.error("Snapshot execution is interrupted", ex.toString());
                     }
 
-
+                    
                     long finish = new Date().getTime();
                     long duration = finish - start;
                     logger.info("All tasks complete {} millisec. Checking the dashboard", duration);
+                    
+                    // Script Metrics
+
+                    String aggregation = MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION;
+                    String timeRollup = MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM;
+                    String cluster = MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE;
+
+                    MetricWriteHelper metricWriter = tasksExecutionServiceProvider.getMetricWriteHelper();
+                    
+                    String path = Utilities.getMetricsPathV2(config, "Script");
+
+                    //metricWriter.printMetric(path+METRIC_SEPARATOR+"MetricsCollected", "100",aggregation, timeRollup,cluster);
+                    metricWriter.printMetric(path+METRIC_SEPARATOR+"ScriptTasksResponseTime",(String) String.valueOf(duration),aggregation, timeRollup,cluster);
+
+
+                    // End Script Metrics
+
+
+
                     //check dashboard
                     //if does not exist, create from template
                     if (shoudldBuildDashboard(config)) {

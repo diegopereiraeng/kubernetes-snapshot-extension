@@ -77,10 +77,10 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
                 SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initDeploySummaryObject(config, ALL);
-                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                    getSummaryMap().put("DeployMetricsCollected", summaryMetrics);
                 }
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+                incrementField(summaryMetrics, "DeployMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 
@@ -239,7 +239,7 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
         summary.put("DeployReplicas", 0);
         summary.put("DeployReplicasUnAvailable", 0);
         summary.put("DeployCollisionCount", 0);
-        summary.put("MetricsCollected", 0);
+        summary.put("DeployMetricsCollected", 0);
 
 
 

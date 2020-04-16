@@ -16,6 +16,7 @@ import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.models.V1beta1ReplicaSet;
 import io.kubernetes.client.models.V1beta1ReplicaSetList;
+import com.appdynamics.monitors.kubernetes.Globals;
 
 import java.io.IOException;
 import java.net.URL;
@@ -73,10 +74,10 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                 SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initRSSummaryObject(config, ALL);
-                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                    getSummaryMap().put("RSSMetricsCollected", summaryMetrics);
                 }
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+                incrementField(summaryMetrics, "RSSMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
                 
@@ -198,6 +199,7 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
         summary.put("RsReplicas", 0);
         summary.put("RsReplicasAvailable", 0);
         summary.put("RsReplicasUnAvailable", 0);
+        summary.put("RSSMetricsCollected", 0);
 
 
 

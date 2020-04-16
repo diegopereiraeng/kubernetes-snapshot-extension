@@ -73,10 +73,10 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                 SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initDaemonSummaryObject(config, ALL);
-                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                    getSummaryMap().put("DaemonMetricsCollected", summaryMetrics);
                 }
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+                incrementField(summaryMetrics, "DaemonMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 
@@ -222,7 +222,7 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
         summary.put("DaemonReplicasUnAvailable", 0);
         summary.put("DaemonMissScheduled", 0);
         summary.put("DaemonCollisionCount", 0);
-        summary.put("MetricsCollected", 0);
+        summary.put("DaemonMetricsCollected", 0);
         
 
 
