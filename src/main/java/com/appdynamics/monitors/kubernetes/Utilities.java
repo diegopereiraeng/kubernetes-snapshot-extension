@@ -192,6 +192,57 @@ public class Utilities {
         return objectNode;
     }
 
+    public static ObjectNode setField(SummaryObj summaryObj, String fieldName, int value){
+        if (summaryObj == null){
+            return null;
+        }
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            int val = value;
+            obj.put(fieldName, val);
+        }
+
+        return obj;
+    }
+
+    public static ObjectNode decrementField(SummaryObj summaryObj, String fieldName, Integer decrement){
+        if (summaryObj == null){
+            return null;
+        }
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            int val = obj.get(fieldName).asInt();
+            obj.put(fieldName, val-decrement);
+        }
+
+        return obj;
+    }
+    public static ObjectNode decrementField(SummaryObj summaryObj, String fieldName, Float decrement){
+        if (summaryObj == null){
+            return null;
+        }
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            int val = obj.get(fieldName).asInt();
+            obj.put(fieldName, val-decrement);
+        }
+
+        return obj;
+    }
+
+    public static ObjectNode decrementField(SummaryObj summaryObj, String fieldName, BigDecimal decrement){
+        if (summaryObj == null){
+            return null;
+        }
+        ObjectNode obj = summaryObj.getData();
+        if(obj != null && obj.has(fieldName)) {
+            BigDecimal val = new BigDecimal(obj.get(fieldName).asDouble());
+            val = val.subtract(decrement);
+            obj.put(fieldName, val);
+        }
+
+        return obj;
+    }
 
     public static ObjectNode incrementField(SummaryObj summaryObj, String fieldName){
         if (summaryObj == null){
@@ -200,19 +251,6 @@ public class Utilities {
         ObjectNode obj = summaryObj.getData();
         if(obj != null && obj.has(fieldName)) {
             int val = obj.get(fieldName).asInt() + 1;
-            obj.put(fieldName, val);
-        }
-
-        return obj;
-    }
-
-    public static ObjectNode setField(SummaryObj summaryObj, String fieldName, int value){
-        if (summaryObj == null){
-            return null;
-        }
-        ObjectNode obj = summaryObj.getData();
-        if(obj != null && obj.has(fieldName)) {
-            int val = value;
             obj.put(fieldName, val);
         }
 

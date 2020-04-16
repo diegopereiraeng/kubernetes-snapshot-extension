@@ -157,14 +157,14 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         //Read JSON file
                         Object obj = jsonParser.parse(sb.toString());
                         JSONObject podRestartHistoryJson = (JSONObject) obj;
-                        logger.info((String) podRestartHistoryJson.get("podRestarts").toString());
+                        logger.info("History PodRestarts:"+(String) podRestartHistoryJson.get("podRestarts").toString());
                         Integer podRestartHistory = (Integer) Math.toIntExact((Long) podRestartHistoryJson.get("podRestarts"));
                         podRestartsHist = podRestartHistory;
                         reader.close();
                         inputStream.close();
                         isReader.close();
-                        
                         logger.info("File "+podHistoryFile+" loaded with success");
+                        logger.info("History PodRestarts Converted to integer:"+ podRestartsHist.toString());
                         
                     } catch (FileNotFoundException e) {
                         podRestartsHist = 0;
@@ -203,7 +203,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     }
                     
                 }
-
+                logger.info("Pod Sum "+podRestartsSum+" - "+"Pod History "+podRestartsHist.toString());
                 if (podRestartsHist > 0 && podRestartsSum > 0) {
                     clusterPodRestarts = podRestartsSum - podRestartsHist;
                 }
@@ -211,7 +211,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     clusterPodRestarts = 0;
                 }
 
-                Utilities.setField(summary, ALL, clusterPodRestarts);
+                Utilities.decrementField(summary, "PodRestarts", podRestartsHist);
 
                 
                 JSONObject clusterHistory = new JSONObject();
