@@ -213,6 +213,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                     file.write(clusterHistory.toJSONString());
                     file.flush();
+                    file.close();
 
                 } catch (IOException e) {
                     logger.error("Issues when saving podRestart History file", e.getMessage());
