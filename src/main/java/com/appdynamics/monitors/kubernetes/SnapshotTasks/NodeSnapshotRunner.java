@@ -78,11 +78,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                /* SummaryObj summaryMetrics = getSummaryMap().get(ALL);
                 if (summaryMetrics == null) {
                     summaryMetrics =  initNodeSummaryObject(config, ALL);
                     getSummaryMap().put("NodeMetricsCollected", summaryMetrics);
-                }
+                } */
 
                 SummaryObj summaryScript = getSummaryMap().get("NodeScript");
                 if (summaryScript == null) {
@@ -91,7 +91,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 }
 
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
                 incrementField(summaryScript, "NodeMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */

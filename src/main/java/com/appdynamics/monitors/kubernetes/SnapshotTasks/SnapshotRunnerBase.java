@@ -180,7 +180,7 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
         ObjectNode summary = mapper.createObjectNode();
 
         summary.put("nodename", type+"Script");
-        summary.put(type+"CollectedMetrics", 0);
+        summary.put(type+"MetricsCollected", 0);
         
 
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>(); 
