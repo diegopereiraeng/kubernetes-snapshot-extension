@@ -74,13 +74,15 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
-                if (summaryMetrics == null) {
-                    summaryMetrics =  initDeploySummaryObject(config, ALL);
-                    getSummaryMap().put("DeployMetricsCollected", summaryMetrics);
+                SummaryObj summaryScript = getSummaryMap().get("DeploymentScript");
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Deployment");
+                    getSummaryMap().put("DeploymentScript", summaryScript);
                 }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "DeployMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "DeploymentMetricsCollected", metrics_count);
+                incrementField(summaryScript, "DeploymentMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 

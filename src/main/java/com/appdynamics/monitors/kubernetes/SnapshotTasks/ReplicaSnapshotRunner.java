@@ -71,13 +71,15 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                 createReplicasetPayload(rsList, config, publishUrl, accountName, apiKey);
 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
-                if (summaryMetrics == null) {
-                    summaryMetrics =  initRSSummaryObject(config, ALL);
-                    getSummaryMap().put("RSSMetricsCollected", summaryMetrics);
+                SummaryObj summaryScript = getSummaryMap().get("ReplicaScript");
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Replica");
+                    getSummaryMap().put("ReplicaScript", summaryScript);
                 }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "RSSMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
+                incrementField(summaryScript, "ReplicaMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
                 

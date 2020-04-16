@@ -98,13 +98,15 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 
                 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
-                if (summaryMetrics == null) {
-                    summaryMetrics = initPodSummaryObject(config, ALL, ALL);
-                    getSummaryMap().put("PodMetricsCollected", summaryMetrics);
+                SummaryObj summaryScript = getSummaryMap().get("PodScript");
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Pod");
+                    getSummaryMap().put("PodScript", summaryScript);
                 }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "PodMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
+                incrementField(summaryScript, "PodMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 

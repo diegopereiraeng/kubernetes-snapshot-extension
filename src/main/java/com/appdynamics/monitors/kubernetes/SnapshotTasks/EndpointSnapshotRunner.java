@@ -85,13 +85,15 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                 createEndpointPayload(epList, config, publishUrl, accountName, apiKey);
 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
-                if (summaryMetrics == null) {
-                    summaryMetrics =  initEPSummaryObject(config, ALL);
-                    getSummaryMap().put("EndPointMetricsCollected", summaryMetrics);
+                SummaryObj summaryScript = getSummaryMap().get("EndpointScript");
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Endpoint");
+                    getSummaryMap().put("EndpointScript", summaryScript);
                 }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "EndPointMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "EndpointMetricsCollected", metrics_count);
+                incrementField(summaryScript, "EndpointMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 

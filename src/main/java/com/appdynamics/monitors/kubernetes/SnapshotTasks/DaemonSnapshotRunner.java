@@ -70,13 +70,15 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                 createDaemonsetPayload(dsList, config, publishUrl, accountName, apiKey);
 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
-                if (summaryMetrics == null) {
-                    summaryMetrics =  initDaemonSummaryObject(config, ALL);
-                    getSummaryMap().put("DaemonMetricsCollected", summaryMetrics);
+                SummaryObj summaryScript = getSummaryMap().get("DaemonScript");
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Daemon");
+                    getSummaryMap().put("DaemonScript", summaryScript);
                 }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "DaemonMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "DaemonMetricsCollected", metrics_count);
+                incrementField(summaryScript, "DaemonMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 

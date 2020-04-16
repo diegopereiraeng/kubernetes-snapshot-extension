@@ -77,13 +77,15 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
 
                 /* Config to get Total metrics collected */
-                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
-                if (summaryMetrics == null) {
-                    summaryMetrics =  initEventSummaryObject(config, ALL);
-                    getSummaryMap().put("EventMetricsCollected", summaryMetrics);
+                SummaryObj summaryScript = getSummaryMap().get("EventScript");
+                if (summaryScript == null) {
+                    summaryScript = initScriptSummaryObject(config, "Event");
+                    getSummaryMap().put("EventScript", summaryScript);
                 }
+
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
-                incrementField(summaryMetrics, "EventMetricsCollected", metrics_count);
+                //incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
+                incrementField(summaryScript, "EventMetricsCollected", metrics_count);
 
                 /* End config Summary Metrics */
 
