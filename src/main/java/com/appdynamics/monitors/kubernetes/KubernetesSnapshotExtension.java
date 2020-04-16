@@ -105,7 +105,8 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     // Script Metrics
 
                     String aggregation = MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION;
-                    String timeRollup = MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM;
+                    //String timeRollup = MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM;
+                    String timeRollup = MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE;
                     String cluster = MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE;
 
                     MetricWriteHelper metricWriter = tasksExecutionServiceProvider.getMetricWriteHelper();
