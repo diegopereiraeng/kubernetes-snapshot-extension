@@ -11,6 +11,8 @@ import com.appdynamics.monitors.kubernetes.Utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nimbusds.jose.util.IOUtils;
+
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
@@ -19,15 +21,21 @@ import io.kubernetes.client.models.*;
 import io.sundr.shaded.org.apache.velocity.runtime.log.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import java.io.FileWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.io.FileNotFoundException;
@@ -130,10 +138,21 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 boolean historyExist = podHistoryFile.exists();
                 if(historyExist){
-                    try (FileReader reader = new FileReader(podHistoryPath+"/"+"history.tmp"))
+                    try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(podHistoryPath+"/"+"history.tmp")) 
                     {
+                        // To String
+                        //creating an InputStreamReader object
+                        InputStreamReader isReader = new InputStreamReader(inputStream);
+                        //Creating a BufferedReader object
+                        BufferedReader reader = new BufferedReader(isReader);
+                        StringBuffer sb = new StringBuffer();
+                        String str;
+                        while((str = reader.readLine())!= null){
+                            sb.append(str);
+                        }
+                        
                         //Read JSON file
-                        Object obj = jsonParser.parse(reader);
+                        Object obj = jsonParser.parse(sb.toString());
                         JSONObject podRestartHistoryJson = (JSONObject) obj;
                         Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
                         podRestartsHist = podRestartHistory;
