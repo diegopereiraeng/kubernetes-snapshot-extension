@@ -84,10 +84,10 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                     getSummaryMap().put("NodeMetricsCollected", summaryMetrics);
                 }
 
-                SummaryObj summaryScript = getSummaryMap().get(ALL);
+                SummaryObj summaryScript = getSummaryMap().get("NodeScript");
                 if (summaryScript == null) {
                     summaryScript = initScriptSummaryObject(config, "Node");
-                    getSummaryMap().put(ALL, summaryScript);
+                    getSummaryMap().put("NodeScript", summaryScript);
                 }
 
                 Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();

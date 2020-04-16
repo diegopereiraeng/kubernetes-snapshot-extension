@@ -178,8 +178,9 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
     public static SummaryObj initScriptSummaryObject(Map<String, String> config, String type){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
-        summary.put(type+"MetricsCollected", type);
-        //summary.put(type+"ResponseTime", 0);
+
+        summary.put("nodename", type+"Script");
+        summary.put(type+"CollectedMetrics", 0);
         
 
         ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>(); 
