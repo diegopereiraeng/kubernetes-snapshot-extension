@@ -137,8 +137,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Integer podRestartsHist = 0;
 
                 boolean historyExist = true; //podHistoryFile.exists();
+                String podHistoryFile = podHistoryPath+"/"+"history.tmp";
                 if(historyExist){
-                    try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(podHistoryPath+"/"+"history.tmp")) 
+                    try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(podHistoryFile)) 
                     {
                         // To String
                         //creating an InputStreamReader object
@@ -157,7 +158,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
                         podRestartsHist = podRestartHistory;
                         reader.close();
-                        logger.info("File "+podHistoryPath+"/"+"history.tmp"+" loaded with success");
+                        logger.info("File "+podHistoryFile+" loaded with success");
                         
                     } catch (FileNotFoundException e) {
                         podRestartsHist = 0;
