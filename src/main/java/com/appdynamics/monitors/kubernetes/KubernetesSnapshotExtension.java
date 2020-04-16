@@ -112,7 +112,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     MetricWriteHelper metricWriter = tasksExecutionServiceProvider.getMetricWriteHelper();
                     
                     String path = Utilities.getMetricsPathV2(config, "Script");
-
+                    logger.info("Metric Path:"+path);
                     //metricWriter.printMetric(path+METRIC_SEPARATOR+"MetricsCollected", "100",aggregation, timeRollup,cluster);
                     metricWriter.printMetric(path+METRIC_SEPARATOR+"ScriptTasksResponseTime",(String) String.valueOf(duration),aggregation, timeRollup,cluster);
 
