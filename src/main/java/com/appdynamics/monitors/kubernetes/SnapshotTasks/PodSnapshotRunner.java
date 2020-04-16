@@ -130,7 +130,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 boolean historyExist = podHistoryFile.exists();
                 if(historyExist){
-                    try (FileReader reader = new FileReader(podHistoryFile))
+                    try (FileReader reader = new FileReader(podHistoryPath+"/"+"history.tmp"))
                     {
                         //Read JSON file
                         Object obj = jsonParser.parse(reader);
@@ -189,7 +189,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 JSONObject clusterHistory = new JSONObject();
                 clusterHistory.put("podRestarts", podRestartsSum);
                 
-                try (FileWriter file = new FileWriter(podHistoryFile)) {
+                try (FileWriter file = new FileWriter(podHistoryPath+"/"+"history.tmp")) {
 
                     file.write(clusterHistory.toJSONString());
                     file.flush();
