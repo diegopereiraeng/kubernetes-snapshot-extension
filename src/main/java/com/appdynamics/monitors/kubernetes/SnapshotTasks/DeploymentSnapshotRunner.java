@@ -72,6 +72,20 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
                 createDeployPayload(deployList, config, publishUrl, accountName, apiKey);
 
+
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                if (summaryMetrics == null) {
+                    summaryMetrics =  initDeploySummaryObject(config, ALL);
+                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+
+                /* End config Summary Metrics */
+
+
+
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} deployment metrics", metricList.size());
@@ -79,10 +93,10 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
                 getConfiguration().getExecutorService().execute("UploadDeployMetricsTask", metricsTask);
             } catch (IOException e) {
                 countDownLatch.countDown();
-                logger.error("Failed to push Deployments data", e);
+                logger.error("Failed to push Deployments metric data", e);
             } catch (Exception e) {
                 countDownLatch.countDown();
-                logger.error("Failed to push Deployments data", e);
+                logger.error("Failed to push Deployments metric data", e);
             }
         }
     }
@@ -225,6 +239,7 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
         summary.put("DeployReplicas", 0);
         summary.put("DeployReplicasUnAvailable", 0);
         summary.put("DeployCollisionCount", 0);
+        summary.put("MetricsCollected", 0);
 
 
 

@@ -75,6 +75,18 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
                 createEventPayload(eventList, config, publishUrl, accountName, apiKey);
 
+
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                if (summaryMetrics == null) {
+                    summaryMetrics =  initEventSummaryObject(config, ALL);
+                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+
+                /* End config Summary Metrics */
+
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} event metrics", metricList.size());
@@ -268,6 +280,7 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
         summary.put("ImagePullErrors", 0);
         summary.put("ImagePulls", 0);
         summary.put("StorageIssues", 0);
+        summary.put("MetricsCollected", 0);
 
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace);

@@ -84,6 +84,16 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
 
                 createEndpointPayload(epList, config, publishUrl, accountName, apiKey);
 
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                if (summaryMetrics == null) {
+                    summaryMetrics =  initEPSummaryObject(config, ALL);
+                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+
+                /* End config Summary Metrics */
 
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} endpoints metrics", metricList.size());
@@ -214,6 +224,7 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
         summary.put("HealthyEndpoints", 0);
         summary.put("UnhealthyEndpoints", 0);
         summary.put("OrphanEndpoints", 0);
+        summary.put("MetricsCollected", 0);
 
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace);

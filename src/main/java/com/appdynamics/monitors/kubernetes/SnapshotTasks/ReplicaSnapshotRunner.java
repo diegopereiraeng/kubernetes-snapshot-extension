@@ -69,7 +69,17 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
 
                 createReplicasetPayload(rsList, config, publishUrl, accountName, apiKey);
 
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                if (summaryMetrics == null) {
+                    summaryMetrics =  initRSSummaryObject(config, ALL);
+                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
 
+                /* End config Summary Metrics */
+                
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} replica set metrics", metricList.size());
@@ -149,7 +159,12 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
             arrayNode.add(deployObject);
             if (arrayNode.size() >= batchSize){
                 logger.info("Sending batch of {} Replica Set records", arrayNode.size());
+                
+
+                
+
                 String payload = arrayNode.toString();
+
                 arrayNode = arrayNode.removeAll();
                 if(!payload.equals("[]")){
                     UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);

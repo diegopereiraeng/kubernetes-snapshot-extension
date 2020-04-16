@@ -76,6 +76,19 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 logger.debug("Analyzing Nodes - Number of nodes: "+ nodeList.getItems().size());
                 createNodePayload(nodeList, config, publishUrl, accountName, apiKey);
 
+
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                if (summaryMetrics == null) {
+                    summaryMetrics =  initNodeSummaryObject(config, ALL);
+                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+
+                /* End config Summary Metrics */
+
+
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} node metrics", metricList.size());
@@ -331,7 +344,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
         }
-
+        logger.info("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
          if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Node records", arrayNode.size());
              String payload = arrayNode.toString();
@@ -353,7 +366,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
         summary.put("nodename", node);
-        logger.info("Init nodename: "+ node);
+        //logger.info("Init nodename: "+ node);
         if (node.equals(ALL)) {
             summary.put("ReadyNodes", 0);
             summary.put("OutOfDiskNodes", 0);
@@ -372,19 +385,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("CapacityCpu", 0);
             summary.put("CapacityPods", 0);
             summary.put("Nodes", 0);
-            /* summary.put("AllocationsMemory", 0);
-            summary.put("AllocationsCpu", 0);
-            summary.put("AllocationsPods", 0);
-            summary.put("CapacityMemory", 0);
-            summary.put("CapacityCpu", 0);
-            summary.put("CapacityPods", 0);
-            summary.put("AllocationsMemory", 0);
-            summary.put("AllocationsCpu", 0);
-            summary.put("AllocationsPods", 0);
-            summary.put("CapacityMemory", 0);
-            summary.put("CapacityCpu", 0);
-            summary.put("CapacityPods", 0); */
-
+            summary.put("MetricsCollected", 0);
         }
         else{
             summary.put("CapacityMemory", 0);
@@ -407,6 +408,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         else{
             path = Utilities.getMetricsPath(config, ALL, node);
         }
+        //logger.info("Init path: "+ path);
+
         return new SummaryObj(summary, metricsList, path);
     }
 

@@ -95,8 +95,23 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 createPodPayload(podList, config, publishUrl, accountName, apiKey);
 
+                
+                
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get("Metrics");
+                if (summaryMetrics == null) {
+                    summaryMetrics = initPodSummaryObject(config, "Metrics", ALL);
+                    getSummaryMap().put("Metrics", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "Metrics Collected", metrics_count);
+
+                /* End config Summary Metrics */
+
+
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
+
                 logger.info("About to send {} pod metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadMetricsTask", podMetricsTask);
@@ -604,6 +619,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
     public  static SummaryObj initPodSummaryObject(Map<String, String> config, String namespace, String node){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
+
+        
         summary.put("namespace", namespace);
         summary.put("nodename", node);
 
@@ -626,6 +643,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("HasPodAffinity", 0);
             summary.put("HasPodAntiAffinity", 0);
             summary.put("NamespacesRunning", 0);
+            summary.put("Metrics Collected", 0);
+            
         }
         else {
             summary.put("RequestCpu", 0);
@@ -633,6 +652,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("LimitCpu", 0);
             summary.put("LimitMemory", 0);
         }
+        
 
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace, node);

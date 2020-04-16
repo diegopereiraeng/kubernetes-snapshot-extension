@@ -69,8 +69,20 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
 
                 createDaemonsetPayload(dsList, config, publishUrl, accountName, apiKey);
 
+                /* Config to get Total metrics collected */
+                SummaryObj summaryMetrics = getSummaryMap().get(ALL);
+                if (summaryMetrics == null) {
+                    summaryMetrics =  initDaemonSummaryObject(config, ALL);
+                    getSummaryMap().put("MetricsCollected", summaryMetrics);
+                }
+                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                incrementField(summaryMetrics, "MetricsCollected", metrics_count);
+
+                /* End config Summary Metrics */
+
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} Daemon set metrics", metricList.size());
+                
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadDaemonMetricsTask", podMetricsTask);
 
@@ -210,6 +222,8 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
         summary.put("DaemonReplicasUnAvailable", 0);
         summary.put("DaemonMissScheduled", 0);
         summary.put("DaemonCollisionCount", 0);
+        summary.put("MetricsCollected", 0);
+        
 
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace);
