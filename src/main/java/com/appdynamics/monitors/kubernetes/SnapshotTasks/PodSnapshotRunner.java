@@ -217,11 +217,12 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 JSONObject clusterHistory = new JSONObject();
                 clusterHistory.put("podRestarts", podRestartsSum);
                 
-                try (FileWriter file = new FileWriter(podHistoryPath+"/"+"history.tmp")) {
+                try (FileWriter file = new FileWriter(podHistoryFile)) {
 
                     file.write(clusterHistory.toJSONString());
                     file.flush();
                     file.close();
+                    logger.info("File "+podHistoryFile+" saved with success!");
 
                 } catch (IOException e) {
                     logger.error("Issues when saving podRestart History file", e.getMessage());
