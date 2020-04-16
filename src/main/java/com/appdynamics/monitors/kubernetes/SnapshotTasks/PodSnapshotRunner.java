@@ -157,6 +157,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
                         podRestartsHist = podRestartHistory;
                         reader.close();
+                        logger.info("File "+podHistoryPath+"/"+"history.tmp"+" loaded with success");
                         
                     } catch (FileNotFoundException e) {
                         podRestartsHist = 0;
