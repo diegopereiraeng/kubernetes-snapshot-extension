@@ -157,7 +157,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         //Read JSON file
                         Object obj = jsonParser.parse(sb.toString());
                         JSONObject podRestartHistoryJson = (JSONObject) obj;
-                        Integer podRestartHistory = (Integer) podRestartHistoryJson.get("podRestarts");
+                        Integer podRestartHistory = (Integer) Math.toIntExact((Long) podRestartHistoryJson.get("podRestarts"));
                         podRestartsHist = podRestartHistory;
                         reader.close();
                         inputStream.close();
