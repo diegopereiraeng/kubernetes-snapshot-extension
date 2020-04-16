@@ -333,7 +333,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             }
 
             arrayNode.add(nodeObject);
-            logger.info("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
+            logger.debug("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
             if (arrayNode.size() >= batchSize){
                 logger.info("Sending batch of {} Node records", arrayNode.size());
                 String payload = arrayNode.toString();
@@ -344,7 +344,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
         }
-        logger.info("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
+        logger.debug("Number of nodes collected: "+arrayNode.size()+" and BatchSize: "+batchSize);
          if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Node records", arrayNode.size());
              String payload = arrayNode.toString();
@@ -366,7 +366,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode summary = mapper.createObjectNode();
         summary.put("nodename", node);
-        //logger.info("Init nodename: "+ node);
+        logger.debug("Init nodename: "+ node);
         if (node.equals(ALL)) {
             summary.put("ReadyNodes", 0);
             summary.put("OutOfDiskNodes", 0);
@@ -408,7 +408,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         else{
             path = Utilities.getMetricsPath(config, ALL, node);
         }
-        //logger.info("Init path: "+ path);
+        logger.debug("Init path: "+ path);
 
         return new SummaryObj(summary, metricsList, path);
     }

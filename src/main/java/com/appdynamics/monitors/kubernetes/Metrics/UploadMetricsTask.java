@@ -33,6 +33,7 @@ public class UploadMetricsTask implements Runnable{
             if (finalMetricList != null) {
                 logger.info("Executing Metrics update");
 
+                
                 metricWriteHelper.transformAndPrintMetrics(finalMetricList);
             }
             else{
