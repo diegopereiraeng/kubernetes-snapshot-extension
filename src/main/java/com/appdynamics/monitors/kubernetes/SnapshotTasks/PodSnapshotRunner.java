@@ -139,7 +139,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 boolean historyExist = true; //podHistoryFile.exists();
                 String podHistoryFile = podHistoryPath+"/"+"history.tmp";
                 if(historyExist){
-                    try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(podHistoryFile)) 
+                    try (InputStream inputStream = this.getClass().getResourceAsStream(podHistoryFile)) 
                     {
                         // To String
                         //creating an InputStreamReader object
