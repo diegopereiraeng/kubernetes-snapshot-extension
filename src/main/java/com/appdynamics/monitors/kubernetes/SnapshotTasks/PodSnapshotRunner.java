@@ -124,9 +124,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 // File to read and save podRestart history
                 String podHistoryPath = Utilities.getExtensionDirectory();
 
-                final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
+                //final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
 
-                logger.info("History file: " + podHistoryFile);
+                //logger.info("History file: " + podHistoryFile);
                 
                 //JSON parser object to parse read file
                 JSONParser jsonParser = new JSONParser();
@@ -136,7 +136,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Integer namespacepodRestartsSum = 0;
                 Integer podRestartsHist = 0;
 
-                boolean historyExist = podHistoryFile.exists();
+                boolean historyExist = true; //podHistoryFile.exists();
                 if(historyExist){
                     try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(podHistoryPath+"/"+"history.tmp")) 
                     {
@@ -173,8 +173,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     } catch (Exception e){
                         podRestartsHist = 0;
                         logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
-                        logger.info(e.getMessage());
-                        logger.info(e.getStackTrace().toString());
+                        logger.info(e.getLocalizedMessage());
+                        e.printStackTrace();
                     }
                 }
                 //Save and Add PodRestarts history file
