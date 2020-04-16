@@ -298,11 +298,11 @@ public class Utilities {
 
     public static String getMetricsPath(Map<String, String> config, String namespace, String node){
         if(!node.equals(ALL)){
-            logger.info("getMetricsPath: - Node : "+ String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, METRIC_PATH_NODES, METRIC_SEPARATOR, node));
+            logger.info("getMetricsPath: - Node : "+ String.format("%s%s%s%s", Utilities.getMetricsPath(config), METRIC_PATH_NODES, METRIC_SEPARATOR, node));
             return String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, METRIC_PATH_NODES, METRIC_SEPARATOR, node);  
         }
         else if (!namespace.equals(ALL)){
-            logger.info("getMetricsPath: - Namespace : "+ String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, METRIC_PATH_NAMESPACES, METRIC_SEPARATOR, namespace));
+            logger.info("getMetricsPath: - Namespace : "+ String.format("%s%s%s%s", Utilities.getMetricsPath(config), METRIC_PATH_NAMESPACES, METRIC_SEPARATOR, namespace));
             return String.format("%s%s%s%s%s", Utilities.getMetricsPath(config), METRIC_SEPARATOR, METRIC_PATH_NAMESPACES, METRIC_SEPARATOR, namespace);
         }
 
