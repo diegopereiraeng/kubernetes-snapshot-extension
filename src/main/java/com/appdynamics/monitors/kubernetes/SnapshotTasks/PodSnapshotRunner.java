@@ -168,11 +168,15 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     summary = initPodSummaryObject(config, ALL, ALL);
                     getSummaryMap().put(ALL, summary);
                 }else{
-                    podRestartsSum = summary.getData().get("podRestarts").intValue();
-
+                    try {
+                        podRestartsSum = summary.getData().get("PodRestarts").intValue();
+                    } catch (Exception e) {
+                        podRestartsSum = 0;
+                    }
+                    
                 }
 
-                if (podRestartsHist > 0) {
+                if (podRestartsHist > 0 && podRestartsSum > 0) {
                     clusterPodRestarts = podRestartsSum - podRestartsHist;
                 }
                 else{
