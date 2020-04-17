@@ -29,7 +29,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-
+import java.util.concurrent.ThreadLocalRandom;
 import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.File;
@@ -258,15 +258,24 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         Map<String, Integer> namespaces = new HashMap<String, Integer>();
 
         
-
+        ArrayList<V1Pod> podListCustom = new ArrayList<V1Pod>();
         
+        for(int i = 1; i < 51; i++){
+            for(V1Pod podItem : podList.getItems()){
+                V1Pod newpod = new V1Pod();
+                newpod = podItem;
+                podListCustom.add(newpod);
         
-
-        for(V1Pod podItem : podList.getItems()){
-
+            }
+        }
+        Integer podCount = 1;
+        for(V1Pod podItem : podListCustom){
+            int nodeInt = ThreadLocalRandom.current().nextInt(1, 50);
             ObjectNode podObject = mapper.createObjectNode();
-            String namespace = podItem.getMetadata().getNamespace();
-            String nodeName = podItem.getSpec().getNodeName();
+            String namespace = podItem.getMetadata().getNamespace()+podCount;
+            podCount++;
+            //String nodeName = podItem.getSpec().getNodeName();
+            String nodeName = "nodeTest"+nodeInt;
 
             namespaces.putIfAbsent(namespace, 0);
             namespaces.put(namespace, namespaces.get(namespace) + 1);
