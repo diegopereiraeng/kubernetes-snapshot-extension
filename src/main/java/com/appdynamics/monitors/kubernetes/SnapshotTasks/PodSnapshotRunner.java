@@ -230,9 +230,15 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 // End Save History
 
+
+                // Stress Tes
+
+                logger.info("Total Namespaces Running: "+summary.getData().get("NamespacesRunning").asText());
+                
+
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
-
+                
                 logger.info("About to send {} pod metrics", metricList.size());
                 UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadMetricsTask", podMetricsTask);
@@ -312,7 +318,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
             Integer totalNamespaces =  namespaces.entrySet().size();
-            logger.info("Namespaces : "+totalNamespaces);
+            
             Utilities.setField(summary, "NamespacesRunning", totalNamespaces);
             Utilities.incrementField(summary, "Pods");
             Utilities.incrementField(summaryNamespace, "Pods");

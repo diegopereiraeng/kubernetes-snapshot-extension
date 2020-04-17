@@ -120,7 +120,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     //metricWriter.printMetric(path+METRIC_SEPARATOR+"MetricsCollected", "100",aggregation, timeRollup,cluster);
                     metricWriter.printMetric(path+METRIC_SEPARATOR+"ScriptTasksResponseTime",(String) String.valueOf(duration),aggregation, timeRollup,cluster);
                     
-                    Metric metric = new Metric("PodRestarts","0","Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats");
+                    //Metric metric = new Metric("PodRestarts","0","Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats");
 
                     // End Script Metrics
 

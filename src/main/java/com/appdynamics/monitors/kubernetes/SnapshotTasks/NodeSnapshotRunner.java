@@ -140,7 +140,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         Integer nodeCount_2 = 1;
         //V1Node baseNode = new V1Node();
         //baseNode = nodeList.getItems().get(0);
-        for(int i = 1; i < 49; i++ ){
+        for(int i = 1; i < 51; i++ ){
             V1Node baseNode = new V1Node();
             V1Node newNode = new V1Node(); 
             baseNode = nodeList.getItems().get(0);
@@ -159,7 +159,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             newNode.getMetadata().setInitializers(baseNode.getMetadata().getInitializers());
             
             nodeListCustom.add(newNode);
-            logger.info("nodename test:"+nodeName);
+            //logger.info("nodename test:"+nodeName);
             nodeCount_2++;
             
         }
@@ -181,7 +181,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName()+nodeCount_2.toString();
             nodeCount_2++;
-            logger.info("nodename orig:"+nodeName);
+            //logger.info("nodename orig:"+nodeName);
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
             String clusterName = Utilities.ensureClusterName(config, nodeObj.getMetadata().getClusterName());
 
