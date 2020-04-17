@@ -135,9 +135,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         logger.info("NodeList size: "+nodeList.getItems().size());
 
         V1NodeList nodeListCustom = new V1NodeList();
-        nodeListCustom = nodeList;
+        //nodeListCustom = nodeList;
         for(int node = 1; node < 30; node++ ){
-            for(V1Node nodeObj : nodeListCustom.getItems()) {          
+            for(V1Node nodeObj : nodeList.getItems()) {          
                 V1Node newNode = new V1Node(); 
                 newNode.setApiVersion(nodeObj.getApiVersion());
                 newNode.setKind(nodeObj.getKind());
@@ -148,7 +148,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 newNode.getMetadata().setName(nodeName);
                 
                 nodeListCustom = nodeListCustom.addItemsItem(newNode);
-                nodeList = nodeList.addItemsItem(newNode);
+                //nodeList = nodeList.addItemsItem(newNode);
             }
         }
 
