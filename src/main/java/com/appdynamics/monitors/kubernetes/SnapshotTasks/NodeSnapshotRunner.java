@@ -16,6 +16,7 @@ import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
+import io.sundr.shaded.org.apache.velocity.anakia.NodeList;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -134,16 +135,24 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         logger.info("NodeList size: "+nodeList.getItems().size());
 
         V1NodeList nodeListCustom = new V1NodeList();
+        nodeListCustom = nodeList;
         for(int node = 1; node < 30; node++ ){
             for(V1Node nodeObj : nodeListCustom.getItems()) {          
                 V1Node newNode = new V1Node(); 
-                newNode = nodeObj;
+                newNode.setApiVersion(nodeObj.getApiVersion());
+                newNode.setKind(nodeObj.getKind());
+                newNode.setMetadata(nodeObj.getMetadata());
+                newNode.setSpec(nodeObj.getSpec());
+                newNode.setStatus(nodeObj.getStatus());
                 String nodeName = newNode.getMetadata().getName()+node;
                 newNode.getMetadata().setName(nodeName);
-                nodeListCustom.addItemsItem(nodeObj);
+                
+                nodeListCustom = nodeListCustom.addItemsItem(newNode);
                 nodeList = nodeList.addItemsItem(newNode);
             }
         }
+
+        logger.info("NodeListCustom size after: "+nodeListCustom.getItems().size());
         logger.info("NodeList size after: "+nodeList.getItems().size());
 
 
