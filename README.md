@@ -14,7 +14,7 @@ Masters - New Folder Summary:
  * Total Memory, CPU and PODs
  * Total Allocation Memory, CPU and PODS
 
- * orkers - New Folder Summary:
+ Workers - New Folder Summary:
  * Total Memory, CPU and PODs
  * Total Allocation Memory, CPU and PODS
 
