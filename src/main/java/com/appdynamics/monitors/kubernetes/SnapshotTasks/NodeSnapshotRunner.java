@@ -136,25 +136,27 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
         V1NodeList nodeListCustom = new V1NodeList();
         //nodeListCustom = nodeList;
-        Integer nodeCount = 1;
-        for(int node = 1; node < 30; node++ ){
-            for(V1Node nodeObj : nodeList.getItems()) {          
-                V1Node newNode = new V1Node(); 
-                newNode.setApiVersion(nodeObj.getApiVersion());
-                newNode.setKind(nodeObj.getKind());
-                newNode.setMetadata(nodeObj.getMetadata());
-                newNode.setSpec(nodeObj.getSpec());
-                newNode.setStatus(nodeObj.getStatus());
-                String nodeName = newNode.getMetadata().getName();
-                nodeName = "nodeTest";
-                nodeName = nodeName+(String) nodeCount.toString();
-                logger.info("nodename test:"+nodeName);
-                newNode.getMetadata().setName(nodeName);
-                logger.info("nodename test:"+nodeName);
-                nodeListCustom = nodeListCustom.addItemsItem(newNode);
-                nodeCount++;
-                //nodeList = nodeList.addItemsItem(newNode);
-            }
+        Integer nodeCount_2 = 1;
+        V1Node baseNode =  nodeList.getItems().get(0);
+        for(int nodeCount = 1; nodeCount < 5; nodeCount++ ){
+            V1Node newNode = new V1Node(); 
+            
+            newNode.setApiVersion(baseNode.getApiVersion());
+            newNode.setKind(baseNode.getKind());
+            newNode.setMetadata(baseNode.getMetadata());
+            newNode.setSpec(baseNode.getSpec());
+            newNode.setStatus(baseNode.getStatus());
+            //String nodeName = newNode.getMetadata().getName();
+            String nodeName = "nodeTest";
+            nodeName = nodeName+(String) nodeCount_2.toString();
+            logger.info("nodename test:"+nodeName);
+            newNode.getMetadata().setName(nodeName);
+            newNode.getMetadata().setGenerateName(nodeName);
+            newNode.getMetadata().setUid(nodeName);
+            newNode.getMetadata().setInitializers(baseNode.getMetadata().getInitializers());
+            logger.info("nodename test:"+nodeName);
+            nodeListCustom = nodeListCustom.addItemsItem(newNode);
+            nodeCount_2++;
             
         }
         for(V1Node nodeObj : nodeList.getItems()) {          
