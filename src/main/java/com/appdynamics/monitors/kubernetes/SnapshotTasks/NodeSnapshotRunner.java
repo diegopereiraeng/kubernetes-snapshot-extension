@@ -152,9 +152,10 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 newNode.getMetadata().setName(nodeName);
                 logger.info("nodename test:"+nodeName);
                 nodeListCustom = nodeListCustom.addItemsItem(newNode);
+                nodeCount++;
                 //nodeList = nodeList.addItemsItem(newNode);
             }
-            nodeCount++;
+            
         }
         for(V1Node nodeObj : nodeList.getItems()) {          
             V1Node newNode = new V1Node(); 
