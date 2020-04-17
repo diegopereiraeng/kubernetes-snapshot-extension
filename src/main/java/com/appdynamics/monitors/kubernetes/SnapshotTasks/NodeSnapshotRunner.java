@@ -138,7 +138,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         //nodeListCustom = nodeList;
         Integer nodeCount_2 = 1;
         V1Node baseNode =  nodeList.getItems().get(0);
-        for(int nodeCount = 1; nodeCount < 5; nodeCount++ ){
+        for(int i = 1; i < 5; i++ ){
             V1Node newNode = new V1Node(); 
             
             newNode.setApiVersion(baseNode.getApiVersion());
@@ -159,7 +159,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             nodeCount_2++;
             
         }
-        for(V1Node nodeObj : nodeList.getItems()) {          
+        /* for(V1Node nodeObj : nodeList.getItems()) {          
             V1Node newNode = new V1Node(); 
             newNode.setApiVersion(nodeObj.getApiVersion());
             newNode.setKind(nodeObj.getKind());
@@ -168,7 +168,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             newNode.setStatus(nodeObj.getStatus());            
             nodeListCustom = nodeListCustom.addItemsItem(newNode);
             //nodeList = nodeList.addItemsItem(newNode);
-        }
+        } */
         logger.info("NodeListCustom size after: "+nodeListCustom.getItems().size());
         logger.info("NodeList size after: "+nodeList.getItems().size());
 
