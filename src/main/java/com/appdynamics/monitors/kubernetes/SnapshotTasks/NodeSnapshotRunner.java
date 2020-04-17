@@ -146,6 +146,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 newNode.setSpec(nodeObj.getSpec());
                 newNode.setStatus(nodeObj.getStatus());
                 String nodeName = newNode.getMetadata().getName();
+                nodeName = "nodeTest";
                 nodeName = nodeName+(String) nodeCount.toString();
                 logger.info("nodename test:"+nodeName);
                 newNode.getMetadata().setName(nodeName);
