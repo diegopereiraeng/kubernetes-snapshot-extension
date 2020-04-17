@@ -132,6 +132,17 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             getSummaryMap().put("Masters", summaryMaster);
         }
 
+        V1NodeList nodeListCustom = nodeList;
+        for(int node = 1; node < 30; node++ ){
+            for(V1Node nodeObj : nodeListCustom.getItems()) {
+                V1Node newNode = nodeObj;
+                newNode.getMetadata().setName(nodeObj.getMetadata().getName()+node);
+                nodeList.addItemsItem(newNode);
+            }
+        }
+        
+
+
         for(V1Node nodeObj : nodeList.getItems()) {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();

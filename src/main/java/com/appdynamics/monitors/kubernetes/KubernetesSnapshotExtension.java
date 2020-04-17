@@ -4,6 +4,9 @@ import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.extensions.MetricWriteHelper;
+import com.appdynamics.extensions.metrics.Metric;
+import com.appdynamics.extensions.http.SimpleHttpClient;
+
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.appdynamics.monitors.kubernetes.Dashboard.ClusterDashboardGenerator;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
@@ -52,6 +55,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     public ConcurrentHashMap<String, String> summaryMetrics = new ConcurrentHashMap<String, String>();
 
+ 
     // End Script Metrics
 
     @Override
@@ -115,7 +119,8 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     //logger.info("Metric Path:"+path);
                     //metricWriter.printMetric(path+METRIC_SEPARATOR+"MetricsCollected", "100",aggregation, timeRollup,cluster);
                     metricWriter.printMetric(path+METRIC_SEPARATOR+"ScriptTasksResponseTime",(String) String.valueOf(duration),aggregation, timeRollup,cluster);
-
+                    
+                    Metric metric = new Metric("PodRestarts","0","Application Infrastructure Performance|ClusterAgent|Custom Metrics|Cluster Stats");
 
                     // End Script Metrics
 
