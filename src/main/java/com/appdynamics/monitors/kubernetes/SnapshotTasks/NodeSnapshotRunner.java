@@ -151,12 +151,21 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 //nodeList = nodeList.addItemsItem(newNode);
             }
         }
-
+        for(V1Node nodeObj : nodeList.getItems()) {          
+            V1Node newNode = new V1Node(); 
+            newNode.setApiVersion(nodeObj.getApiVersion());
+            newNode.setKind(nodeObj.getKind());
+            newNode.setMetadata(nodeObj.getMetadata());
+            newNode.setSpec(nodeObj.getSpec());
+            newNode.setStatus(nodeObj.getStatus());            
+            nodeListCustom = nodeListCustom.addItemsItem(newNode);
+            //nodeList = nodeList.addItemsItem(newNode);
+        }
         logger.info("NodeListCustom size after: "+nodeListCustom.getItems().size());
         logger.info("NodeList size after: "+nodeList.getItems().size());
 
 
-        for(V1Node nodeObj : nodeList.getItems()) {
+        for(V1Node nodeObj : nodeListCustom.getItems()) {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
