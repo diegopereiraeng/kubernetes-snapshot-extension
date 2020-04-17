@@ -266,7 +266,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         
         ArrayList<V1Pod> podListCustom = new ArrayList<V1Pod>();
         
-        for(int i = 1; i < 151; i++){
+        for(int i = 1; i < 300; i++){
             for(V1Pod podItem : podList.getItems()){
                 V1Pod newpod = new V1Pod();
                 newpod = podItem;
@@ -276,7 +276,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         }
         Integer podCount = 1;
         for(V1Pod podItem : podListCustom){
-            int nodeInt = ThreadLocalRandom.current().nextInt(1, 100);
+            int nodeInt = ThreadLocalRandom.current().nextInt(1, 500);
             ObjectNode podObject = mapper.createObjectNode();
             String namespace = podItem.getMetadata().getNamespace()+podCount;
             podCount++;
