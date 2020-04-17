@@ -138,11 +138,12 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         
         //nodeListCustom = nodeList;
         Integer nodeCount_2 = 1;
-        V1Node baseNode = new V1Node();
-        baseNode = nodeList.getItems().get(0);
+        //V1Node baseNode = new V1Node();
+        //baseNode = nodeList.getItems().get(0);
         for(int i = 1; i < 5; i++ ){
+            V1Node baseNode = new V1Node();
             V1Node newNode = new V1Node(); 
-            
+            baseNode = nodeList.getItems().get(0);
             newNode.setApiVersion(baseNode.getApiVersion());
             newNode.setKind(baseNode.getKind());
             newNode.setMetadata(baseNode.getMetadata());
@@ -150,8 +151,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             newNode.setStatus(baseNode.getStatus());
             //String nodeName = newNode.getMetadata().getName();
             String nodeName = "nodeTest";
-            //nodeName = nodeName+(String) nodeCount_2.toString();
-            logger.info("nodename test:"+nodeName);
+            nodeName = nodeName+(String) nodeCount_2.toString();
+            //logger.info("nodename test:"+nodeName);
             newNode.getMetadata().setName(nodeName);
             newNode.getMetadata().setGenerateName(nodeName);
             newNode.getMetadata().setUid(nodeName);
