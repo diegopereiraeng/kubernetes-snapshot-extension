@@ -131,7 +131,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summaryMaster = initNodeSummaryObject(config, "Masters");
             getSummaryMap().put("Masters", summaryMaster);
         }
-
+        logger.info("NodeList size: "+nodeList.getItems().size());
         V1NodeList nodeListCustom = nodeList;
         for(int node = 1; node < 30; node++ ){
             for(V1Node nodeObj : nodeListCustom.getItems()) {
@@ -140,7 +140,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 nodeList.addItemsItem(newNode);
             }
         }
-        
+        logger.info("NodeList size after: "+nodeList.getItems().size());
 
 
         for(V1Node nodeObj : nodeList.getItems()) {
