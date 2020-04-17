@@ -132,6 +132,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             getSummaryMap().put("Masters", summaryMaster);
         }
         logger.info("NodeList size: "+nodeList.getItems().size());
+        
         V1NodeList nodeListCustom = nodeList;
         for(int node = 1; node < 30; node++ ){
             for(V1Node nodeObj : nodeListCustom.getItems()) {
