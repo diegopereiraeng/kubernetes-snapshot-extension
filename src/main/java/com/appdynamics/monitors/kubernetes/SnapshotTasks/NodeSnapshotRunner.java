@@ -136,6 +136,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
         V1NodeList nodeListCustom = new V1NodeList();
         //nodeListCustom = nodeList;
+        Integer nodeCount = 1;
         for(int node = 1; node < 30; node++ ){
             for(V1Node nodeObj : nodeList.getItems()) {          
                 V1Node newNode = new V1Node(); 
@@ -144,12 +145,13 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 newNode.setMetadata(nodeObj.getMetadata());
                 newNode.setSpec(nodeObj.getSpec());
                 newNode.setStatus(nodeObj.getStatus());
-                String nodeName = newNode.getMetadata().getName()+node;
+                String nodeName = newNode.getMetadata().getName()+nodeCount;
                 newNode.getMetadata().setName(nodeName);
                 logger.info("nodename test:"+nodeName);
                 nodeListCustom = nodeListCustom.addItemsItem(newNode);
                 //nodeList = nodeList.addItemsItem(newNode);
             }
+            nodeCount++;
         }
         for(V1Node nodeObj : nodeList.getItems()) {          
             V1Node newNode = new V1Node(); 
