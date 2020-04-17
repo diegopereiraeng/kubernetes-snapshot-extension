@@ -176,10 +176,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         logger.info("NodeListCustom size after: "+nodeListCustom.size());
         logger.info("NodeList size after: "+nodeList.getItems().size());
 
-
+        nodeCount_2 = 1;
         for(V1Node nodeObj : nodeListCustom) {
             ObjectNode nodeObject = mapper.createObjectNode();
-            String nodeName = nodeObj.getMetadata().getName();
+            String nodeName = nodeObj.getMetadata().getName()+nodeCount_2.toString();
+            nodeCount_2++;
             logger.info("nodename orig:"+nodeName);
             nodeObject = checkAddObject(nodeObject, nodeName, "nodeName");
             String clusterName = Utilities.ensureClusterName(config, nodeObj.getMetadata().getClusterName());
