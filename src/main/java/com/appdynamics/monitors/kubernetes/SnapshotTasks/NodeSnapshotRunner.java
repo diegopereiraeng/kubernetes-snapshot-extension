@@ -151,7 +151,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             newNode.setStatus(baseNode.getStatus());
             //String nodeName = newNode.getMetadata().getName();
             String nodeName = "nodeTest";
-            nodeName = nodeName+(String) nodeCount_2.toString();
+            //nodeName = nodeName+(String) nodeCount_2.toString();
             //logger.info("nodename test:"+nodeName);
             newNode.getMetadata().setName(nodeName);
             newNode.getMetadata().setGenerateName(nodeName);
@@ -173,11 +173,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             nodeListCustom = nodeListCustom.addItemsItem(newNode);
             //nodeList = nodeList.addItemsItem(newNode);
         } */
-        logger.info("NodeListCustom size after: "+nodeListCustom.getItems().size());
+        logger.info("NodeListCustom size after: "+nodeListCustom.size());
         logger.info("NodeList size after: "+nodeList.getItems().size());
 
 
-        for(V1Node nodeObj : nodeListCustom.getItems()) {
+        for(V1Node nodeObj : nodeListCustom) {
             ObjectNode nodeObject = mapper.createObjectNode();
             String nodeName = nodeObj.getMetadata().getName();
             logger.info("nodename orig:"+nodeName);
