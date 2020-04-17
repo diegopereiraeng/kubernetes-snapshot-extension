@@ -18,6 +18,17 @@ Masters - New Folder Summary:
  * Total Memory, CPU and PODs
  * Total Allocation Memory, CPU and PODS
 
+ Script
+ * Node metrics collected
+ * Pod metrics collected
+ * Replica metrics collected
+ * Deployment metrics collected
+ * Endpoint metrics collected
+ * Daemon metrics collected
+ * Event metrics collected
+ * Script All Tasks ResponseTime metric collected
+
+
 
 ## What changed?
 
@@ -25,6 +36,8 @@ Cluster Metric names:
  * Changed Pending to PendingPods
  * Changed Running to RunningPods
  * Changed Failed to FailedPods
+
+Metrics now are collected minute by minute
 
 ## What was fixed?
 
