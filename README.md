@@ -5,26 +5,26 @@
 New Metrics:
 
 Cluster
-*Total Memory, CPU and PODs
-*Total Allocation Memory, CPU and PODS
-*Number of Nodes
-*Total NameSpaces with running Pods
+ * Total Memory, CPU and PODs
+ * Total Allocation Memory, CPU and PODS
+ * Number of Nodes
+ * Total NameSpaces with running Pods
 
 Masters - New Folder Summary:
-*Total Memory, CPU and PODs
-*Total Allocation Memory, CPU and PODS
+ * Total Memory, CPU and PODs
+ * Total Allocation Memory, CPU and PODS
 
-Workers - New Folder Summary:
-*Total Memory, CPU and PODs
-*Total Allocation Memory, CPU and PODS
+ * orkers - New Folder Summary:
+ * Total Memory, CPU and PODs
+ * Total Allocation Memory, CPU and PODS
 
 
 ## What changed?
 
 Cluster Metric names:
-Changed Pending to PendingPods
-Changed Running to RunningPods
-Changed Failed to FailedPods
+ * Changed Pending to PendingPods
+ * Changed Running to RunningPods
+ * Changed Failed to FailedPods
 
 ## What was fixed?
 
