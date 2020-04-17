@@ -1,5 +1,35 @@
 # AppDynamics Kubernetes Snapshot Extension
 
+## What is New?
+
+New Metrics:
+
+Cluster
+*Total Memory, CPU and PODs
+*Total Allocation Memory, CPU and PODS
+*Number of Nodes
+*Total NameSpaces with running Pods
+
+Masters - New Folder Summary:
+*Total Memory, CPU and PODs
+*Total Allocation Memory, CPU and PODS
+
+Workers - New Folder Summary:
+*Total Memory, CPU and PODs
+*Total Allocation Memory, CPU and PODS
+
+
+## What changed?
+
+Cluster Metric names:
+Changed Pending to PendingPods
+Changed Running to RunningPods
+Changed Failed to FailedPods
+
+## What was fixed?
+
+Pod Restarts metric for cluster now do diff from the last run
+
 ## Use Case
 
 The extension monitors events and the state of Kubernetes or OpenShift clusters, records attributes of resources: pods, endpoints, daemon sets, replica sets, deployments and nodes.
