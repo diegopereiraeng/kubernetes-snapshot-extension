@@ -145,7 +145,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 newNode.setMetadata(nodeObj.getMetadata());
                 newNode.setSpec(nodeObj.getSpec());
                 newNode.setStatus(nodeObj.getStatus());
-                String nodeName = newNode.getMetadata().getName()+nodeCount;
+                String nodeName = newNode.getMetadata().getName();
+                nodeName = nodeName+(String) nodeCount.toString();
+                logger.info("nodename test:"+nodeName);
                 newNode.getMetadata().setName(nodeName);
                 logger.info("nodename test:"+nodeName);
                 nodeListCustom = nodeListCustom.addItemsItem(newNode);
