@@ -204,7 +204,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     
                 }
                 logger.info("Pod Sum "+podRestartsSum+" - "+"Pod History "+podRestartsHist.toString());
-                if (podRestartsHist > 0 && podRestartsSum > 0) {
+                if (podRestartsHist > 0 && podRestartsSum > 0 && podRestartsSum >= podRestartsHist) {
                     clusterPodRestarts = podRestartsSum - podRestartsHist;
                 }
                 else{
