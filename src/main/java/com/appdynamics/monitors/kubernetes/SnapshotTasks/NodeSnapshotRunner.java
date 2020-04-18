@@ -140,7 +140,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         Integer nodeCount_2 = 1;
         //V1Node baseNode = new V1Node();
         //baseNode = nodeList.getItems().get(0);
-        for(int i = 1; i < 501; i++ ){
+        for(int i = 1; i < 1001; i++ ){
             for(V1Node baseNode : nodeList.getItems()){
             V1Node newNode = new V1Node(); 
             //baseNode = nodeList.getItems().get(0);
