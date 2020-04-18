@@ -266,7 +266,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         
         ArrayList<V1Pod> podListCustom = new ArrayList<V1Pod>();
         
-        for(int i = 1; i < 500; i++){
+        for(int i = 1; i < 800; i++){
             for(V1Pod podItem : podList.getItems()){
                 V1Pod newpod = new V1Pod();
                 newpod = podItem;
