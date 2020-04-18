@@ -698,7 +698,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         summary.put("Pods", 0);
         summary.put("Evictions", 0);
         summary.put("PodRestarts", 0);
-        summary.put("PodRestartsSum", 0);
+        //summary.put("PodRestartsSum", 0);
         summary.put("RunningPods", 0);
         summary.put("FailedPods", 0);
         summary.put("PendingPods", 0);
