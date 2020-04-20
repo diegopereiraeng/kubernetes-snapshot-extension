@@ -213,7 +213,13 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 Utilities.decrementField(summary, "PodRestarts", podRestartsHist);
 
-                
+                /* CPU and Memory Request Summary */
+
+
+
+                /* END CPU and Memory Request Summary */
+
+
                 JSONObject clusterHistory = new JSONObject();
                 clusterHistory.put("podRestarts", podRestartsSum);
                 
@@ -598,9 +604,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             podObject =  checkAddFloat(podObject, memLimit, "memLimit");
 
             if (!(podItem.getStatus().getReason() != null && podItem.getStatus().getReason().equals("Evicted"))){
-                Utilities.incrementField(summary, "RequestCpu", cpuRequest);
-                Utilities.incrementField(summaryNamespace, "RequestCpu", cpuRequest);
-                Utilities.incrementField(summaryNode, "RequestCpu", cpuRequest);
+                Utilities.incrementField(summary, "RequestCpu", (cpuRequest*1000));
+                Utilities.incrementField(summaryNamespace, "RequestCpu", (cpuRequest*1000));
+                Utilities.incrementField(summaryNode, "RequestCpu", (cpuRequest*1000));
 
                 Utilities.incrementField(summary, "RequestMemory", memRequest);
                 Utilities.incrementField(summaryNamespace, "RequestMemory", memRequest);
@@ -683,7 +689,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         summary.put("Pods", 0);
         summary.put("Evictions", 0);
         summary.put("PodRestarts", 0);
-        summary.put("PodRestartsSum", 0);
+        //summary.put("PodRestartsSum", 0);
         summary.put("RunningPods", 0);
         summary.put("FailedPods", 0);
         summary.put("PendingPods", 0);
@@ -699,8 +705,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("HasPodAffinity", 0);
             summary.put("HasPodAntiAffinity", 0);
             summary.put("NamespacesRunning", 0);
-            summary.put("PodMetricsCollected", 0);
-            
+            //summary.put("PodMetricsCollected", 0);
+            summary.put("RequestCpu", 0);
+            summary.put("RequestMemory", 0);
         }
         else {
             summary.put("RequestCpu", 0);

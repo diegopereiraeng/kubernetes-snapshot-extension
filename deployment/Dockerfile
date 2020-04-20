@@ -15,7 +15,7 @@ RUN chmod +x /updateAnalyticsAgent.sh
 
 COPY startup.sh /startup.sh
 RUN chmod +x /startup.sh
-
+RUN chmod -R 777 /opt/appdynamics/MachineAgent
 
 RUN chgrp -R 0 /opt && \
     chmod -R g=u /opt

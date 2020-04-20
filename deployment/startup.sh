@@ -46,4 +46,4 @@ if [ "x${METRIC_LIMIT}" != "x" ]; then
 fi
 
 # Start Machine Agent
-java ${MA_PROPERTIES} -jar ${MACHINE_AGENT_HOME}/machineagent.jar
+${MACHINE_AGENT_HOME}/jre/bin/java ${MA_PROPERTIES} -jar ${MACHINE_AGENT_HOME}/machineagent.jar
