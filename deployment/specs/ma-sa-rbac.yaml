@@ -119,7 +119,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: k8s-monitor-sa
-  namespace: #<namespace where K8s-monitor-sa was created>
+  namespace: development #<namespace where K8s-monitor-sa was created>
 roleRef:
   kind: ClusterRole
   name: appd-cluster-reader
