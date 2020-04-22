@@ -9,8 +9,8 @@ RUN mkdir -p /opt/appdynamics/MachineAgent
 
 COPY artifacts /opt/appdynamics/MachineAgent
 
-COPY cacerts /opt/appdynamics/MachineAgent/conf/
-RUN chmod 644 /opt/appdynamics/MachineAgent/conf/cacerts
+#COPY cacerts /opt/appdynamics/MachineAgent/conf/
+#RUN chmod 644 /opt/appdynamics/MachineAgent/conf/cacerts
 
 ENV MACHINE_AGENT_HOME /opt/appdynamics/MachineAgent
 
