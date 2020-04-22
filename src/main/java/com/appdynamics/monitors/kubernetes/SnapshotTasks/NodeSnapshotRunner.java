@@ -295,7 +295,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             if (nodeObj.getStatus().getVolumesAttached() != null){
                 String attachedValumes = "";
                 for (V1AttachedVolume v : nodeObj.getStatus().getVolumesAttached()) {
-                    attachedValumes += String.format("$s:$s;", v.getName(), v.getDevicePath());
+                    attachedValumes += String.format("%s:%s;", v.getName(), v.getDevicePath());
                 }
                 nodeObject = checkAddObject(nodeObject, attachedValumes, "attachedVolumes");
             }
@@ -304,7 +304,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 String volumesInUse = "";
                 
                 for (String v : nodeObj.getStatus().getVolumesInUse()) {
-                    volumesInUse += String.format("$s:", v);
+                    volumesInUse += String.format("%s:", v);
                 }
                 nodeObject = checkAddObject(nodeObject, volumesInUse, "volumesInUse");
             }
