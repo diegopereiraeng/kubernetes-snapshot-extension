@@ -289,6 +289,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             nodeObject = checkAddObject(nodeObject, nodeObj.getStatus().getNodeInfo().getContainerRuntimeVersion(), "runtimeVersion");
             nodeObject = checkAddObject(nodeObject, nodeObj.getStatus().getNodeInfo().getMachineID(), "machineID");
             nodeObject = checkAddObject(nodeObject, nodeObj.getStatus().getNodeInfo().getOperatingSystem(), "osName");
+            
+            logger.info("Node Capacity : " + nodeObj.getStatus().getCapacity());
 
             if (nodeObj.getStatus().getVolumesAttached() != null){
                 String attachedValumes = "";
@@ -300,7 +302,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
             if (nodeObj.getStatus().getVolumesInUse() != null) {
                 String volumesInUse = "";
-                logger.info("Node Capacity : " + nodeObj.getStatus().getCapacity());
+                
                 for (String v : nodeObj.getStatus().getVolumesInUse()) {
                     volumesInUse += String.format("$s:", v);
                 }
