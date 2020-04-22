@@ -290,7 +290,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             nodeObject = checkAddObject(nodeObject, nodeObj.getStatus().getNodeInfo().getMachineID(), "machineID");
             nodeObject = checkAddObject(nodeObject, nodeObj.getStatus().getNodeInfo().getOperatingSystem(), "osName");
             
-            logger.info("Node Capacity : " + nodeObj.getStatus().getCapacity());
+            logger.debug("Node Capacity : " + nodeObj.getStatus().getCapacity());
 
             if (nodeObj.getStatus().getVolumesAttached() != null){
                 String attachedValumes = "";
