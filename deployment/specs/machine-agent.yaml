@@ -1,9 +1,13 @@
-apiVersion: extensions/v1beta1
+#apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata: 
   name: k8s-monitor
 spec: 
   replicas: 1
+  selector:
+      matchLabels:
+        name: k8s-monitor
   template: 
     metadata: 
       labels: 
@@ -12,7 +16,7 @@ spec:
       serviceAccountName: k8s-monitor-sa
       containers:
       - name: appd-infra-agent
-        image: diegopereiraeng/machineagent:latest #@sha256:8f92c7992de5daebff19e0daf85113867e99ce0d4e3870ed1cdf911101f70e0d #<image reference>
+        image: diegokoala/appdynamics-kubernetes-extension:latest #@sha256:8f92c7992de5daebff19e0daf85113867e99ce0d4e3870ed1cdf911101f70e0d #<image reference>
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
