@@ -22,22 +22,22 @@ data:
 
         <logger name="com.singularity" additivity="false">
             <level value="info"/>
-            <appender-ref ref="FileAppender"/>
+            <appender-ref ref="ConsoleAppender"/>
         </logger>
 
         <logger name="com.appdynamics" additivity="false">
             <level value="info"/>
-            <appender-ref ref="FileAppender"/>
+            <appender-ref ref="ConsoleAppender"/>
         </logger>
 
         <logger name="com.singularity.ee.agent.systemagent.task.sigar.SigarAppAgentMonitor" additivity="false">
             <level value="info"/>
-            <appender-ref ref="FileAppender"/>
+            <appender-ref ref="ConsoleAppender"/>
         </logger>
 
         <root>
             <priority value="error"/>
-            <appender-ref ref="FileAppender"/>
+            <appender-ref ref="ConsoleAppender"/>
         </root>
 
     </log4j:configuration>
