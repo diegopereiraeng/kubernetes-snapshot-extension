@@ -300,6 +300,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
             if (nodeObj.getStatus().getVolumesInUse() != null) {
                 String volumesInUse = "";
+                logger.info("Node Capacity : " + nodeObj.getStatus().getCapacity());
                 for (String v : nodeObj.getStatus().getVolumesInUse()) {
                     volumesInUse += String.format("$s:", v);
                 }

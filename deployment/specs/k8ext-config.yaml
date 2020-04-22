@@ -63,6 +63,14 @@ data:
     # list of namespaces to collect metrics for. If all namespaces need to be monitored, set name to "all"
     namespaces:
     - name: "all"
+    # Custom groups for Summary - CPU, Mem and Disk - Not working yet
+    #customgroups:
+    #  -name: Gluster
+    #   label: regex
+    #   node: regex
+    #  -name: Infra
+    #   label: regex
+    #   node: regex
 
     # Absolute path to the dashboard template.
     dashboardTemplatePath: "/opt/appdynamics/MachineAgent/monitors/KubernetesSnapshotExtension/templates/k8s_dashboard_template.json"

@@ -709,6 +709,10 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("RequestCpu", 0);
             summary.put("RequestMemory", 0);
         }
+        else if(node != null && node.equals("Workers") || node.equals("Masters")){
+            summary.put("RequestCpu", 0);
+            summary.put("RequestMemory", 0);
+        }
         else {
             summary.put("RequestCpu", 0);
             summary.put("RequestMemory", 0);
