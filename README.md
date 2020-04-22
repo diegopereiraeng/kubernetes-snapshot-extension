@@ -9,6 +9,8 @@ Cluster
  * Total Allocation Memory, CPU and PODS
  * Number of Nodes
  * Total NameSpaces with running Pods
+ * CPURequests
+
 
 Masters - New Folder Summary:
  * Total Memory, CPU and PODs
@@ -29,7 +31,6 @@ Masters - New Folder Summary:
  * Script All Tasks ResponseTime metric collected
 
 
-
 ## What changed?
 
 Cluster Metric names:
@@ -42,6 +43,10 @@ Metrics now are collected minute by minute
 ## What was fixed?
 
 Pod Restarts metric for cluster now do diff from the last run
+
+Config for Log4j.xml in new machine agent 20.3
+
+Some other minor config and image fixes
 
 ## Use Case
 
