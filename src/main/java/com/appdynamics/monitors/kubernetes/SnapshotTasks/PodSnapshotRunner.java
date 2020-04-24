@@ -157,14 +157,14 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         //Read JSON file
                         Object obj = jsonParser.parse(sb.toString());
                         JSONObject podRestartHistoryJson = (JSONObject) obj;
-                        logger.info("History PodRestarts:"+(String) podRestartHistoryJson.get("podRestarts").toString());
+                        logger.debug("History PodRestarts:"+(String) podRestartHistoryJson.get("podRestarts").toString());
                         Integer podRestartHistory = (Integer) Math.toIntExact((Long) podRestartHistoryJson.get("podRestarts"));
                         podRestartsHist = podRestartHistory;
                         reader.close();
                         inputStream.close();
                         isReader.close();
                         logger.info("File "+podHistoryFile+" loaded with success");
-                        logger.info("History PodRestarts Converted to integer:"+ podRestartsHist.toString());
+                        logger.debug("History PodRestarts Converted to integer:"+ podRestartsHist.toString());
                         
                     } catch (FileNotFoundException e) {
                         podRestartsHist = 0;
@@ -203,7 +203,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     }
                     
                 }
-                logger.info("Pod Sum "+podRestartsSum+" - "+"Pod History "+podRestartsHist.toString());
+                logger.debug("Pod Sum Restarts"+podRestartsSum+" - "+"Pod History Sum Restarts"+podRestartsHist.toString());
                 if (podRestartsHist > 0 && podRestartsSum > 0 && podRestartsSum >= podRestartsHist) {
                     clusterPodRestarts = podRestartsSum - podRestartsHist;
                 }
@@ -309,7 +309,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
             Integer totalNamespaces =  namespaces.entrySet().size();
-            logger.info("Namespaces : "+totalNamespaces);
+            logger.debug("Namespaces : "+totalNamespaces);
             Utilities.setField(summary, "NamespacesRunning", totalNamespaces);
             Utilities.incrementField(summary, "Pods");
             Utilities.incrementField(summaryNamespace, "Pods");

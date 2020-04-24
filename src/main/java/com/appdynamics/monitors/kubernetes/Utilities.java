@@ -329,7 +329,7 @@ public class Utilities {
     public static String getRestUITierPath(Map<String, String> config){
         String restuiTierPath = config.get(CONFIG_APP_TIER_NAME);
         if (StringUtils.isNotEmpty(restuiTierPath) == false){
-            restuiTierPath = "restui";
+            restuiTierPath = "restui/v1";
         }
         return  restuiTierPath;
     }
