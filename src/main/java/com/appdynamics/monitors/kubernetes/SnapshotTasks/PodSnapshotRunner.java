@@ -724,7 +724,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
         ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace, node);
         String path = Utilities.getMetricsPath(config, namespace, node);
-
+        logger.info("Init Pod Path: %s",path);
         return new SummaryObj(summary, metricsList, path);
     }
 
