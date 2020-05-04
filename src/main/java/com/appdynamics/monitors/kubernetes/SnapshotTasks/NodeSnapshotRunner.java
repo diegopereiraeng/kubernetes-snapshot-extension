@@ -427,7 +427,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         else{
             path = Utilities.getMetricsPath(config, ALL, node);
         }
-        path = path.replace("Nodes", "KNodes");
+        path = path.replace("Nodes", "Nodes");
         logger.info("Init path node: "+ node);
         logger.info("Init path: "+ path);
 
