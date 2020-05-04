@@ -147,11 +147,15 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             
 
             SummaryObj summaryNode = getSummaryMap().get(nodeName);
+            logger.debug("Should collect metrics for node %s ?", nodeName);
             if(Utilities.shouldCollectMetricsForNode(getConfiguration(), nodeName)) {
+                logger.debug("Yes, should collect");
                 if (summaryNode == null) {
                     summaryNode = initNodeSummaryObject(config, nodeName);
                     getSummaryMap().put(nodeName, summaryNode);
                 }
+            }else{
+                logger.debug("No shouldn't collect");
             }
 
 
@@ -423,7 +427,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
         else{
             path = Utilities.getMetricsPath(config, ALL, node);
         }
-        logger.debug("Init path: "+ path);
+        logger.info("Init path: "+ path);
 
         return new SummaryObj(summary, metricsList, path);
     }
