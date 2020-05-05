@@ -265,12 +265,12 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                     if (s.getKey().equals("cpu")) {
                         float val = s.getValue().getNumber().floatValue();
                         nodeObject = checkAddFloat(nodeObject, val, "cpuAllocations");
-                        Utilities.incrementField(summaryNode, "AllocationsCpu", val);
-                        Utilities.incrementField(summary, "AllocationsMemory", val);
+                        Utilities.incrementField(summaryNode, "AllocationsCpu", val*1000);
+                        Utilities.incrementField(summary, "AllocationsCpu", val*1000);
                         if (isMaster) {
-                            Utilities.incrementField(summaryMaster, "AllocationsMemory", val);
+                            Utilities.incrementField(summaryMaster, "AllocationsCpu", val*1000);
                         } else {
-                            Utilities.incrementField(summaryWorker, "AllocationsMemory", val);
+                            Utilities.incrementField(summaryWorker, "AllocationsCpu", val*1000);
                         }
                     }
                     if (s.getKey().equals("pods")) {
