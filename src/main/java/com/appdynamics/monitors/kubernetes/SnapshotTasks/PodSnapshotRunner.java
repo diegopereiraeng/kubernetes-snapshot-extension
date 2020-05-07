@@ -350,6 +350,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             Utilities.incrementField(summary, "Pods");
             Utilities.incrementField(summaryNamespace, "Pods");
             Utilities.incrementField(summaryNode, "Pods");
+            if (Role != "") {
+                Utilities.incrementField(summaryRole, "Pods");
+            }
 
             podObject = checkAddObject(podObject, podItem.getMetadata().getUid(), "object_uid");
 
@@ -389,6 +392,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "Containers", containerCount);
                 Utilities.incrementField(summaryNamespace, "Containers", containerCount);
                 Utilities.incrementField(summaryNode, "Containers", containerCount);
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "Containers", containerCount);
+                }
             }
 
             final int initContainerCount = podItem.getSpec().getInitContainers() != null ? podItem.getSpec().getInitContainers().size() : 0;
@@ -398,6 +404,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "InitContainers", initContainerCount);
                 Utilities.incrementField(summaryNamespace, "InitContainers", initContainerCount);
                 Utilities.incrementField(summaryNode, "InitContainers", initContainerCount);
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "InitContainers", initContainerCount);
+                }
             }
 
             podObject = checkAddObject(podObject, nodeName, "nodeName");
@@ -412,6 +421,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "TolerationsCount", tolerationsCount);
                 Utilities.incrementField(summaryNamespace, "TolerationsCount", tolerationsCount);
                 Utilities.incrementField(summaryNode, "TolerationsCount", tolerationsCount);
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "TolerationsCount", tolerationsCount);
+                }
                 for(final V1Toleration toleration : podItem.getSpec().getTolerations()){
                     tolerations += String.format("%s;", toleration.toString());
                 }
@@ -424,6 +436,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     Utilities.incrementField(summary, "HasNodeAffinity");
                     Utilities.incrementField(summaryNamespace, "HasNodeAffinity");
                     Utilities.incrementField(summaryNode, "HasNodeAffinity");
+                    if (Role != "") {
+                        Utilities.incrementField(summaryRole, "HasNodeAffinity");
+                    }
                     String nodeAffinityPreferred = "";
 
                     if (affinity.getPreferredDuringSchedulingIgnoredDuringExecution() != null) {
@@ -457,6 +472,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "HasPodAffinity");
                 Utilities.incrementField(summaryNamespace, "HasPodAffinity");
                 Utilities.incrementField(summaryNode, "HasPodAffinity");
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "HasPodAffinity");
+                }
             }
 
             final boolean hasPodAntiAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAntiAffinity() != null;
@@ -475,6 +493,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "PendingPods");
                 Utilities.incrementField(summaryNamespace, "PendingPods");
                 Utilities.incrementField(summaryNode, "PendingPods");
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "PendingPods");
+                }
             }
 
             if (phase.equals("Failed")) {
@@ -487,6 +508,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "RunningPods");
                 Utilities.incrementField(summaryNamespace, "RunningPods");
                 Utilities.incrementField(summaryNode, "RunningPods");
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "RunningPods");
+                }
             }
 
             podObject = checkAddObject(podObject, podItem.getStatus().getPodIP(), "podIP");
@@ -497,6 +521,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "Evictions");
                 Utilities.incrementField(summaryNamespace, "Evictions");
                 Utilities.incrementField(summaryNode, "Evictions");
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "Evictions");
+                }
             }
             podObject = checkAddObject(podObject, podItem.getStatus().getStartTime(), "startTime");
 
