@@ -6,6 +6,7 @@ import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.monitors.kubernetes.Metrics.UploadMetricsTask;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
+import com.appdynamics.monitors.kubernetes.Models.NodeRole;
 import com.appdynamics.monitors.kubernetes.RestClient;
 import com.appdynamics.monitors.kubernetes.Utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
@@ -54,7 +56,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
     }
 
-    public PodSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
+    public PodSnapshotRunner(final TasksExecutionServiceProvider serviceProvider, final Map<String, String> config, final CountDownLatch countDownLatch){
         super(serviceProvider, config, countDownLatch);
     }
 
@@ -72,20 +74,20 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
     private void generatePodSnapshot(){
         logger.info("Proceeding to POD update...");
-        Map<String, String> config = (Map<String, String>) getConfiguration().getConfigYml();
+        final Map<String, String> config = (Map<String, String>) getConfiguration().getConfigYml();
         if (config != null) {
-            String apiKey = Utilities.getEventsAPIKey(config);
-            String accountName = Utilities.getGlobalAccountName(config);
-            URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_POD, CONFIG_SCHEMA_DEF_POD);
+            final String apiKey = Utilities.getEventsAPIKey(config);
+            final String accountName = Utilities.getGlobalAccountName(config);
+            final URL publishUrl = Utilities.ensureSchema(config, apiKey, accountName,CONFIG_SCHEMA_NAME_POD, CONFIG_SCHEMA_DEF_POD);
 
             try {
                 V1PodList podList;
 
                 try {
-                    ApiClient client = Utilities.initClient(config);
+                    final ApiClient client = Utilities.initClient(config);
                     this.setAPIServerTimeout(client, K8S_API_TIMEOUT);
                     Configuration.setDefaultApiClient(client);
-                    CoreV1Api api = new CoreV1Api();
+                    final CoreV1Api api = new CoreV1Api();
 
                     this.setCoreAPIServerTimeout(api, K8S_API_TIMEOUT);
                     podList = api.listPodForAllNamespaces(null,
@@ -98,7 +100,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                             null,
                             null);
                 }
-                catch (Exception ex){
+                catch (final Exception ex){
                     throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
                 }
 
@@ -114,7 +116,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }
 
 
-                Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
+                final Integer metrics_count = getMetricsFromSummary(getSummaryMap(), config).size();
                 //incrementField(summaryMetrics, "NodeMetricsCollected", metrics_count);
                 incrementField(summaryScript, "PodMetricsCollected", metrics_count);
 
@@ -123,42 +125,42 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 // Pod Restart fix 
 
                 // File to read and save podRestart history
-                String podHistoryPath = Utilities.getExtensionDirectory();
+                final String podHistoryPath = Utilities.getExtensionDirectory();
 
                 //final File podHistoryFile = new File(podHistoryPath+"/"+"history.tmp");
 
                 //logger.info("History file: " + podHistoryFile);
                 
                 //JSON parser object to parse read file
-                JSONParser jsonParser = new JSONParser();
+                final JSONParser jsonParser = new JSONParser();
                 Integer podRestartsSum = 0;
                 Integer clusterPodRestarts = 0;
-                Integer nodepodRestartsSum = 0;
-                Integer namespacepodRestartsSum = 0;
+                final Integer nodepodRestartsSum = 0;
+                final Integer namespacepodRestartsSum = 0;
                 Integer podRestartsHist = 0;
 
-                boolean historyExist = true; //podHistoryFile.exists();
-                String podHistoryFile = podHistoryPath+"/"+"history.tmp";
+                final boolean historyExist = true; //podHistoryFile.exists();
+                final String podHistoryFile = podHistoryPath+"/"+"history.tmp";
                 if(historyExist){
                     //try (InputStream inputStream = this.getClass().getResourceAsStream(podHistoryFile)) 
                     try (InputStream inputStream = new FileInputStream(new File(podHistoryFile)))
                     {
                         // To String
                         //creating an InputStreamReader object
-                        InputStreamReader isReader = new InputStreamReader(inputStream);
+                        final InputStreamReader isReader = new InputStreamReader(inputStream);
                         //Creating a BufferedReader object
-                        BufferedReader reader = new BufferedReader(isReader);
-                        StringBuffer sb = new StringBuffer();
+                        final BufferedReader reader = new BufferedReader(isReader);
+                        final StringBuffer sb = new StringBuffer();
                         String str;
                         while((str = reader.readLine())!= null){
                             sb.append(str);
                         }
                         
                         //Read JSON file
-                        Object obj = jsonParser.parse(sb.toString());
-                        JSONObject podRestartHistoryJson = (JSONObject) obj;
+                        final Object obj = jsonParser.parse(sb.toString());
+                        final JSONObject podRestartHistoryJson = (JSONObject) obj;
                         logger.debug("History PodRestarts:"+(String) podRestartHistoryJson.get("podRestarts").toString());
-                        Integer podRestartHistory = (Integer) Math.toIntExact((Long) podRestartHistoryJson.get("podRestarts"));
+                        final Integer podRestartHistory = (Integer) Math.toIntExact((Long) podRestartHistoryJson.get("podRestarts"));
                         podRestartsHist = podRestartHistory;
                         reader.close();
                         inputStream.close();
@@ -166,19 +168,19 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                         logger.info("File "+podHistoryFile+" loaded with success");
                         logger.debug("History PodRestarts Converted to integer:"+ podRestartsHist.toString());
                         
-                    } catch (FileNotFoundException e) {
+                    } catch (final FileNotFoundException e) {
                         podRestartsHist = 0;
                         logger.error("NotFound - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
                         logger.info("Sending PodRestarts as 0 because PodRestarts history file doesn't exist and it will be created");
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         podRestartsHist = 0;
                         logger.error("IOException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
                         logger.info("Sending PodRestarts as 0 because of IOException");
-                    } catch (ParseException e) {
+                    } catch (final ParseException e) {
                         podRestartsHist = 0;
                         logger.error("ParseException - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
                         logger.info("Sending PodRestarts as 0 because Could not parse the file, please delete the file "+podHistoryFile+" if its corrupt");
-                    } catch (Exception e){
+                    } catch (final Exception e){
                         podRestartsHist = 0;
                         logger.error("Exception - Issues when reading podRestart History file: "+podHistoryFile, e.getMessage());
                         logger.info(e.getLocalizedMessage());
@@ -198,7 +200,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }else{
                     try {
                         podRestartsSum = summary.getData().get("PodRestarts").intValue();
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         podRestartsSum = 0;
                     }
                     
@@ -220,7 +222,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 /* END CPU and Memory Request Summary */
 
 
-                JSONObject clusterHistory = new JSONObject();
+                final JSONObject clusterHistory = new JSONObject();
                 clusterHistory.put("podRestarts", podRestartsSum);
                 
                 try (FileWriter file = new FileWriter(podHistoryFile)) {
@@ -230,49 +232,75 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     file.close();
                     logger.info("File "+podHistoryFile+" saved with success!");
 
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     logger.error("Issues when saving podRestart History file", e.getMessage());
                 }
 
                 // End Save History
 
                 //build and update metrics
-                List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
+                final List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
 
                 logger.info("About to send {} pod metrics", metricList.size());
-                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
+                final UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
                 getConfiguration().getExecutorService().execute("UploadMetricsTask", podMetricsTask);
 
                 //check searches
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 countDownLatch.countDown();
                 logger.error("Failed to push POD data", e);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 countDownLatch.countDown();
                 logger.error("Failed to push POD data", e);
             }
         }
     }
 
-     ArrayNode createPodPayload(V1PodList podList, Map<String, String> config, URL publishUrl, String accountName, String apiKey){
-        ObjectMapper mapper = new ObjectMapper();
+     ArrayNode createPodPayload(final V1PodList podList, final Map<String, String> config, final URL publishUrl, final String accountName, final String apiKey){
+        final ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
+        
+        // Read historical Node rol//es
+        
+        Map<String,String> mapNodes = new HashMap<String,String>();
+        try {
+   
+            // convert JSON file to map
+            mapNodes = mapper.readValue(Paths.get("nodes.roles").toFile(), HashMap.class);
+            logger.info("Successfull reading the historical node roles");
+            //List<NodeRole> nodesRoles = Arrays.asList(mapper.readValue(Paths.get("nodes.roles").toFile(), NodeRole[].class));
+        
+        } catch (final Exception ex) {
+            logger.error("Fail reading the historical node roles - maybe it is the first time");
+            logger.error(ex.getMessage());
+        }
 
-        long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
+        final long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
         
         // Variable to count namespaces
-        Map<String, Integer> namespaces = new HashMap<String, Integer>();
+        final HashMap<String, Integer> namespaces = new HashMap<String, Integer>();
 
         
 
         
         
 
-        for(V1Pod podItem : podList.getItems()){
+        for(final V1Pod podItem : podList.getItems()){
 
             ObjectNode podObject = mapper.createObjectNode();
-            String namespace = podItem.getMetadata().getNamespace();
-            String nodeName = podItem.getSpec().getNodeName();
+            final String namespace = podItem.getMetadata().getNamespace();
+            final String nodeName = podItem.getSpec().getNodeName();
+
+            // Get Role Name if exist
+            String Role = "";
+
+            try {
+                Role = mapNodes.get(nodeName);
+                logger.info("Role mapped: "+Role);
+            } catch (final Exception e) {
+                logger.info("Fail map role for node: "+nodeName);
+                logger.error(e.getMessage());
+            }
 
             namespaces.putIfAbsent(namespace, 0);
             namespaces.put(namespace, namespaces.get(namespace) + 1);
@@ -285,7 +313,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 logger.info(String.format("Pod %s missing node attribution", podItem.getMetadata().getName()));
             }
 
-            String clusterName = Utilities.ensureClusterName(config, podItem.getMetadata().getClusterName());
+            final String clusterName = Utilities.ensureClusterName(config, podItem.getMetadata().getClusterName());
 
             SummaryObj summary = getSummaryMap().get(ALL);
             if (summary == null) {
@@ -308,7 +336,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     getSummaryMap().put(nodeName, summaryNode);
                 }
             }
-            Integer totalNamespaces =  namespaces.entrySet().size();
+            final Integer totalNamespaces =  namespaces.entrySet().size();
             logger.debug("Namespaces : "+totalNamespaces);
             Utilities.setField(summary, "NamespacesRunning", totalNamespaces);
             Utilities.incrementField(summary, "Pods");
@@ -323,9 +351,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
             if (podItem.getMetadata().getLabels() != null) {
                 String labels = "";
-                Iterator it = podItem.getMetadata().getLabels().entrySet().iterator();
+                final Iterator it = podItem.getMetadata().getLabels().entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
+                    final Map.Entry pair = (Map.Entry)it.next();
                     labels += String.format("%s:%s;", pair.getKey(), pair.getValue());
                     it.remove();
                 }
@@ -334,9 +362,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
             if (podItem.getMetadata().getAnnotations() != null){
                 String annotations = "";
-                Iterator it = podItem.getMetadata().getAnnotations().entrySet().iterator();
+                final Iterator it = podItem.getMetadata().getAnnotations().entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
+                    final Map.Entry pair = (Map.Entry)it.next();
                     annotations += String.format("%s:%s;", pair.getKey(), pair.getValue());
                     it.remove();
                 }
@@ -346,7 +374,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             podObject = checkAddObject(podObject, podItem.getMetadata().getName(), "name");
             podObject = checkAddObject(podObject, namespace, "namespace");
 
-            int containerCount = podItem.getSpec().getContainers() != null ? podItem.getSpec().getContainers().size() : 0;
+            final int containerCount = podItem.getSpec().getContainers() != null ? podItem.getSpec().getContainers().size() : 0;
             podObject = checkAddInt(podObject, containerCount, "containerCount");
 
             if (containerCount > 0) {
@@ -355,7 +383,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summaryNode, "Containers", containerCount);
             }
 
-            int initContainerCount = podItem.getSpec().getInitContainers() != null ? podItem.getSpec().getInitContainers().size() : 0;
+            final int initContainerCount = podItem.getSpec().getInitContainers() != null ? podItem.getSpec().getInitContainers().size() : 0;
             podObject = checkAddInt(podObject, initContainerCount, "initContainerCount");
 
             if (initContainerCount > 0) {
@@ -372,18 +400,18 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
             if (podItem.getSpec().getTolerations() != null) {
                 String tolerations = "";
-                int tolerationsCount = podItem.getSpec().getTolerations().size();
+                final int tolerationsCount = podItem.getSpec().getTolerations().size();
                 Utilities.incrementField(summary, "TolerationsCount", tolerationsCount);
                 Utilities.incrementField(summaryNamespace, "TolerationsCount", tolerationsCount);
                 Utilities.incrementField(summaryNode, "TolerationsCount", tolerationsCount);
-                for(V1Toleration toleration : podItem.getSpec().getTolerations()){
+                for(final V1Toleration toleration : podItem.getSpec().getTolerations()){
                     tolerations += String.format("%s;", toleration.toString());
                 }
                 podObject = checkAddObject(podObject, tolerations, "tolerations");
             }
 
              if (podItem.getSpec().getAffinity() != null) {
-                V1NodeAffinity affinity = podItem.getSpec().getAffinity().getNodeAffinity();
+                final V1NodeAffinity affinity = podItem.getSpec().getAffinity().getNodeAffinity();
                 if (affinity != null) {
                     Utilities.incrementField(summary, "HasNodeAffinity");
                     Utilities.incrementField(summaryNamespace, "HasNodeAffinity");
@@ -391,7 +419,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     String nodeAffinityPreferred = "";
 
                     if (affinity.getPreferredDuringSchedulingIgnoredDuringExecution() != null) {
-                        for (V1PreferredSchedulingTerm t : affinity.getPreferredDuringSchedulingIgnoredDuringExecution()) {
+                        for (final V1PreferredSchedulingTerm t : affinity.getPreferredDuringSchedulingIgnoredDuringExecution()) {
                             nodeAffinityPreferred += String.format("%s;", t.toString());
                         }
                     }
@@ -399,12 +427,12 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
 
                     String nodeAffinityRequired = "";
-                    V1NodeSelector nodeSelector = affinity.getRequiredDuringSchedulingIgnoredDuringExecution();
+                    final V1NodeSelector nodeSelector = affinity.getRequiredDuringSchedulingIgnoredDuringExecution();
                     if (nodeSelector != null) {
                         if (nodeSelector.getNodeSelectorTerms() != null) {
-                            for (V1NodeSelectorTerm term : nodeSelector.getNodeSelectorTerms()) {
+                            for (final V1NodeSelectorTerm term : nodeSelector.getNodeSelectorTerms()) {
                                 if (term.getMatchExpressions() != null) {
-                                    for (V1NodeSelectorRequirement req : term.getMatchExpressions()) {
+                                    for (final V1NodeSelectorRequirement req : term.getMatchExpressions()) {
                                         nodeAffinityRequired += String.format("%s;", req.toString());
                                     }
                                 }
@@ -415,7 +443,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 }
             }
 
-            boolean hasPodAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAffinity() != null;
+            final boolean hasPodAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAffinity() != null;
             podObject = checkAddBoolean(podObject, hasPodAffinity, "hasPodAffinity");
             if(hasPodAffinity){
                 Utilities.incrementField(summary, "HasPodAffinity");
@@ -423,7 +451,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summaryNode, "HasPodAffinity");
             }
 
-            boolean hasPodAntiAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAntiAffinity() != null;
+            final boolean hasPodAntiAffinity = podItem.getSpec().getAffinity() != null && podItem.getSpec().getAffinity().getPodAntiAffinity() != null;
             podObject = checkAddBoolean(podObject, hasPodAntiAffinity, "hasPodAntiAffinity");
             if (hasPodAntiAffinity){
                 Utilities.incrementField(summary, "HasPodAntiAffinity");
@@ -433,7 +461,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
             podObject = checkAddObject(podObject, podItem.getStatus().getHostIP(), "hostIP");
 
-            String phase = podItem.getStatus().getPhase();
+            final String phase = podItem.getStatus().getPhase();
             podObject = checkAddObject(podObject, phase, "phase");
             if (phase.equals("Pending")) {
                 Utilities.incrementField(summary, "PendingPods");
@@ -465,7 +493,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             podObject = checkAddObject(podObject, podItem.getStatus().getStartTime(), "startTime");
 
             if (podItem.getStatus().getConditions() != null && podItem.getStatus().getConditions().size() > 0) {
-                V1PodCondition recentCondition = podItem.getStatus().getConditions().get(0);
+                final V1PodCondition recentCondition = podItem.getStatus().getConditions().get(0);
                 podObject = checkAddObject(podObject, recentCondition.getLastTransitionTime(), "lastTransitionTimeCondition");
                 podObject = checkAddObject(podObject, recentCondition.getReason(), "reasonCondition");
                 podObject = checkAddObject(podObject, recentCondition.getStatus(), "statusCondition");
@@ -473,18 +501,18 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             }
 
             int podRestarts = 0;
-            String contStates = "";
+            final String contStates = "";
             String images = "";
             String waitReasons = "";
             String termReasons = "";      
 
             if (podItem.getStatus().getContainerStatuses() != null){
-                for(V1ContainerStatus status : podItem.getStatus().getContainerStatuses()){
+                for(final V1ContainerStatus status : podItem.getStatus().getContainerStatuses()){
 
-                    String image = status.getImage();
+                    final String image = status.getImage();
                     images += String.format("%s;", image);
 
-                    int restarts = status.getRestartCount();
+                    final int restarts = status.getRestartCount();
                     podRestarts += restarts;
 
                     if (status.getState().getWaiting()!= null){
@@ -533,7 +561,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             float memLimit = 0;
             float cpuLimit = 0;
 
-            for(V1Container container : podItem.getSpec().getContainers()){
+            for(final V1Container container : podItem.getSpec().getContainers()){
                 if (container.getSecurityContext() != null ){
 
                     try {
@@ -541,7 +569,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                             numPrivileged++;
                         }
                     }
-                    catch (Exception ex){
+                    catch (final Exception ex){
                         logger.error("Issues when getting the privileged flag for " + podItem.getMetadata().getName(), ex.getMessage());
                     }
                 }
@@ -550,7 +578,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 numReady += container.getReadinessProbe() != null ? 1 : 0;
                 if (container.getPorts() != null) {
                     String ports = "";
-                    for (V1ContainerPort port : container.getPorts()) {
+                    for (final V1ContainerPort port : container.getPorts()) {
                         ports += String.format("%d;",port.getContainerPort());
                     }
                     podObject = checkAddObject(podObject, ports, "ports");
@@ -558,8 +586,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
                 if (container.getResources() != null) {
                     if (container.getResources().getRequests() != null) {
-                        Set<Map.Entry<String, Quantity>> setRequests = container.getResources().getRequests().entrySet();
-                        for (Map.Entry<String, Quantity> s : setRequests) {
+                        final Set<Map.Entry<String, Quantity>> setRequests = container.getResources().getRequests().entrySet();
+                        for (final Map.Entry<String, Quantity> s : setRequests) {
                             if (s.getKey().equals("memory")) {
                                 memRequest += s.getValue().getNumber().divide(new BigDecimal(1000000)).floatValue(); //MB
 
@@ -572,8 +600,8 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     }
 
                  if (container.getResources().getLimits() != null) {
-                     Set<Map.Entry<String, Quantity>> setLimits = container.getResources().getLimits().entrySet();
-                     for (Map.Entry<String, Quantity> s : setLimits) {
+                     final Set<Map.Entry<String, Quantity>> setLimits = container.getResources().getLimits().entrySet();
+                     for (final Map.Entry<String, Quantity> s : setLimits) {
                          if (s.getKey().equals("memory")) {
                              memLimit += s.getValue().getNumber().divide(new BigDecimal(1000000)).floatValue(); //MB
 
@@ -588,7 +616,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 if (container.getVolumeMounts() != null){
 
                     String mounts = "";
-                    for(V1VolumeMount vm : container.getVolumeMounts()){
+                    for(final V1VolumeMount vm : container.getVolumeMounts()){
                         mounts += String.format("%s;",vm.getMountPath());
                     }
                     podObject = checkAddObject(podObject, mounts, "mounts");
@@ -651,10 +679,10 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             arrayNode.add(podObject);
             if (arrayNode.size() >= batchSize){
                 logger.info("Sending batch of {} Pod records", arrayNode.size());
-                String payload = arrayNode.toString();
+                final String payload = arrayNode.toString();
                 arrayNode = arrayNode.removeAll();
                 if(!payload.equals("[]")){
-                    UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
+                    final UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
                     getConfiguration().getExecutorService().execute("UploadPodData", uploadEventsTask);
                 }
             }
@@ -664,23 +692,23 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 
         if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Pod records", arrayNode.size());
-             String payload = arrayNode.toString();
+             final String payload = arrayNode.toString();
              arrayNode = arrayNode.removeAll();
              if(!payload.equals("[]")){
-                 UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
+                 final UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
                  getConfiguration().getExecutorService().execute("UploadPodData", uploadEventsTask);
              }
          }
         return  arrayNode;
     }
 
-    protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
+    protected SummaryObj initDefaultSummaryObject(final Map<String, String> config){
         return initPodSummaryObject(config, ALL, ALL);
     }
 
-    public  static SummaryObj initPodSummaryObject(Map<String, String> config, String namespace, String node){
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode summary = mapper.createObjectNode();
+    public  static SummaryObj initPodSummaryObject(final Map<String, String> config, final String namespace, final String node){
+        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectNode summary = mapper.createObjectNode();
 
         
         summary.put("namespace", namespace);
@@ -722,21 +750,21 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         
 
 
-        ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace, node);
+        final ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace, node);
         String path = Utilities.getMetricsPath(config, namespace, node);
         path = path.replace("Nodes", "KNodes");
         logger.info("Init Pod Path:"+path);
         return new SummaryObj(summary, metricsList, path);
     }
 
-    public  static  ArrayList<AppDMetricObj> initMetrics(Map<String, String> config, String namespace, String node){
+    public  static  ArrayList<AppDMetricObj> initMetrics(final Map<String, String> config, final String namespace, final String node){
         if (Utilities.ClusterName == null || Utilities.ClusterName.isEmpty()){
             return new ArrayList<AppDMetricObj>();
         }
-        String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", Utilities.getClusterTierName(config));
-        String clusterName = Utilities.ClusterName;
-        String parentSchema = config.get(CONFIG_SCHEMA_NAME_POD);
-        ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
+        final String rootPath = String.format("Application Infrastructure Performance|%s|Custom Metrics|Cluster Stats|", Utilities.getClusterTierName(config));
+        final String clusterName = Utilities.ClusterName;
+        final String parentSchema = config.get(CONFIG_SCHEMA_NAME_POD);
+        final ArrayList<AppDMetricObj> metricsList = new ArrayList<AppDMetricObj>();
         String namespacesCondition = "";
         String nodeCondition = "";
         if(namespace != null && !namespace.equals(ALL)){
@@ -747,7 +775,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             nodeCondition = String.format("and nodeName = \"%s\"", node);
         }
 
-        String filter = namespacesCondition.isEmpty() ? nodeCondition : namespacesCondition;
+        final String filter = namespacesCondition.isEmpty() ? nodeCondition : namespacesCondition;
 
         if (namespace != null && namespace.equals(ALL) && node != null && node.equals(ALL)) {
 
