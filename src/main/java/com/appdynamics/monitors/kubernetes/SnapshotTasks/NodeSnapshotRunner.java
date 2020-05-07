@@ -161,6 +161,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
      ArrayNode createNodePayload(V1NodeList nodeList, Map<String, String> config, URL publishUrl, String accountName, String apiKey) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
+        ArrayNode arrayNodeResult = mapper.createArrayNode();
 
         long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
 
@@ -425,6 +426,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             if (arrayNode.size() >= batchSize){
                 logger.info("Sending batch of {} Node records", arrayNode.size());
                 String payload = arrayNode.toString();
+                for (JsonNode jsonNode : arrayNode) {
+                    arrayNodeResult.add(jsonNode);
+                }
                 arrayNode = arrayNode.removeAll();
                 if(!payload.equals("[]")){
                     UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
@@ -436,6 +440,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
          if (arrayNode.size() > 0){
              logger.info("Sending last batch of {} Node records", arrayNode.size());
              String payload = arrayNode.toString();
+             for (JsonNode jsonNode : arrayNode) {
+                arrayNodeResult.add(jsonNode);
+             }
              arrayNode = arrayNode.removeAll();
              if(!payload.equals("[]")){
                  UploadEventsTask uploadEventsTask = new UploadEventsTask(getTaskName(), config, publishUrl, accountName, apiKey, payload);
@@ -443,7 +450,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
              }
          }
 
-        return arrayNode;
+        return arrayNodeResult;
     }
 
     protected SummaryObj initDefaultSummaryObject(Map<String, String> config){
