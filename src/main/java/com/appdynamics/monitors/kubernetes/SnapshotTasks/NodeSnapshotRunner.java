@@ -8,16 +8,27 @@ import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.appdynamics.monitors.kubernetes.RestClient;
 import com.appdynamics.monitors.kubernetes.Utilities;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
@@ -74,8 +85,41 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                     throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
                 }
                 logger.debug("Analyzing Nodes - Number of nodes: "+ nodeList.getItems().size());
-                createNodePayload(nodeList, config, publishUrl, accountName, apiKey);
+                ArrayNode NodeAnalytics = createNodePayload(nodeList, config, publishUrl, accountName, apiKey);
 
+                // File to read and save podRestart history
+                String nodeRolesMapFilePath = Utilities.getExtensionDirectory();
+
+                //JSON parser object to parse read file
+                JSONParser jsonParser = new JSONParser();
+
+                //JSON Object to put node roles
+                JSONObject nodeRoles = new JSONObject();
+
+                for (JsonNode objNode : NodeAnalytics) {
+                    String nodeName = objNode.get("nodeName").textValue();
+                    String roleName = objNode.get("role").textValue();
+                    nodeRoles.put(nodeName,roleName);
+                }
+
+                
+                String nodeRolesMapFile = nodeRolesMapFilePath+"/"+"nodes.roles";
+
+                
+                try (FileWriter file = new FileWriter(nodeRolesMapFile)) {
+
+                    file.write(nodeRoles.toJSONString());
+                    file.flush();
+                    file.close();
+                    logger.info("File "+nodeRolesMapFile+" saved with success!");
+
+                } catch (IOException e) {
+                    logger.error("Issues when saving Node rules map file", e.getMessage());
+                }
+
+                // End Save History
+
+                
 
                 /* Config to get Total metrics collected */
                 /* SummaryObj summaryMetrics = getSummaryMap().get(ALL);
@@ -181,8 +225,13 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
             //labels
             boolean isMaster = false;
+            boolean isWorker = false;
+            boolean isStorage = false;
+            boolean isInfra = false;
             int masters = 0;
             int workers = 0;
+            int storages = 0;
+            int infras = 0;
             if (nodeObj.getMetadata().getLabels() != null) {
                 String labels = "";
                 Iterator it = nodeObj.getMetadata().getLabels().entrySet().iterator();
@@ -190,6 +239,15 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                     Map.Entry pair = (Map.Entry) it.next();
                     if (!isMaster && pair.getKey().equals("node-role.kubernetes.io/master")) {
                         isMaster = true;
+                    }
+                    if (!isStorage && pair.getKey().equals("node-role.kubernetes.io/compute-storage")) {
+                        isStorage = true;
+                    }
+                    if (!isInfra && pair.getKey().equals("node-role.kubernetes.io/infra")) {
+                        isInfra = true;
+                    }
+                    if (!isWorker && pair.getKey().equals("node-role.kubernetes.io/compute")) {
+                        isWorker = true;
                     }
                     labels += String.format("%s:%s;", pair.getKey(), pair.getValue());
                     it.remove();
@@ -199,7 +257,16 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             if (isMaster) {
                 nodeObject = checkAddObject(nodeObject, "Masters", "role");
                 masters++;
-            } else {
+            }
+            else if (isStorage) {
+                nodeObject = checkAddObject(nodeObject, "Storage", "role");
+                storages++;
+            }
+            else if (isInfra) {
+                nodeObject = checkAddObject(nodeObject, "Infra", "role");
+                infras++;
+            }
+            else if (isWorker) {
                 nodeObject = checkAddObject(nodeObject, "Workers", "role");
                 workers++;
             }
@@ -207,7 +274,11 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
             Utilities.incrementField(summary, "Masters", masters);
             Utilities.incrementField(summary, "Workers", workers);
+            Utilities.incrementField(summary, "InfraNodes", infras);
+            Utilities.incrementField(summary, "StorageNodes", storages);
             Utilities.incrementField(summary, "Nodes", 1);
+
+            
 
             if (nodeObj.getStatus().getCapacity() != null) {
                 Set<Map.Entry<String, Quantity>> set = nodeObj.getStatus().getCapacity().entrySet();
@@ -219,7 +290,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summary, "CapacityMemory", val);
                         if (isMaster) {
                             Utilities.incrementField(summaryMaster, "CapacityMemory", val);
-                        } else {
+                        } else if (isWorker) {
                             Utilities.incrementField(summaryWorker, "CapacityMemory", val);
                         }
                     }
@@ -230,7 +301,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summary, "CapacityCpu", val);
                         if (isMaster) {
                             Utilities.incrementField(summaryMaster, "CapacityCpu", val);
-                        } else {
+                        } else if (isWorker) if (isWorker) {
                             Utilities.incrementField(summaryWorker, "CapacityCpu", val);
                         }
                     }
@@ -241,7 +312,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summary, "CapacityPods", val);
                         if (isMaster) {
                             Utilities.incrementField(summaryMaster, "CapacityPods", val);
-                        } else {
+                        } else if (isWorker) {
                             Utilities.incrementField(summaryWorker, "CapacityPods", val);
                         }
                     }
@@ -258,7 +329,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summary, "AllocationsMemory", val);
                         if (isMaster) {
                             Utilities.incrementField(summaryMaster, "AllocationsMemory", val);
-                        } else {
+                        } else if (isWorker) {
                             Utilities.incrementField(summaryWorker, "AllocationsMemory", val);
                         }
                     }
@@ -269,7 +340,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summary, "AllocationsCpu", val*1000);
                         if (isMaster) {
                             Utilities.incrementField(summaryMaster, "AllocationsCpu", val*1000);
-                        } else {
+                        } else if (isWorker) {
                             Utilities.incrementField(summaryWorker, "AllocationsCpu", val*1000);
                         }
                     }
@@ -279,7 +350,7 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summary, "AllocationsPods", val);
                         if (isMaster) {
                             Utilities.incrementField(summaryMaster, "AllocationsPods", val);
-                        } else {
+                        } else if (isWorker) {
                             Utilities.incrementField(summaryWorker, "AllocationsPods", val);
                         }
                     }
@@ -394,6 +465,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
             summary.put("TaintsTotal", 0);
             summary.put("Masters", 0);
             summary.put("Workers", 0);
+            summary.put("InfraNodes", 0);
+            summary.put("StorageNodes", 0);
             summary.put("CapacityMemory", 0);
             summary.put("CapacityCpu", 0);
             summary.put("CapacityPods", 0);
