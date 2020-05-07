@@ -90,15 +90,15 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 // File to read and save podRestart history
                 String nodeRolesMapFilePath = Utilities.getExtensionDirectory();
 
-                //JSON parser object to parse read file
-                JSONParser jsonParser = new JSONParser();
-
                 //JSON Object to put node roles
                 JSONObject nodeRoles = new JSONObject();
+
+                logger.info("Nodes Collected: "+NodeAnalytics.size());
 
                 for (JsonNode objNode : NodeAnalytics) {
                     String nodeName = objNode.get("nodeName").textValue();
                     String roleName = objNode.get("role").textValue();
+                    logger.info("Node: "+nodeName+" - Role: "+roleName);
                     nodeRoles.put(nodeName,roleName);
                 }
 
