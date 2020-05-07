@@ -259,6 +259,9 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                     if (!isWorker && pair.getKey().equals("node-role.kubernetes.io/compute")) {
                         isWorker = true;
                     }
+                    else {
+                        isWorker = true;
+                    }
                     labels += String.format("%s:%s;", pair.getKey(), pair.getValue());
                     it.remove();
                 }
