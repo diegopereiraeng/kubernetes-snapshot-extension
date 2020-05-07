@@ -336,6 +336,14 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     getSummaryMap().put(nodeName, summaryNode);
                 }
             }
+            
+            SummaryObj summaryRole= getSummaryMap().get(Role);
+            if (Role != "") {
+                if (summaryRole == null) {
+                    summaryRole = initPodSummaryObject(config, ALL, Role);
+                    getSummaryMap().put(Role, summaryRole);
+                }
+            }
             final Integer totalNamespaces =  namespaces.entrySet().size();
             logger.debug("Namespaces : "+totalNamespaces);
             Utilities.setField(summary, "NamespacesRunning", totalNamespaces);
@@ -635,6 +643,13 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summary, "RequestCpu", (cpuRequest*1000));
                 Utilities.incrementField(summaryNamespace, "RequestCpu", (cpuRequest*1000));
                 Utilities.incrementField(summaryNode, "RequestCpu", (cpuRequest*1000));
+                if (Role != "") {
+                    Utilities.incrementField(summaryRole, "RequestCpu", (cpuRequest*1000));
+                    Utilities.incrementField(summaryRole, "RequestMemory", memRequest);
+                    Utilities.incrementField(summaryRole, "LimitCpu", cpuLimit);
+                    Utilities.incrementField(summaryRole, "LimitMemory", memLimit);
+
+                }
 
                 Utilities.incrementField(summary, "RequestMemory", memRequest);
                 Utilities.incrementField(summaryNamespace, "RequestMemory", memRequest);
@@ -652,23 +667,35 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                     Utilities.incrementField(summary, "NoLivenessProbe");
                     Utilities.incrementField(summaryNamespace, "NoLivenessProbe");
                     Utilities.incrementField(summaryNode, "NoLivenessProbe");
+                    if (Role != "") {
+                        Utilities.incrementField(summaryRole, "NoLivenessProbe");
+                    }
                 }
 
                 if (numReady == 0) {
                     Utilities.incrementField(summary, "NoReadinessProbe");
                     Utilities.incrementField(summaryNamespace, "NoReadinessProbe");
                     Utilities.incrementField(summaryNode, "NoReadinessProbe");
+                    if (Role != "") {
+                        Utilities.incrementField(summaryRole, "NoReadinessProbe");
+                    }
                 }
 
                 if (numPrivileged > 0) {
                     Utilities.incrementField(summary, "Privileged");
                     Utilities.incrementField(summaryNamespace, "Privileged");
                     Utilities.incrementField(summaryNode, "Privileged");
+                    if (Role != "") {
+                        Utilities.incrementField(summaryRole, "Privileged");
+                    }
                 }
                 if (!limitsDefined){
                     Utilities.incrementField(summary, "NoLimits");
                     Utilities.incrementField(summaryNamespace, "NoLimits");
                     Utilities.incrementField(summaryNode, "NoLimits");
+                    if (Role != "") {
+                        Utilities.incrementField(summaryRole, "NoLimits");
+                    }
                 }
             }
 
@@ -737,9 +764,11 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
             summary.put("RequestCpu", 0);
             summary.put("RequestMemory", 0);
         }
-        else if(node != null && node.equals("Workers") || node.equals("Masters")){
+        else if(node != null ){//&& node.equals("Workers") || node.equals("Masters")){
             summary.put("RequestCpu", 0);
             summary.put("RequestMemory", 0);
+            summary.put("LimitCpu", 0);
+            summary.put("LimitMemory", 0);
         }
         else {
             summary.put("RequestCpu", 0);
@@ -751,7 +780,14 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
 
 
         final ArrayList<AppDMetricObj> metricsList = initMetrics(config, namespace, node);
-        String path = Utilities.getMetricsPath(config, namespace, node);
+
+        String path = "";
+        if (node.equals("Workers") || node.equals("Masters") || node.equals("Storage") || node.equals("Infra")) {
+            path = Utilities.getMetricsPathV2(config, "Summary", node);
+        } else {
+            path = Utilities.getMetricsPath(config, namespace, node);
+        }
+        
         path = path.replace("Nodes", "KNodes");
         logger.info("Init Pod Path:"+path);
         return new SummaryObj(summary, metricsList, path);
