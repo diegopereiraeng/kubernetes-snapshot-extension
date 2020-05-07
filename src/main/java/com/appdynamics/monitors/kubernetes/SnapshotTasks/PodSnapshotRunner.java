@@ -266,7 +266,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
         try {
    
             // convert JSON file to map
-            mapNodes = mapper.readValue(Paths.get("nodes.roles").toFile(), HashMap.class);
+            mapNodes = mapper.readValue(Paths.get(Utilities.getExtensionDirectory()+"/nodes.roles").toFile(), HashMap.class);
             logger.info("Successfull reading the historical node roles");
             //List<NodeRole> nodesRoles = Arrays.asList(mapper.readValue(Paths.get("nodes.roles").toFile(), NodeRole[].class));
         
