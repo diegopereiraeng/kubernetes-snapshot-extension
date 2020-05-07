@@ -97,11 +97,18 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
                 for (JsonNode objNode : NodeAnalytics) {
                     logger.info("Texto Nodes 1:"+objNode.asText());
-                    logger.info("Texto Nodes 2:"+objNode.fieldNames().toString());
-                    String nodeName = objNode.get("nodeName").textValue();
-                    String roleName = objNode.get("role").textValue();
-                    logger.info("Node: "+nodeName+" - Role: "+roleName);
-                    nodeRoles.put(nodeName,roleName);
+                    Iterator fieldsNames = objNode.fieldNames();
+                    while (fieldsNames.hasNext()) 
+                        System.out.print(fieldsNames.next() + " ");
+                        
+                    try {
+                        String nodeName = objNode.get("nodeName").textValue();
+                        String roleName = objNode.get("role").textValue();
+                        logger.info("Node: "+nodeName+" - Role: "+roleName);
+                        nodeRoles.put(nodeName,roleName);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage());
+                    }
                 }
 
                 
