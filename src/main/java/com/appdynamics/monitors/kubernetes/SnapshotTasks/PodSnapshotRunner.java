@@ -12,7 +12,7 @@ import com.appdynamics.monitors.kubernetes.Utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.nimbusds.jose.util.IOUtils;
+
 
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.Configuration;
