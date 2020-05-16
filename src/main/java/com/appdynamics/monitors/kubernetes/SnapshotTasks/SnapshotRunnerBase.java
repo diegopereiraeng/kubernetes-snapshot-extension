@@ -187,7 +187,7 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
 
         String path = "";
 
-        path = Utilities.getMetricsPathV2(config, "Script");
+        path = Utilities.getMetricsPathV2(config, "Extension");
 
         return new SummaryObj(summary, metricsList, path);
     }

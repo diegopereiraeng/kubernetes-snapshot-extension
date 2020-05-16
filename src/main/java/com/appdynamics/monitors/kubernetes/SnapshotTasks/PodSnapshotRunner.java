@@ -673,7 +673,7 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 if (Role != "") {
                     Utilities.incrementField(summaryRole, "RequestCpu", (cpuRequest*1000));
                     Utilities.incrementField(summaryRole, "RequestMemory", memRequest);
-                    Utilities.incrementField(summaryRole, "LimitCpu", cpuLimit);
+                    Utilities.incrementField(summaryRole, "LimitCpu", (cpuLimit*1000));
                     Utilities.incrementField(summaryRole, "LimitMemory", memLimit);
 
                 }
@@ -682,9 +682,9 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 Utilities.incrementField(summaryNamespace, "RequestMemory", memRequest);
                 Utilities.incrementField(summaryNode, "RequestMemory", memRequest);
 
-                Utilities.incrementField(summary, "LimitCpu", cpuLimit);
-                Utilities.incrementField(summaryNamespace, "LimitCpu", cpuLimit);
-                Utilities.incrementField(summaryNode, "LimitCpu", cpuLimit);
+                Utilities.incrementField(summary, "LimitCpu", (cpuLimit*1000));
+                Utilities.incrementField(summaryNamespace, "LimitCpu", (cpuLimit*1000));
+                Utilities.incrementField(summaryNode, "LimitCpu", (cpuLimit*1000));
 
                 Utilities.incrementField(summary, "LimitMemory", memLimit);
                 Utilities.incrementField(summaryNamespace, "LimitMemory", memLimit);

@@ -2,25 +2,29 @@
 
 ## What is New?
 
+Upgrade the io.kubernetes library from 3.0.0 to 5.0.0
+
 New Metrics:
 
 Cluster
- * Total Memory, CPU and PODs
+ * Total Capacity of Memory, CPU and PODs
  * Total Allocation Memory, CPU and PODS
- * Number of Nodes
+ * Number of Master, Workers, Storage Nodes and Infra Nodes separately
+ * Total Number of Nodes
  * Total NameSpaces with running Pods
- * CPURequests
+ * Total CPU and Memory Requests
 
 
-Masters - New Folder Summary:
+ Msters, Workers, Infra Nodes and Storage Nodes - New Folder Summary:
  * Total Memory, CPU and PODs
  * Total Allocation Memory, CPU and PODS
+ * Total Capacity of Memory, CPU and PODs
+ * Total Limit and Request (CPU and Memory) of pods runnings
+ * total Evictions, Failed Pods and Pendins Pods
 
- Workers - New Folder Summary:
- * Total Memory, CPU and PODs
- * Total Allocation Memory, CPU and PODS
+,  
 
- Script
+ Extension
  * Node metrics collected
  * Pod metrics collected
  * Replica metrics collected
@@ -28,7 +32,7 @@ Masters - New Folder Summary:
  * Endpoint metrics collected
  * Daemon metrics collected
  * Event metrics collected
- * Script All Tasks ResponseTime metric collected
+ * Extension All Tasks ResponseTime metric collected
 
 
 ## What changed?
@@ -42,9 +46,11 @@ Metrics now are collected minute by minute
 
 ## What was fixed?
 
-Pod Restarts metric for cluster now do diff from the last run
+Pod Restarts metric for cluster now do diff from the last run (working only for the cluster)
 
 Config for Log4j.xml in new machine agent 20.3
+
+Limit and Rquest CPU for all groups, multiplying by 1000 because appdynamics only accepts integers
 
 Some other minor config and image fixes
 
