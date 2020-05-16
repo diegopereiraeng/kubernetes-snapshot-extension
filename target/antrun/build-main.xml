@@ -18,7 +18,7 @@
   <copy todir="/Users/dieperei/Documents/Development/Java/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension">
     <fileset includes="kubernetes-snapshot-extension.jar" dir="/Users/dieperei/Documents/Development/Java/kubernetes-snapshot-extension/target"/>
   </copy>
-  <zip destfile="/Users/dieperei/Documents/Development/Java/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension-1.23.zip">
+  <zip destfile="/Users/dieperei/Documents/Development/Java/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension-2.0.zip">
     <zipfileset prefix="KubernetesSnapshotExtension/" filemode="755" dir="/Users/dieperei/Documents/Development/Java/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
   </zip>
   <delete dir="/Users/dieperei/Documents/Development/Java/kubernetes-snapshot-extension/target/KubernetesSnapshotExtension"/>
