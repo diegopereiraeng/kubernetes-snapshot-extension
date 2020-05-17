@@ -224,16 +224,24 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
             logger.info("Before Quota Status");
             if (quotaItem.getStatus() != null) {
                 logger.info("Quota Status not null");
-                String tolerations = "";
+                final String tolerations = "";
                 final V1ResourceQuotaStatus quotaStatus = quotaItem.getStatus();
                 final Map<String, String> hardLimit = quotaStatus.getHard();
                 final Map<String, String> usedLimit = quotaStatus.getUsed();
 
                 for(final Map.Entry<String, String> hard : hardLimit.entrySet()){
                     final String hardKey = hard.getKey().toString();
-                    final BigDecimal hardValue = new BigDecimal(hard.getValue());
-                    logger.info("Hard Key:"+hardKey);
-                    logger.info("Hard Value:"+hardValue);
+                    logger.info("Quota Hard Key converted:"+hardKey);
+                    logger.info("Quota - Trying to convert to bigDecimal: "+hard.getValue());
+                    
+                    BigDecimal hardValue;
+                    try {
+                        hardValue = new BigDecimal(hard.getValue());
+                    } catch (Exception e) {
+                        hardValue = new BigDecimal(0);
+                    }
+
+                    logger.info("Quota Hard Value converted:"+hardValue);
                     if (hardKey == "limits.cpu") {
                         Utilities.incrementField(summary, ("ResourceQuotaHardLimitsCPU"), (hardValue.multiply(new BigDecimal(1000))));
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardLimitsCPU"), (hardValue.multiply(new BigDecimal(1000))));
@@ -264,7 +272,17 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                 
                 for(final Map.Entry<String, String> used : usedLimit.entrySet()){
                     final String usedKey = used.getKey().toString();
-                    final BigDecimal usedValue = new BigDecimal(used.getValue());
+                    logger.info("Quota Hard Key converted:"+usedKey);
+                    logger.info("Quota - Trying to convert to bigDecimal: "+used.getValue());
+                    
+                    BigDecimal usedValue;
+
+                    try {
+                        usedValue = new BigDecimal(used.getValue());
+                    } catch (Exception e) {
+                        usedValue = new BigDecimal(0);
+                    }
+
                     logger.info("Used Key:"+usedKey);
                     logger.info("Used Value:"+usedValue);
                     if (usedKey == "limits.cpu" ) {
