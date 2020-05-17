@@ -260,8 +260,8 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                 for(final Map.Entry<String, String> used : usedLimit.entrySet()){
                     final String usedKey = used.getKey().toString();
                     final BigDecimal usedValue = new BigDecimal(used.getValue());
-                    logger.info("Hard Key:"+usedKey);
-                    logger.info("Hard Value:"+usedValue);
+                    logger.info("Used Key:"+usedKey);
+                    logger.info("Used Value:"+usedValue);
                     if (usedKey == "cpu" ) {
                         Utilities.incrementField(summary, ("ResourceQuotaUsedCPU"), (usedValue.multiply(new BigDecimal(1000))));
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedCPU"), (usedValue.multiply(new BigDecimal(1000))));
