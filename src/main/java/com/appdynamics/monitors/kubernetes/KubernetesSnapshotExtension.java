@@ -83,6 +83,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     for (String taskName : TASKS) {
                         Map<String, String> taskConfig = Utilities.getEntityConfig(entities, taskName);
                         if (taskConfig != null) {
+                            logger.info("starting " + taskName);
                             tasks.add(initTask(tasksExecutionServiceProvider, taskConfig, taskName));
                         }
                     }
