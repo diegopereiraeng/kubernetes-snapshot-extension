@@ -150,31 +150,17 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
         final ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         
-        // Read historical Node rol//es
-        
-        Map<String,String> mapNodes = new HashMap<String,String>();
-        try {
-   
-            // convert JSON file to map
-            mapNodes = mapper.readValue(Paths.get(Utilities.getExtensionDirectory()+"/nodes.roles").toFile(), HashMap.class);
-            logger.info("Successfull reading the historical node roles");
-            //List<NodeRole> nodesRoles = Arrays.asList(mapper.readValue(Paths.get("nodes.roles").toFile(), NodeRole[].class));
-        
-        } catch (final Exception ex) {
-            logger.error("Fail reading the historical node roles - maybe it is the first time");
-            logger.error(ex.getMessage());
-        }
+        logger.info("Creating Quota Payload");
 
         final long batchSize = Long.parseLong(config.get(CONFIG_RECS_BATCH_SIZE));
         
-        // Variable to count namespaces
-        final HashMap<String, Integer> namespaces = new HashMap<String, Integer>();
 
         for(final V1ResourceQuota quotaItem : quotaList.getItems()){
 
             ObjectNode quotaObject = mapper.createObjectNode();
             final String namespace = quotaItem.getMetadata().getNamespace();
             
+            logger.info("Quota Namespace check:" + namespace);
 
             if (namespace == null || namespace.isEmpty()){
                 logger.info(String.format("Quota %s missing namespace attribution", quotaItem.getMetadata().getName()));
