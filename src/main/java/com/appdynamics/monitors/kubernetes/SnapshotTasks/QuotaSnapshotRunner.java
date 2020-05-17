@@ -218,8 +218,9 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
             
 
 
-            
+            logger.info("Before Quota Status");
             if (quotaItem.getStatus() != null) {
+                logger.info("Quota Status not null");
                 String tolerations = "";
                 final V1ResourceQuotaStatus quotaStatus = quotaItem.getStatus();
                 final Map<String, String> hardLimit = quotaStatus.getHard();
