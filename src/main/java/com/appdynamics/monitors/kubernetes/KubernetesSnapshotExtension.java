@@ -174,6 +174,8 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     private SnapshotRunnerBase initTask(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, String taskName){
         SnapshotRunnerBase task = null;
+
+        logger.info("Task Name:"+taskName);
         switch (taskName){
             case CONFIG_ENTITY_TYPE_POD:
                 task = new PodSnapshotRunner(tasksExecutionServiceProvider, config, latch);
