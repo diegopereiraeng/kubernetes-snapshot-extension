@@ -109,6 +109,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     throw new Exception("Unable to connect to Kubernetes API server because it may be unavailable or the cluster credentials are invalid", ex);
                 }
 
+                logger.info("Quota itens: " + String.valueOf(quotaList.getItems().size()) );
                 createQuotaPayload(quotaList, config, publishUrl, accountName, apiKey);
 
                 
