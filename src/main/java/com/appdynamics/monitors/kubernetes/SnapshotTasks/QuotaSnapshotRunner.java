@@ -95,7 +95,9 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                         return resp.getData();
                     } */
                     this.setCoreAPIServerTimeout(api, K8S_API_TIMEOUT);
-                    quotaList = api.listResourceQuotaForAllNamespaces(null,
+                    quotaList = api.listNamespacedResourceQuota("kube-system", 
+                            null,
+                    //.listResourceQuotaForAllNamespaces(null,
                             null,
                             null,
                             null,
