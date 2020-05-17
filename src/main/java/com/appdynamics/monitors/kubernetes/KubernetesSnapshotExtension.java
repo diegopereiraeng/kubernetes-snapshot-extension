@@ -42,7 +42,8 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
             CONFIG_ENTITY_TYPE_DEPLOYMENT,
             CONFIG_ENTITY_TYPE_DAEMON,
             CONFIG_ENTITY_TYPE_ENDPOINT,
-            CONFIG_ENTITY_TYPE_REPLICA};
+            CONFIG_ENTITY_TYPE_REPLICA,
+            CONFIG_ENTITY_TYPE_QUOTA};
 
     private CountDownLatch latch;
     public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
@@ -193,6 +194,9 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                 break;
             case CONFIG_ENTITY_TYPE_EVENT:
                 task = new EventSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                break;
+            case CONFIG_ENTITY_TYPE_QUOTA:
+                task = new QuotaSnapshotRunner(tasksExecutionServiceProvider, config, latch);
                 break;
         }
         return task;

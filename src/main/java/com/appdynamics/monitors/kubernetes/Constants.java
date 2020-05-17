@@ -29,6 +29,7 @@ public class Constants {
     public static final String CONFIG_ENTITY_TYPE_DAEMON = "daemon";
     public static final String CONFIG_ENTITY_TYPE_REPLICA = "replica";
     public static final String CONFIG_ENTITY_TYPE_ENDPOINT = "endpoint";
+    public static final String CONFIG_ENTITY_TYPE_QUOTA = "quota";
 
     public static final String CONFIG_SCHEMA_DEF_POD = "podsSchemaDefinition";
     public static final String CONFIG_SCHEMA_NAME_POD = "podsSchemaName";
