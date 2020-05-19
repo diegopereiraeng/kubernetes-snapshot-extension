@@ -19,7 +19,7 @@ Cluster
  * Total CPU and Memory Requests
 
 
- Msters, Workers, Infra Nodes and Storage Nodes - New Folder Summary:
+ Masters, Workers, Infra Nodes and Storage Nodes - New Folder Summary:
  * Total Memory, CPU and PODs
  * Total Allocation Memory, CPU and PODS
  * Total Capacity of Memory, CPU and PODs
