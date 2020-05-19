@@ -65,7 +65,7 @@ The data is received via Kubernetes API at a configurable interval and is sent t
 and stored under a desired Application Tier. Metrics can be viewed in the Metrics Browser under Application -> Metric Browser -> Application Infrastructure Performance
 -> Tier Name -> Custom Metrics -> Cluster Stats.
 
-![Sample Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/metrics.png)
+![Sample Dashboard](https://github.com/diegopereiraeng/kubernetes-snapshot-extension/blob/master/metrics.png)
 The extension aggregates metrics at the cluster level with further categorization by node and namespace.
 
 If you want to monitor events only, use [Kubernetes Events Extension](https://github.com/Appdynamics/kubernetes-events-extension).
@@ -74,7 +74,7 @@ If you are interested in automated metric collection for events and other cluste
 The extension automatically creates the dashboard below. The first attempt to create the dashboard is made
 after the number of seconds defined in the *dashboardCheckInterval* setting has passed since the first run of the extension.
 
-![The Default Dashboard](https://github.com/sashaPM/kubernetes-snapshot-extension/blob/master/dashboard.png)
+![The Default Dashboard](https://github.com/diegopereiraeng/kubernetes-snapshot-extension/blob/master/dashboard.png)
 
 Other specialized dashboards with the metrics collected can be built in AppDynamics -> Dashboards & Reports.
 
@@ -94,7 +94,7 @@ These automatically created queries can also be accessed under Analytics -> Sear
  * The number of collected metrics depends on the size of the cluster in terms of namespaces/projects and nodes.
  It may be necessary to increase the threshold for metric ingestion in the machine agent configuration:
  ```
- -Dappdynamics.agent.maxMetrics=2000
+ -Dappdynamics.agent.maxMetrics=4000
  ```
  The current metric collection rate is:
    * Cluster-specific: 52
