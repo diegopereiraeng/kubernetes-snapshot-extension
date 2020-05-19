@@ -235,19 +235,19 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                         quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardRequestsCPU");
                     }
                     else if(hardKey.contains("limits.memory")){
-                        Utilities.incrementField(summary, ("ResourceQuotaHardLimitsMemory"), hardValue);
-                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardLimitsMemory"), hardValue);
-                        quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardLimitsMemory");
+                        Utilities.incrementField(summary, ("ResourceQuotaHardLimitsMemory"), hardValue.divide(new BigDecimal(1000)));
+                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardLimitsMemory"), hardValue.divide(new BigDecimal(1000)));
+                        quotaObject = checkAddObject(quotaObject, hardValue.divide(new BigDecimal(1000)), "ResourceQuotaHardLimitsMemory");
                     }
                     else if(hardKey.contains("requests.memory")){
-                        Utilities.incrementField(summary, ("ResourceQuotaHardRequestsMemory"), hardValue);
-                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardRequestsMemory"), hardValue);
-                        quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardRequestsMemory");
+                        Utilities.incrementField(summary, ("ResourceQuotaHardRequestsMemory"), hardValue.divide(new BigDecimal(1000)));
+                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardRequestsMemory"), hardValue.divide(new BigDecimal(1000)));
+                        quotaObject = checkAddObject(quotaObject, hardValue.divide(new BigDecimal(1000)), "ResourceQuotaHardRequestsMemory");
                     }
                     else if(hardKey.contains("requests.nvidia.com/gpu")){
                         Utilities.incrementField(summary, ("ResourceQuotaHardRequestsGPU"), hardValue);
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardRequestsGPU"), hardValue);
-                        quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardRequestsGPU");
+                        quotaObject = checkAddObject(quotaObject, hardValue.divide(new BigDecimal(1000)), "ResourceQuotaHardRequestsGPU");
                     }
                     else if(hardKey.contains("pods")){
                         Utilities.incrementField(summary, ("ResourceQuotaHardRequestsPods"), hardValue);
@@ -287,14 +287,14 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     }
                     else if(usedKey.contains("limits.memory")) {
                         logger.info("Quota - Adding Key:"+usedKey+" - Value:"+usedValue);
-                        Utilities.incrementField(summary, ("ResourceQuotaUsedLimitsMemory"), usedValue);
-                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedLimitsMemory"), usedValue);
-                        quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedLimitsMemory");
+                        Utilities.incrementField(summary, ("ResourceQuotaUsedLimitsMemory"), usedValue.divide(new BigDecimal(1000)));
+                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedLimitsMemory"), usedValue.divide(new BigDecimal(1000)));
+                        quotaObject = checkAddObject(quotaObject, usedValue.divide(new BigDecimal(1000)), "ResourceQuotaUsedLimitsMemory");
                     }
                     else if(usedKey.contains("requests.memory")) {
-                        Utilities.incrementField(summary, ("ResourceQuotaUsedRequestsMemory"), usedValue);
-                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedRequestsMemory"), usedValue);
-                        quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedRequestsMemory");
+                        Utilities.incrementField(summary, ("ResourceQuotaUsedRequestsMemory"), usedValue.divide(new BigDecimal(1000)));
+                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedRequestsMemory"), usedValue.divide(new BigDecimal(1000)));
+                        quotaObject = checkAddObject(quotaObject, usedValue.divide(new BigDecimal(1000)), "ResourceQuotaUsedRequestsMemory");
                     }
                     else if(usedKey.contains("requests.nvidia.com/gpu")){
                         Utilities.incrementField(summary, ("ResourceQuotaUsedRequestsGPU"), usedValue);
