@@ -211,7 +211,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                 final Map<String, String> usedLimit = quotaStatus.getUsed();
 
                 for(final Map.Entry<String, String> hard : hardLimit.entrySet()){
-                    final String hardKey = hard.getKey().toString();
+                    String hardKey = hard.getKey().toString();
                     logger.info("Quota Hard Key converted:"+hardKey);
                     logger.info("Quota - Trying to convert to bigDecimal: "+hard.getValue());
                     String hardValueString = hard.getValue();
@@ -262,7 +262,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                 }
                 
                 for(final Map.Entry<String, String> used : usedLimit.entrySet()){
-                    final String usedKey = used.getKey().toString();
+                    String usedKey = used.getKey().toString();
                     logger.info("Quota Hard Key converted:"+usedKey);
                     logger.info("Quota - Trying to convert to bigDecimal: "+used.getValue());
                     
