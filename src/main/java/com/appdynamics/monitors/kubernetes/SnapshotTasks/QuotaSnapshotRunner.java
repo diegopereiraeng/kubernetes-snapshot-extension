@@ -218,6 +218,11 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     
                     //BigDecimal hardValue = Utilities.convertBigDecimalMemCPUValues(hardValueString, "type");
                     BigDecimal hardValue = new Quantity(hardValueString).getNumber();
+
+                    if(hardKey.contains("cpu")){
+                        hardValue.multiply(new BigDecimal(1000));
+                    }
+
                     logger.info(new Quantity(hardValueString).toString());
 
                     try {
@@ -269,6 +274,10 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
 
                     //BigDecimal usedValue = Utilities.convertBigDecimalMemCPUValues(usedValueString, "type");
                     BigDecimal usedValue = new Quantity(usedValueString).getNumber();
+
+                    if(usedKey.contains("cpu")){
+                        usedValue.multiply(new BigDecimal(1000));
+                    }
 
                     logger.info("Used Key:"+usedKey);
                     logger.info("Used Value:"+usedValue);
