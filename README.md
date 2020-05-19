@@ -1,5 +1,9 @@
 # AppDynamics Kubernetes Snapshot Extension
 
+This Extension was mirrored from https://github.com/sashaPM/kubernetes-snapshot-extension
+
+I continued his work!
+
 ## What is New?
 
 Upgrade the io.kubernetes library from 3.0.0 to 5.0.0
@@ -32,7 +36,7 @@ Cluster
  * Endpoint metrics collected
  * Daemon metrics collected
  * Event metrics collected
- * Extension All Tasks ResponseTime metric collected
+ * Extension All Tasks ResponseTime
 
 
 ## What changed?
@@ -42,7 +46,7 @@ Cluster Metric names:
  * Changed Running to RunningPods
  * Changed Failed to FailedPods
 
-Metrics now are collected minute by minute
+Metrics now are collected minute by minute as default
 
 ## What was fixed?
 

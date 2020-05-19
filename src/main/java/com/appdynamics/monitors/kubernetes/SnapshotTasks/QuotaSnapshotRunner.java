@@ -346,21 +346,24 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
  
         summary.put("namespace", namespace);
 
-        summary.put("ResourceQuotaHardLimitsCPU", 0);
-        summary.put("ResourceQuotaHardRequestsCPU", 0);
-        summary.put("ResourceQuotaHardLimitsMemory", 0);
-        summary.put("ResourceQuotaHardRequestsMemory", 0);
-        summary.put("ResourceQuotaHardRequestsGPU", 0);
-        summary.put("ResourceQuotaHardRequestsMemory", 0);
-        summary.put("ResourceQuotaHardPods", 0);
+        if (namespace.equals(ALL)) {
+            summary.put("ResourceQuotaHardLimitsCPU", 0);
+            summary.put("ResourceQuotaHardRequestsCPU", 0);
+            summary.put("ResourceQuotaHardLimitsMemory", 0);
+            summary.put("ResourceQuotaHardRequestsMemory", 0);
+            summary.put("ResourceQuotaHardRequestsGPU", 0);
+            summary.put("ResourceQuotaHardRequestsMemory", 0);
+            summary.put("ResourceQuotaHardPods", 0);
 
-        summary.put("ResourceQuotaUsedLimitsCPU", 0);
-        summary.put("ResourceQuotaUsedRequestsCPU", 0);
-        summary.put("ResourceQuotaUsedLimitsMemory", 0);
-        summary.put("ResourceQuotaUsedRequestsMemory", 0);
-        summary.put("ResourceQuotaUsedRequestsGPU", 0);
-        summary.put("ResourceQuotaUsedRequestsMemory", 0);
-        summary.put("ResourceQuotaUsedPods", 0);
+            summary.put("ResourceQuotaUsedLimitsCPU", 0);
+            summary.put("ResourceQuotaUsedRequestsCPU", 0);
+            summary.put("ResourceQuotaUsedLimitsMemory", 0);
+            summary.put("ResourceQuotaUsedRequestsMemory", 0);
+            summary.put("ResourceQuotaUsedRequestsGPU", 0);
+            summary.put("ResourceQuotaUsedRequestsMemory", 0);
+            summary.put("ResourceQuotaUsedPods", 0);
+        }
+        
         
 
         final String path = Utilities.getMetricsPath(config, namespace, node);
