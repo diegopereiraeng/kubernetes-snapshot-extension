@@ -221,13 +221,14 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
 
                     if(hardKey == "limits.cpu" || hardKey == "requests.cpu" || hard.getKey().toString().contains("cpu")){
                         logger.info(" Quota - its CPU - "+hardKey);
-                        hardValue.multiply(new BigDecimal(1000));
+                        hardValue = hardValue.multiply(new BigDecimal(1000));
                     }
 
                     logger.info(new Quantity(hardValueString).toString());
 
 
                     logger.info("Quota Hard Value converted:"+hardValue);
+
                     if (hardKey == "limits.cpu") {
                         Utilities.incrementField(summary, ("ResourceQuotaHardLimitsCPU"), (hardValue.multiply(new BigDecimal(1000))));
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardLimitsCPU"), (hardValue.multiply(new BigDecimal(1000))));
@@ -273,24 +274,24 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
 
                     logger.info(new Quantity(usedValueString).toString());
 
-                    if(usedKey == "limits.cpu" || usedKey == "requests.cpu" || used.getKey().toString().contains("cpu")){
-                        logger.info(" Quota - its CPU - "+usedKey);
-                        usedValue.multiply(new BigDecimal(1000));
-                    }
+                    logger.info("Quota - Converted to bigDecimal: "+used.getValue());
 
                     logger.info("Quota Used Key:"+usedKey);
                     logger.info("Quota Used Value:"+usedValue);
                     if (usedKey == "limits.cpu" ) {
+                        logger.info("Quota - Adding Key:"+usedKey+" - Value:"+usedValue);
                         Utilities.incrementField(summary, ("ResourceQuotaUsedLimitsCPU"), (usedValue.multiply(new BigDecimal(1000))));
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedLimitsCPU"), (usedValue.multiply(new BigDecimal(1000))));
                         quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedLimitsCPU");
                     }
                     else if (usedKey == "requests.cpu") {
+                        
                         Utilities.incrementField(summary, ("ResourceQuotaUsedRequestsCPU"), (usedValue.multiply(new BigDecimal(1000))));
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedRequestsCPU"), (usedValue.multiply(new BigDecimal(1000))));
                         quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedRequestsCPU");
                     }
                     else if(usedKey == "limits.memory") {
+                        logger.info("Quota - Adding Key:"+usedKey+" - Value:"+usedValue);
                         Utilities.incrementField(summary, ("ResourceQuotaUsedLimitsMemory"), usedValue);
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedLimitsMemory"), usedValue);
                         quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedLimitsMemory");
