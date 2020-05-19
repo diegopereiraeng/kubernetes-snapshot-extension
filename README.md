@@ -52,9 +52,9 @@ Metrics now are collected minute by minute as default
 
 Pod Restarts metric for cluster now do diff from the last run (working only for the cluster)
 
-Config for Log4j.xml in new machine agent 20.3
+Config for Log4j.xml for machine agent 20.3 java format
 
-Limit and Rquest CPU for all groups, multiplying by 1000 because appdynamics only accepts integers
+Limit and Rquest CPU for all groups(Masters, Workers, Infra Nodes and Storage Nodes and Cluster), multiplying by 1000 because appdynamics only accepts integers and decimal values were round to below so 0.3 became 0, so the Totals got 0.
 
 Some other minor config and image fixes
 
