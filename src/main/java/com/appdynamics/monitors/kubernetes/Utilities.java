@@ -113,9 +113,9 @@ public class Utilities {
 
 
         if (m.find( )) {
-            if (m.group(3) != "") {
+            if (m.group(3) != "" && null != m.group(3)) {
                 valueBigDecimal = new BigDecimal(m.group(1)+"."+m.group(3));
-                if (m.group(4) != "") {
+                if (m.group(4) != "" && null != m.group(4)) {
                     switch (m.group(4)) {
                         case "m":
                             valueBigDecimal.multiply(new BigDecimal(1));
@@ -141,9 +141,9 @@ public class Utilities {
                     valueBigDecimal.multiply(new BigDecimal(1000));
                 }
                 
-            } else if (m.group(5) != "") {
+            } else if (m.group(5) != "" && null != m.group(5)) {
                 valueBigDecimal = new BigDecimal(m.group(5));
-                if (m.group(6) != "") {
+                if (m.group(6) != "" && null != m.group(6)) {
                     switch (m.group(6)) {
                         case "m":
                             valueBigDecimal.multiply(new BigDecimal(1));
