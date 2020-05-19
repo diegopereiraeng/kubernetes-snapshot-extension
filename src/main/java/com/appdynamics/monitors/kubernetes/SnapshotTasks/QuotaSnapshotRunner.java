@@ -250,7 +250,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                         quotaObject = checkAddObject(quotaObject, hardValue.divide(new BigDecimal(1000)).divide(new BigDecimal(1000)), "ResourceQuotaHardRequestsGPU");
                     }
                     else if(hardKey.contains("pods")){
-                        Utilities.incrementField(summary, ("ResourceQuotaHardRequestsPods"), hardValue);
+                        Utilities.incrementField(summary, ("ResourceQuotaHardPods"), hardValue);
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardRequestsPods"), hardValue);
                         quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardRequestsPods");
                     }
@@ -302,7 +302,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                         quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedRequestsGPU");
                     }
                     else if(usedKey.contains("pods")){
-                        Utilities.incrementField(summary, ("ResourceQuotaUsedRequestsPods"), usedValue);
+                        Utilities.incrementField(summary, ("ResourceQuotaUsedPods"), usedValue);
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedRequestsPods"), usedValue);
                         quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedRequestsPods");
                     }
@@ -352,6 +352,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
         summary.put("ResourceQuotaHardRequestsMemory", 0);
         summary.put("ResourceQuotaHardRequestsGPU", 0);
         summary.put("ResourceQuotaHardRequestsMemory", 0);
+        summary.put("ResourceQuotaHardPods", 0);
 
         summary.put("ResourceQuotaUsedLimitsCPU", 0);
         summary.put("ResourceQuotaUsedRequestsCPU", 0);
@@ -359,6 +360,8 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
         summary.put("ResourceQuotaUsedRequestsMemory", 0);
         summary.put("ResourceQuotaUsedRequestsGPU", 0);
         summary.put("ResourceQuotaUsedRequestsMemory", 0);
+        summary.put("ResourceQuotaUsedPods", 0);
+        
 
         final String path = Utilities.getMetricsPath(config, namespace, node);
 
