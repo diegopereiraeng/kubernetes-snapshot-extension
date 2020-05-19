@@ -219,17 +219,13 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     //BigDecimal hardValue = Utilities.convertBigDecimalMemCPUValues(hardValueString, "type");
                     BigDecimal hardValue = new Quantity(hardValueString).getNumber();
 
-                    if(hardKey.contains("cpu")){
+                    if(hardKey == "limits.cpu" || hardKey == "requests.cpu"){
+                        logger.info(" Quota - its CPU - "+hardKey);
                         hardValue.multiply(new BigDecimal(1000));
                     }
 
                     logger.info(new Quantity(hardValueString).toString());
 
-                    try {
-                        hardValue = new BigDecimal(hard.getValue());
-                    } catch (Exception e) {
-                        hardValue = new BigDecimal(0);
-                    }
 
                     logger.info("Quota Hard Value converted:"+hardValue);
                     if (hardKey == "limits.cpu") {
@@ -275,12 +271,15 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     //BigDecimal usedValue = Utilities.convertBigDecimalMemCPUValues(usedValueString, "type");
                     BigDecimal usedValue = new Quantity(usedValueString).getNumber();
 
-                    if(usedKey.contains("cpu")){
+                    logger.info(new Quantity(usedValueString).toString());
+
+                    if(usedKey == "limits.cpu" || usedKey == "requests.cpu"){
+                        logger.info(" Quota - its CPU - "+usedKey);
                         usedValue.multiply(new BigDecimal(1000));
                     }
 
-                    logger.info("Used Key:"+usedKey);
-                    logger.info("Used Value:"+usedValue);
+                    logger.info("Quota Used Key:"+usedKey);
+                    logger.info("Quota Used Value:"+usedValue);
                     if (usedKey == "limits.cpu" ) {
                         Utilities.incrementField(summary, ("ResourceQuotaUsedLimitsCPU"), (usedValue.multiply(new BigDecimal(1000))));
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedLimitsCPU"), (usedValue.multiply(new BigDecimal(1000))));
