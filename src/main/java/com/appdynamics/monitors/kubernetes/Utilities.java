@@ -19,6 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
 
@@ -89,6 +91,93 @@ public class Utilities {
             logger.error("Issues when parsing namespace config", ex);
         }
         return should;
+    }
+
+    public static BigDecimal convertBigDecimalMemCPUValues(String value, String type){
+        String pattern = "([0-9]+)(,)([0-9]+)([mMiG]+)*|([0-9]+)([mMiG]+)*";
+        // Group 1 number
+        // Group 2 ,
+        // Group 3 number
+        // Group 4 M,Mi,G,Gi,m
+        
+        // Group 5 number
+        // Group 6 M,Mi,G,Gi,m
+
+        // Create a Pattern object
+        Pattern r = Pattern.compile(pattern);
+
+        // Now create matcher object.
+        Matcher m = r.matcher(value);
+        
+        BigDecimal valueBigDecimal = new BigDecimal(0);
+
+
+        if (m.find( )) {
+            if (m.group(3) != "") {
+                valueBigDecimal = new BigDecimal(m.group(1)+"."+m.group(3));
+                if (m.group(4) != "") {
+                    switch (m.group(4)) {
+                        case "m":
+                            valueBigDecimal.multiply(new BigDecimal(1));
+                            break;
+                        case "M":
+                            valueBigDecimal.multiply(new BigDecimal(1000));
+                            break;
+                        case "Mi":
+                            valueBigDecimal.multiply(new BigDecimal(1024));
+                            break;
+                        case "G":
+                            valueBigDecimal.multiply(new BigDecimal(1000*1000));
+                            break;
+                        case "Gi":
+                            valueBigDecimal.multiply(new BigDecimal(1024*1024));
+                            break;
+                        default:
+                            logger.error("Limits using different known values, expected m,M,Mi,G,Gi, received: "+ m.group(4) );
+                            break;
+                    }
+                }
+                else{
+                    valueBigDecimal.multiply(new BigDecimal(1000));
+                }
+                
+            } else if (m.group(5) != "") {
+                valueBigDecimal = new BigDecimal(m.group(5));
+                if (m.group(6) != "") {
+                    switch (m.group(6)) {
+                        case "m":
+                            valueBigDecimal.multiply(new BigDecimal(1));
+                            break;
+                        case "M":
+                            valueBigDecimal.multiply(new BigDecimal(1000));
+                            break;
+                        case "Mi":
+                            valueBigDecimal.multiply(new BigDecimal(1024));
+                            break;
+                        case "G":
+                            valueBigDecimal.multiply(new BigDecimal(1000*1000));
+                            break;
+                        case "Gi":
+                            valueBigDecimal.multiply(new BigDecimal(1024*1024));
+                            break;
+                        default:
+                            logger.error("Limits using different known values, expected m,M,Mi,G,Gi, received: "+ m.group(4) );
+                            break;
+                    }
+                }
+                else{
+                    
+                    valueBigDecimal.multiply(new BigDecimal(1000));
+                }
+
+            }
+
+        } else {
+            logger.error("Conversion dont match '"+pattern+"' - NO MATCH, value="+value);
+        }
+
+        return valueBigDecimal;
+        
     }
 
     public static URL ensureSchema(Map<String, String> config, String apiKey, String accountName, String schemaName, String schemaDefinition){

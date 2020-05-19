@@ -13,39 +13,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
-import io.sundr.shaded.org.apache.velocity.runtime.log.Log;
+
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-import java.io.FileWriter;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import afu.org.checkerframework.checker.units.qual.h;
 
@@ -233,8 +214,11 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     final String hardKey = hard.getKey().toString();
                     logger.info("Quota Hard Key converted:"+hardKey);
                     logger.info("Quota - Trying to convert to bigDecimal: "+hard.getValue());
+                    String hardValueString = hard.getValue();
                     
-                    BigDecimal hardValue;
+                    BigDecimal hardValue = Utilities.convertBigDecimalMemCPUValues(hardValueString, "type");
+                    logger.info(new Quantity(hardValueString).toString());
+
                     try {
                         hardValue = new BigDecimal(hard.getValue());
                     } catch (Exception e) {
@@ -267,6 +251,11 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardRequestsGPU"), hardValue);
                         quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardRequestsGPU");
                     }
+                    else if(hardKey == "pods"){
+                        Utilities.incrementField(summary, ("ResourceQuotaHardRequestsPods"), hardValue);
+                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaHardRequestsPods"), hardValue);
+                        quotaObject = checkAddObject(quotaObject, hardValue, "ResourceQuotaHardRequestsPods");
+                    }
                     
                 }
                 
@@ -275,13 +264,9 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     logger.info("Quota Hard Key converted:"+usedKey);
                     logger.info("Quota - Trying to convert to bigDecimal: "+used.getValue());
                     
-                    BigDecimal usedValue;
+                    String usedValueString = used.getValue();
 
-                    try {
-                        usedValue = new BigDecimal(used.getValue());
-                    } catch (Exception e) {
-                        usedValue = new BigDecimal(0);
-                    }
+                    BigDecimal usedValue = Utilities.convertBigDecimalMemCPUValues(usedValueString, "type");
 
                     logger.info("Used Key:"+usedKey);
                     logger.info("Used Value:"+usedValue);
@@ -310,7 +295,11 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                         Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedRequestsGPU"), usedValue);
                         quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedRequestsGPU");
                     }
-                     
+                    else if(usedKey == "pods"){
+                        Utilities.incrementField(summary, ("ResourceQuotaUsedRequestsPods"), usedValue);
+                        Utilities.incrementField(summaryNamespace, ("ResourceQuotaUsedRequestsPods"), usedValue);
+                        quotaObject = checkAddObject(quotaObject, usedValue, "ResourceQuotaUsedRequestsPods");
+                    }
                 }
                 
             }
@@ -348,21 +337,22 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
     public  static SummaryObj initQuotaSummaryObject(final Map<String, String> config, final String namespace, final String node){
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode summary = mapper.createObjectNode();
-
-        
+ 
         summary.put("namespace", namespace);
+
         summary.put("ResourceQuotaHardLimitsCPU", 0);
         summary.put("ResourceQuotaHardRequestsCPU", 0);
         summary.put("ResourceQuotaHardLimitsMemory", 0);
         summary.put("ResourceQuotaHardRequestsMemory", 0);
         summary.put("ResourceQuotaHardRequestsGPU", 0);
+        summary.put("ResourceQuotaHardRequestsMemory", 0);
+
         summary.put("ResourceQuotaUsedLimitsCPU", 0);
         summary.put("ResourceQuotaUsedRequestsCPU", 0);
         summary.put("ResourceQuotaUsedLimitsMemory", 0);
         summary.put("ResourceQuotaUsedRequestsMemory", 0);
         summary.put("ResourceQuotaUsedRequestsGPU", 0);
-        
-                    
+        summary.put("ResourceQuotaUsedRequestsMemory", 0);
 
         final String path = Utilities.getMetricsPath(config, namespace, node);
 
