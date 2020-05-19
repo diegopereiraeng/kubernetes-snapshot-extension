@@ -219,7 +219,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     //BigDecimal hardValue = Utilities.convertBigDecimalMemCPUValues(hardValueString, "type");
                     BigDecimal hardValue = new Quantity(hardValueString).getNumber();
 
-                    if(hardKey == "limits.cpu" || hardKey == "requests.cpu"){
+                    if(hardKey == "limits.cpu" || hardKey == "requests.cpu" || hard.getKey().toString().contains("cpu")){
                         logger.info(" Quota - its CPU - "+hardKey);
                         hardValue.multiply(new BigDecimal(1000));
                     }
@@ -273,7 +273,7 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
 
                     logger.info(new Quantity(usedValueString).toString());
 
-                    if(usedKey == "limits.cpu" || usedKey == "requests.cpu"){
+                    if(usedKey == "limits.cpu" || usedKey == "requests.cpu" || used.getKey().toString().contains("cpu")){
                         logger.info(" Quota - its CPU - "+usedKey);
                         usedValue.multiply(new BigDecimal(1000));
                     }
