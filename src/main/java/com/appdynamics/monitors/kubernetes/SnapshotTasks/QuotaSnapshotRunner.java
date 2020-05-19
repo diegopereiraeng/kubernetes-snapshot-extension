@@ -216,7 +216,8 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     logger.info("Quota - Trying to convert to bigDecimal: "+hard.getValue());
                     String hardValueString = hard.getValue();
                     
-                    BigDecimal hardValue = Utilities.convertBigDecimalMemCPUValues(hardValueString, "type");
+                    //BigDecimal hardValue = Utilities.convertBigDecimalMemCPUValues(hardValueString, "type");
+                    BigDecimal hardValue = new Quantity(hardValueString).getNumber();
                     logger.info(new Quantity(hardValueString).toString());
 
                     try {
@@ -266,7 +267,8 @@ public class QuotaSnapshotRunner extends SnapshotRunnerBase {
                     
                     String usedValueString = used.getValue();
 
-                    BigDecimal usedValue = Utilities.convertBigDecimalMemCPUValues(usedValueString, "type");
+                    //BigDecimal usedValue = Utilities.convertBigDecimalMemCPUValues(usedValueString, "type");
+                    BigDecimal usedValue = new Quantity(usedValueString).getNumber();
 
                     logger.info("Used Key:"+usedKey);
                     logger.info("Used Value:"+usedValue);
